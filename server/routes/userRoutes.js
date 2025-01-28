@@ -1,8 +1,9 @@
 const express = require('express');
-const { createUser, getAllUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
+const { createUser, getAllUsers, getUserById, updateUser, deleteUser, verifyEmail } = require('../controllers/userController');
 const router = express.Router();
 
 router.post('/', createUser); // Create a new user
+router.get("/verify/:token", verifyEmail); // Email verification
 router.get('/', getAllUsers); // Get all users
 router.get('/:id', getUserById); // Get user by ID
 router.put('/:id', updateUser); // Update user by ID

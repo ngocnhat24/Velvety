@@ -59,7 +59,7 @@ export default function Services() {
         <div className="w-[484px] h-[1.333px] bg-[url(@/assets/images/Line.png)] bg-cover bg-no-repeat absolute top-[22.673px] left-[1317.33px] z-10" />
       </div>
       <div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 mt-4">
       {services.map((service, index) => (
         <ServiceCard
           key={index}

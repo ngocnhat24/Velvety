@@ -1,10 +1,52 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../../components/Navbar";
 
 export default function RegisterPage() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+  });
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous error
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/users", {
+        ...formData,
+        roleName: "Customer", // Assuming "Customer" role for registration
+      });
+
+      if (response.status === 201) {
+        alert("Registration successful! Please check your email to verify your account.");
+        // On successful registration, redirect to login page
+        navigate("/login");
+      }
+    } catch (err) {
+      // Handle backend error message or network issues
+      const errorMessage =
+        err.response?.data?.error || "An error occurred while registering.";
+      setError(errorMessage);
+    }
+  };
+
   return (
     <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
-    <Navbar />
+      <Navbar />
       {/* Main Content */}
       <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
         {/* Background Image */}
@@ -16,16 +58,39 @@ export default function RegisterPage() {
             Register
           </h2>
 
+          {/* Error Message */}
+          {error && (
+            <div className="text-red-500 text-center mb-4">{error}</div>
+          )}
+
           {/* Input Fields */}
-          <form className="flex flex-col gap-6">
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <div>
               <label className="block text-[20px] font-semibold text-gray-800 mb-2">
-                Username
+                First Name
               </label>
               <input
                 type="text"
-                placeholder="Enter username"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                placeholder="Enter first name"
                 className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[20px] font-semibold text-gray-800 mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                placeholder="Enter last name"
+                className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
+                required
               />
             </div>
             <div>
@@ -34,8 +99,12 @@ export default function RegisterPage() {
               </label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Enter email"
                 className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
+                required
               />
             </div>
             <div>
@@ -44,7 +113,24 @@ export default function RegisterPage() {
               </label>
               <input
                 type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
                 placeholder="Enter password"
+                className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[20px] font-semibold text-gray-800 mb-2">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                placeholder="Enter phone number"
                 className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
               />
             </div>

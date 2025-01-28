@@ -2,10 +2,10 @@ import React from 'react';
 
 const ServiceCard = ({ image, name, description, price, onChoose }) => {
   return (
-    <div className="flex flex-col items-center justify-between w-[270.667px] h-[360px] relative">
+    <div className="flex flex-col items-center justify-between w-[420.667px] h-[400px] relative">
       {/* Image */}
       <div
-        className="w-[258.667px] h-[258.667px] bg-cover bg-no-repeat rounded-[133.333px]"
+        className="w-[300.667px] h-[500.667px] bg-cover bg-no-repeat rounded-[200.333px]"
         style={{
           backgroundImage: `url(${image})`,
         }}

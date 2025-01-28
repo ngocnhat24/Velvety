@@ -1,6 +1,5 @@
 const express = require('express');
 const userRoutes = require('./userRoutes');
-const roleRoutes = require('./roleRoutes');
 const bookingRequestRoutes = require('./bookingRequestRoutes');
 const feedbackRoutes = require('./feedbackRoutes');
 const serviceRoutes = require('./serviceRoutes');
@@ -11,7 +10,6 @@ const paymentRoutes = require('./paymentRoutes');
 const router = express.Router();
 
 router.use('/users', userRoutes);
-router.use('/roles', roleRoutes);
 router.use('/booking-requests', bookingRequestRoutes);
 router.use('/feedbacks', feedbackRoutes);
 router.use('/services', serviceRoutes);

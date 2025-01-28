@@ -21,7 +21,7 @@ export default function LoginPage() {
           <form className="flex flex-col gap-6">
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Email"
               className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
             />
             <input
