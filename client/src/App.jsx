@@ -8,6 +8,7 @@ import Forgotpassword from './pages/guest/Forgotpassword.jsx';
 import RegisterPage from './pages/guest/RegisterPage.jsx';
 import Quiz from './pages/guest/Quiz.jsx';
 import axios from 'axios';
+import VerifyEmailPage from './pages/guest/VerifyEmailPage.jsx';
 
 axios.defaults.baseURL = 'http://localhost:5000/';
 axios.defaults.withCredentials = true;
@@ -23,6 +24,7 @@ function App() {
       <Route path='/register' element={<RegisterPage />} />
       <Route path='/forgot-password' element={<Forgotpassword />} />
       <Route path='/quiz' element={<Quiz />} />
+      <Route path='/verify' element={<VerifyEmailPage/>} />
     </Routes>
 
   );

@@ -131,7 +131,7 @@ export default function About() {
         Stephen Strassler applying Reviva skin care to a model {" "}
       </span>
       <div className="flex w-[879.122px] h-[80.884px] justify-between items-center relative z-[21] mt-[0.84px] mr-0 mb-0 ml-[975.908px]">
-        <div className="w-[3.978px] h-[80.884px] shrink-0 bg-[url(@/assets/images/about_2.png)] bg-cover bg-no-repeat relative z-[16]" />
+        <div className="w-[5.978px] h-[90.884px] shrink-0 bg-[url(@/assets/images/Line.png)] bg-cover bg-no-repeat relative z-[16]" />
         <span className="flex w-[840.663px] h-[64px] justify-start items-center shrink-0 font-['Lato'] text-[19.889503479003906px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left uppercase z-[21]">
           Velvety  has been creating superior natural skin care for nearly
           half a century – and we’re just getting started. {" "}

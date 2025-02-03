@@ -1,48 +1,65 @@
 const User = require('../models/User');
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 exports.createUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phoneNumber, roleName } = req.body;
+    const { firstName, lastName, email, password, roleName, phoneNumber } = req.body;
 
-    // Generate a verification token
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Generate a random verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
-    // Create the user with isVerified set to false
+    // Create user
     const user = await User.create({
       firstName,
       lastName,
       email,
-      password,
-      phoneNumber,
+      password: hashedPassword,
       roleName,
-      isVerified: false,
-      verificationToken,
+      phoneNumber,
+      verified: false, // User is unverified at first
+      verificationToken, // Store the token
     });
 
     // Send verification email
     const transporter = nodemailer.createTransport({
-      service: "Gmail",
+      service: "gmail",
       auth: {
-        user: process.env.EMAIL, // Your email
-        pass: process.env.EMAIL_PASSWORD, // Your email password
+        user: process.env.EMAIL, // Sender email
+        pass: process.env.EMAIL_PASSWORD, // App password (not normal password)
       },
     });
 
-    const verificationLink = `http://localhost:5000/verify/${verificationToken}`;
-
-    await transporter.sendMail({
+    const verificationUrl = `http://localhost:5173/verify?token=${verificationToken}`;
+    const mailOptions = {
       from: process.env.EMAIL,
       to: user.email,
       subject: "Verify Your Email",
-      html: `<p>Hi ${user.firstName},</p>
-             <p>Thank you for registering. Please click the link below to verify your email:</p>
-             <a href="${verificationLink}">${verificationLink}</a>
-             <p>If you did not register, please ignore this email.</p>`,
-    });
+      html: `
+        <h2>Welcome, ${user.firstName}!</h2>
+        <p>Click the button below to verify your email:</p>
+        <a href="${verificationUrl}" style="display:inline-block; padding:10px 20px; color:white; background-color:#c86c79; text-decoration:none; border-radius:5px;">
+          Verify Email
+        </a>
+        <p>If you did not sign up, ignore this email.</p>
+      `,
+    };
 
-    res.status(201).json({ message: "User registered successfully. Please check your email to verify your account." });
+    await transporter.sendMail(mailOptions);
+
+    res.status(201).json({ message: "User registered! Please verify your email." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -50,23 +67,38 @@ exports.createUser = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
   try {
-    const { token } = req.params;
+    console.log("Received Token:", req.query.token);
 
-    const user = await User.findOne({ verificationToken: token });
-
-    if (!user) {
-      return res.status(400).json({ error: "Invalid or expired verification token." });
+    const token = req.query.token;
+    if (!token) {
+      return res.status(400).json({ message: "No token provided" });
     }
 
-    user.isVerified = true;
-    user.verificationToken = undefined; // Remove the token after verification
-    await user.save();
+    const user = await User.findOne({ verificationToken: token });
+    console.log("User Found:", user);
 
-    res.status(200).json({ message: "Email verified successfully. You can now log in." });
+    if (!user) {
+      return res.json({ message: "Email already verified or invalid token." }); // Do not return 400 error
+    }
+
+    if (user.verified) {
+      return res.json({ message: "Email already verified." });
+    }
+
+    // Verify the user
+    user.verified = true;
+    user.verificationToken = null;
+    await user.save();
+    console.log("User verified:", user.email);
+
+    res.json({ message: "Email verified successfully! You can now log in." });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Verification Error:", error);
+    res.status(500).json({ message: "Verification failed. Try again." });
   }
 };
+
+
 
 exports.getAllUsers = async (req, res) => {
   try {
