@@ -138,3 +138,33 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Check if user is verified
+    if (!user.verified) {
+      return res.status(400).json({ message: "Email not verified" });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ token, message: "Login successful" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+}
