@@ -7,6 +7,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,6 +21,7 @@ export default function LoginPage() {
 
       // Handle successful login
       console.log("Login successful:", response.data);
+      setSuccess("Login successful!");
 
       // Determine redirect URL based on roleName
       let redirectUrl;
@@ -43,8 +45,10 @@ export default function LoginPage() {
           redirectUrl = "/";
       }
 
-      // Redirect the user
-      navigate(redirectUrl);
+      // Redirect the user after a short delay to show the success message
+      setTimeout(() => {
+        navigate(redirectUrl);
+      }, 2000);
     } catch (err) {
       setError("Invalid email or password");
       console.error("Login error:", err);
@@ -69,6 +73,11 @@ export default function LoginPage() {
           {/* Error Message */}
           {error && (
             <div className="text-center text-red-500 mb-4">{error}</div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div className="text-center text-green-500 mb-4">{success}</div>
           )}
 
           {/* Input Fields */}
