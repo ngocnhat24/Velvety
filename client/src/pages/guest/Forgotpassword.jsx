@@ -1,5 +1,6 @@
 export default function Forgotpassword() {
-    retunr (
+
+    return (
         <div className="main-container w-full h-screen bg-transparent relative mx-auto">
   {/* Header */}
   <div className="w-full h-[121px] bg-[#c86c79] relative z-10">
@@ -14,7 +15,7 @@ export default function Forgotpassword() {
   {/* Background */}
   <div className="absolute inset-0 z-0 bg-[#f9faef]" />
   <div className="absolute top-[121px] left-0 w-full h-[calc(100%-121px)] bg-[url(@/assets/images/forgot-password.png)] bg-cover bg-no-repeat z-1" />
-
+      
   {/* Forgot Password Card */}
   <div className="absolute top-[165px] left-[145px] w-[475px] h-auto bg-[#ffc0cb] bg-opacity-50 rounded-xl shadow-md z-20 p-10">
     <h2 className="text-center text-[34px] font-bold text-[#000] uppercase mb-[40px]">
