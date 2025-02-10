@@ -1,10 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/users/login", {
+        email,
+        password,
+      });
+
+      // Handle successful login
+      console.log("Login successful:", response.data);
+      setSuccess("Login successful!");
+
+      // Determine redirect URL based on roleName
+      let redirectUrl;
+      switch (response.data.roleName) {
+        case "Customer":
+          redirectUrl = "/customer";
+          break;
+        case "Staff":
+          redirectUrl = "/staff";
+          break;
+        case "Manager":
+          redirectUrl = "/manager";
+          break;
+        case "Admin":
+          redirectUrl = "/admin";
+          break;
+        case "Therapist":
+          redirectUrl = "/therapist";
+          break;
+        default:
+          redirectUrl = "/";
+      }
+
+      // Redirect the user after a short delay to show the success message
+      setTimeout(() => {
+        navigate(redirectUrl);
+      }, 2000);
+    } catch (err) {
+      setError("Invalid email or password");
+      console.error("Login error:", err);
+    }
+  };
+
   return (
     <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
-     <Navbar />
+      <Navbar />
 
       {/* Main Content */}
       <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
@@ -17,16 +70,30 @@ export default function LoginPage() {
             Login
           </h2>
 
+          {/* Error Message */}
+          {error && (
+            <div className="text-center text-red-500 mb-4">{error}</div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div className="text-center text-green-500 mb-4">{success}</div>
+          )}
+
           {/* Input Fields */}
-          <form className="flex flex-col gap-6">
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
             />
             <input
               type="password"
               placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
             />
 
