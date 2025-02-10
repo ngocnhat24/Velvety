@@ -11,7 +11,7 @@ export default function Services() {
   // Fetch data from the server
   useEffect(() => {
     axios
-      .get("/api/services") // Update with your actual backend API
+      .get("/api/services/") // Update with your actual backend API
       .then((response) => {
         setServices(response.data); // Assuming response.data is an array of service objects
       })
