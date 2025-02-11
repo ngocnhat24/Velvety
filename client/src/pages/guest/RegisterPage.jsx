@@ -48,7 +48,7 @@ export default function RegisterPage() {
     <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
       <Navbar />
       {/* Main Content */}
-      <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
+      <div className="flex items-center justify-center h-auto max-h-screen overflow-auto relative flex-grow">
         {/* Background Image */}
         <div className="absolute inset-0 bg-[url(@/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
 
@@ -64,7 +64,7 @@ export default function RegisterPage() {
           )}
 
           {/* Input Fields */}
-          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-auto" onSubmit={handleSubmit}>
             <div>
               <label className="block text-[20px] font-semibold text-gray-800 mb-2">
                 First Name
@@ -145,7 +145,7 @@ export default function RegisterPage() {
           </form>
 
           {/* Footer */}
-          <div className="text-center mt-6 text-gray-700">
+          <div className="text-center mt-8 text-gray-700">
             <span>Already have an account? </span>
             <a
               href="/login"
