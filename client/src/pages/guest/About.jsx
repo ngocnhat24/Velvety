@@ -42,7 +42,7 @@ export default function About() {
       <span className="flex w-[10%] h-[30px] justify-center items-center font-['Lato'] text-[2vw] font-normal leading-[30px] text-[#000] tracking-[1.43px] relative text-center uppercase whitespace-nowrap z-[9] mx-auto">
         -------------
       </span>
-      <div className="w-full max-w-[1500px] h-[937.456px] relative z-[23] mt-[66.3px] ml-[40px] mr-[40px] overflow-hidden">
+      <div className="w-full max-w-[1500px] h-[937.456px] relative mx-auto my-0 overflow-hidden">
         <div className="w-[840.663px] h-[224px] font-['Libre_Franklin'] text-[18px] font-normal leading-[31.823px] tracking-[0.8px] absolute top-0 left-[2.647px] text-left z-10">
           <span className="font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left uppercase">
             Throughout its history Velvety  has been a unique skin care
@@ -131,7 +131,7 @@ export default function About() {
       <span className="block h-[27px] font-['Lato'] text-[22.541440963745117px] font-normal leading-[27px] text-[#000] relative text-left whitespace-nowrap z-[24] mt-[13.26px] mr-0 mb-0 ml-[217.455px]">
         Stephen Strassler applying Reviva skin care to a model {" "}
       </span>
-      <div className="flex w-[879.122px] h-[80.884px] justify-between items-center relative z-[21] mt-[0.84px] mr-0 mb-0 ml-[975.908px]">
+      <div className="flex w-[879.122px] h-[80.884px] justify-between items-center relative z-[21] mt-[0.84px] mr- mb-auto ml-[975.908px]">
         <div className="w-[5.978px] h-[90.884px] shrink-0 bg-[url(@/assets/images/Line.png)] bg-cover bg-no-repeat relative z-[16]" />
         <span className="flex w-[840.663px] h-[64px] justify-start items-center shrink-0 font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left uppercase z-[21]">
           Velvety  has been creating superior natural skin care for nearly

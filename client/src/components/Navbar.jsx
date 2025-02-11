@@ -9,39 +9,35 @@ const Navbar = () => {
   return (
     <div className="w-full h-[100px] bg-[#F9FAEF] flex items-center justify-between px-6 md:px-12 lg:px-10 shadow-md relative z-10">
       {/* Logo */}
-      <div className="w-[100px] h-[35px] bg-[url(@/assets/images/Logo.png)] bg-cover bg-no-repeat md:w-[120px] md:h-[45px] lg:w-[150px] lg:h-[55px] z-20"></div>
+      <div className="w-auto h-[52px] bg-[url(@/assets/images/Logo.png)] bg-cover bg-no-repeat md:w-[120px] lg:w-[150px] z-20"></div>
 
       {/* Navigation Links */}
-      <nav className="hidden md:flex gap-24 text-[25px] font-semibold z-10">
+      <nav className="hidden md:flex gap-10 text-[25px] font-semibold z-10">
         <NavLink
           to="/"
           className={({ isActive }) =>
-            ` text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`
-          }
+            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`}
         >
           About
         </NavLink>
         <NavLink
           to="/service"
           className={({ isActive }) =>
-            ` text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`
-          }
+            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`}
         >
           Services
         </NavLink>
         <NavLink
           to="/blog"
           className={({ isActive }) =>
-            ` text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`
-          }
+            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`}
         >
           Blog
         </NavLink>
         <NavLink
           to="/quiz"
           className={({ isActive }) =>
-            ` text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`
-          }
+            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#f1baba]'}`}
         >
           Quiz
         </NavLink>

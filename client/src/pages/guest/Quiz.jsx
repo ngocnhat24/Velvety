@@ -1,86 +1,183 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import axios from "axios";
 
-const questions = [
-  {
-    id: 1,
-    question: "What type of skin do you have?",
-    options: ["Dry", "Oily", "Combination", "Sensitive"],
-  },
-  {
-    id: 2,
-    question: "How often do you experience acne breakouts?",
-    options: ["Rarely", "Occasionally", "Often", "Always"],
-  },
-  {
-    id: 3,
-    question: "What is your main skincare goal?",
-    options: ["Hydration", "Acne Control", "Anti-Aging", "Even Skin Tone"],
-  },
-];
+const Quiz = () => {
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [quizResult, setQuizResult] = useState(null);
+  const [error, setError] = useState(null);
 
-export default function Quiz() {
-  const [answers, setAnswers] = useState({});
+  useEffect(() => {
+    // Fetch questions from the backend
+    const fetchQuestions = async () => {
+      try {
+        const response = await axios.get("/api/questions"); // Adjust the endpoint as necessary
+        setQuestions(response.data);
+      } catch (error) {
+        setError("Failed to load questions. Please try again later.");
+        console.error("Error fetching questions:", error);
+      }
+    };
 
-  const handleOptionChange = (questionId, selectedOption) => {
-    setAnswers((prevAnswers) => ({
-      ...prevAnswers,
-      [questionId]: selectedOption,
-    }));
+    fetchQuestions();
+  }, []);
+
+  const handleAnswerSelection = (weight, questionId, answerText) => {
+    setAnswers((prevAnswers) => [
+      ...prevAnswers.filter((answer) => answer.questionId !== questionId),
+      { questionId, weight, answerText },
+    ]);
   };
 
-  const handleSubmit = () => {
-    console.log("Quiz Answers:", answers);
-    alert("Thank you for completing the quiz!");
+  const handleNextQuestion = () => {
+    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
   };
+
+  const handlePrevQuestion = () => {
+    setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+  };
+
+  const handleSubmitQuiz = async () => {
+    try {
+      const response = await axios.post("/api/quiz-results", { answers });
+      setQuizResult(response.data.quizResult); // Save the quiz result in state
+    } catch (error) {
+      console.error("Error submitting quiz:", error);
+      // Log the error details to understand what's wrong
+      if (error.response) {
+        console.error("Server responded with error:", error.response.data);
+      } else if (error.request) {
+        console.error("Request was made but no response was received:", error.request);
+      } else {
+        console.error("Error setting up the request:", error.message);
+      }
+      setError("Something went wrong. Please try again.");
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4 text-center">
+        {error}
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-600 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="quiz-container w-full min-h-screen bg-[#f9faef] flex flex-col">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center">
       <Navbar />
-      <div className="quiz-content flex flex-col items-center mt-12 px-6">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          Take Our Skincare Quiz
-        </h1>
-        <p className="text-lg text-center text-gray-700 mb-12 max-w-2xl">
-          Answer a few simple questions to find your Skintype for our therapists to serve better services.
-        </p>
-        <div className="quiz-questions w-full max-w-4xl space-y-8">
-          {questions.map((q) => (
+      <div className="bg-white p-6 m-8 rounded-xl shadow-lg max-w-3xl w-full">
+        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
+          Skincare Quiz
+        </h2>
+        
+        {/* Progress Bar */}
+        <div className="text-center mb-4">
+          <p>
+            Question {currentQuestionIndex + 1} of {questions.length}
+          </p>
+          <div className="w-full bg-gray-200 rounded-full h-2">
             <div
-              key={q.id}
-              className="question-card bg-white shadow-lg p-6 rounded-lg"
-            >
-              <h2 className="text-xl font-semibold mb-4">{q.question}</h2>
-              <div className="options grid grid-cols-2 gap-4">
-                {q.options.map((option, index) => (
-                  <label
-                    key={index}
-                    className="flex items-center space-x-3 p-2 border rounded-lg hover:shadow-md cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name={`question-${q.id}`}
-                      value={option}
-                      checked={answers[q.id] === option}
-                      onChange={() => handleOptionChange(q.id, option)}
-                      className="form-radio text-blue-500"
-                    />
-                    <span className="text-gray-800">{option}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
+              className="bg-[#fadade] h-2 rounded-full"
+              style={{
+                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
+              }}
+            />
+          </div>
         </div>
-        <button
-          onClick={handleSubmit}
-          className="mt-8 bg-blue-500 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:bg-blue-600"
-        >
-          Submit Quiz
-        </button>
+
+        <div className="mb-6">
+          <p className="text-lg text-gray-700 mb-4">{currentQuestion.questionText}</p>
+          <div className="space-y-4">
+            {currentQuestion.answerOptions?.map((option, index) => {
+              const isSelected = answers.some(
+                (answer) =>
+                  answer.questionId === currentQuestion._id &&
+                  answer.answerText === option.answerText
+              );
+              return (
+                <button
+                  key={index}
+                  className={`w-full py-3 px-4 ${
+                    isSelected ? "bg-[#faf5f0]" : "bg-gray-200"
+                  } hover:bg-gray-300 text-left rounded-lg transition-all transform hover:scale-105 duration-150`}
+                  onClick={() =>
+                    handleAnswerSelection(option.weight, currentQuestion._id, option.answerText)
+                  }
+                >
+                  {option.answerText}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          {currentQuestionIndex > 0 && (
+            <button
+              className="py-2 px-6 bg-[#f1baba] text-white rounded-lg hover:bg-[#e78999] transition"
+              onClick={handlePrevQuestion}
+            >
+              Previous
+            </button>
+          )}
+          {currentQuestionIndex < questions.length - 1 ? (
+            <button
+              disabled={!answers.some(answer => answer.questionId === currentQuestion._id)}
+              className={`py-2 px-6 ${
+                !answers.some(answer => answer.questionId === currentQuestion._id)
+                  ? "bg-gray-300"
+                  : "bg-[#f1baba]"
+              } text-white rounded-lg hover:bg-[#e78999] transition`}
+              onClick={handleNextQuestion}
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              className="py-2 px-6 bg-green-400 text-white rounded-lg hover:bg-green-600 transition"
+              onClick={handleSubmitQuiz}
+            >
+              Submit
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Modal for Results */}
+      {quizResult && (
+        <div className="fixed inset-0 bg-[#faf5f0] bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Your Skin Type: {quizResult.skinType}
+            </h3>
+            <p>{quizResult.recommendation}</p>
+            <button
+              className="mt-4 py-2 px-6 bg-[#f1baba] text-white rounded-lg hover:bg-[#e78999] transition"
+              onClick={() => setQuizResult(null)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
-}
+};
+
+export default Quiz;
