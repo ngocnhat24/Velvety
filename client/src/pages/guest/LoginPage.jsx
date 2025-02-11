@@ -62,11 +62,11 @@ export default function LoginPage() {
       {/* Main Content */}
       <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
         {/* Background Image */}
-        <div className="absolute inset-0 bg-[url(@/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
+        <div className="absolute h-screen inset-0 bg-[url(@/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
 
         {/* Login Card */}
-        <div className="relative z-10 w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-8">
-          <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-8">
+        <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-8">
+          <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8">
             Login
           </h2>
 
@@ -81,7 +81,7 @@ export default function LoginPage() {
           )}
 
           {/* Input Fields */}
-          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-4 md:gap-6" onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Email"
@@ -107,7 +107,7 @@ export default function LoginPage() {
           </form>
 
           {/* Footer */}
-          <div className="text-center mt-6 text-gray-700">
+          <div className="text-center mt-8 text-gray-700">
             <span>Don’t have an account?</span>{" "}
             <a
               href="/register"
@@ -119,5 +119,6 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+
   );
 }
