@@ -9,7 +9,10 @@ export default {
     extend: {
       colors:{
         'primary': '#5F6FFF',
-      }
+      },
+      fontFamily: {
+        sans: ['Lato', 'sans-serif'],
+      },
     },
   },
  
