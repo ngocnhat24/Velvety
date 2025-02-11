@@ -28,21 +28,32 @@ export default function Blog() {
   };
 
   return (
-    <div className="main-container w-[1920px] h-[3548px] bg-[#f9faef] relative overflow-hidden mx-auto my-0">
+    <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0">
       <Navbar />
-      <span className="flex w-[2002.667px] h-[96px] justify-center items-start font-['Lato'] text-[80px] font-normal leading-[96px] text-[#fff] relative text-center whitespace-nowrap z-[15] mt-[292.002px] mr-0 mb-0 ml-[-41.331px]">
-        Expert Skincare Tips, Trends, & Insights
-      </span>
-      <span className="flex w-[1280px] h-[135px] justify-center items-start font-['Lato'] text-[37.33333206176758px] font-normal leading-[44.8px] text-[#fff] relative text-center z-[16] mt-[21.326px] mr-0 mb-0 ml-[319.998px]">
-        Explore our Blog for the latest in skincare science and beauty trends.
-        Discover expert tips, in-depth reviews, and exclusive insights on our
-        natural skincare products. Elevate your skin health and beauty regimen
-        with us today!
-      </span>
-      <div className="w-[1920px] h-[873.333px] bg-[url(@/assets/images/blog_0.png)] bg-cover bg-no-repeat absolute top-[149.339px] left-0 z-[7]" />
 
+      <div className="w-full h-[80vh] bg-[url(@/assets/images/blog_0.png)] bg-cover bg-center bg-no-repeat relative">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-[1]">
+          <span className="block font-['Lato'] text-[70px] font-bold leading-[100px] text-[#fff] whitespace-nowrap">
+            Expert Skincare Tips, Trends, & Insights
+          </span>
+          <span className="block font-['Lato'] text-[23px] font-normal leading-[30px] text-[#fff] mt-4 px-4 mx-auto">
+            Explore our Blog for the latest in skincare science and beauty trends.
+            Discover expert tips, in-depth reviews, and exclusive insights on our
+            natural skincare products. Elevate your skin health and beauty regimen
+            with us today!
+          </span>
+        </div>
+      </div>
+
+      <div className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
+        <div className="w-[300px] h-[1px] bg-[url(@/assets/images/Line.png)] bg-cover bg-no-repeat flex-1" />
+        <span className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
+          READ MORE
+        </span>
+        <div className="w-[300px] h-[1px] bg-[url(@/assets/images/Line.png)] bg-cover bg-no-repeat flex-1" />
+      </div>
       {/* Render blog posts */}
-      <div className="grid grid-cols-4 gap-4 mt-[400px] mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-[30px] mb-[30px] mx-auto px-4 max-w-screen-xl">
         {blogPosts.map((post) => (
           <BlogCard
             key={post._id}
