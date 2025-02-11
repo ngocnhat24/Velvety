@@ -62,7 +62,7 @@ export default function LoginPage() {
       {/* Main Content */}
       <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
         {/* Background Image */}
-        <div className="absolute inset-0 bg-[url(@/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
+        <div className="absolute h-screen inset-0 bg-[url(@/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
 
         {/* Login Card */}
         <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-8">
