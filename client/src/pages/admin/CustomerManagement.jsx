@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 
-export default function CustomerDashboard() {
+export default function Customer() {
   const [customers, setCustomers] = useState([]);
 
   // Lấy dữ liệu từ API
