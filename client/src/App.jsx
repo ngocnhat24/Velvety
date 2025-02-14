@@ -13,9 +13,9 @@ import BlogDetail from './pages/guest/BlogDetail.jsx';
 import CustomerManagement from './pages/admin/CustomerManagement.jsx';
 import ServiceManagement from './pages/admin/ServiceManagement.jsx';
 import StaffManagement from './pages/admin/StaffManagement.jsx';
-import SkinTherapist from './pages/admin/SkinTherapist.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import BookingPage from './pages/guest/Booking.jsx';
+import TherapistManagement from './pages/admin/TherapistManagement.jsx';
 
 axios.defaults.baseURL = 'http://localhost:5000/';
 axios.defaults.withCredentials = true;
@@ -34,7 +34,7 @@ function App() {
       <Route path='/verify' element={<VerifyEmailPage/>} />
       <Route path='/blog/:id' element={<BlogDetail />} />
       <Route path='/customer-management' element={<CustomerManagement/>} />
-      <Route path='/skin-therapist' element={<SkinTherapist/>} />
+      <Route path='/skin-therapist' element={<TherapistManagement/>} />
       <Route path='/service-management' element={<ServiceManagement />} />
       <Route path='/staff-management' element={<StaffManagement />} />
       <Route path='/dashboard' element={<Dashboard/>} />
