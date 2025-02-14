@@ -7,7 +7,11 @@ export default function About() {
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative mx-auto my-0">
       <Navbar />
-      <div className="w-full h-[50vh] bg-[url(@/assets/images/about_1.png)] bg-cover bg-no-repeat relative z-[1]">
+      <div className="w-full h-[50vh] bg-[url(@/assets/images/about_1.png)] bg-cover bg-no-repeat relative z-[1] "
+        style={{
+          backgroundAttachment: "fixed"
+        }}
+      >
         <span className="flex w-full h-auto justify-center items-start font-['Lato'] text-[10vw] font-bold leading-[180px] text-[#fff] tracking-[-2.23px] absolute top-[20%] left-[50%] transform -translate-x-1/2 text-center whitespace-nowrap z-[1]">
           Our Story
         </span>

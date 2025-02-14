@@ -24,7 +24,10 @@ export default function Services() {
       <Navbar />
 
       {/* Section with background image */}
-      <div className="w-full h-[70vh] bg-[url(@/assets/images/service_0.png)] bg-cover bg-center bg-no-repeat relative">
+      <div className="w-full h-[70vh] bg-[url(@/assets/images/service_0.png)] bg-cover bg-center bg-no-repeat relative"
+        style={{
+          backgroundAttachment: "fixed"
+        }}>
         <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-['Lato'] text-[90px] font-bold leading-[134.4px] text-[#fff] tracking-[-2.24px] text-center z-[1]">
           You can choose who ever you want
         </span>
