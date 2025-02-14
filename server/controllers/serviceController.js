@@ -29,6 +29,36 @@ const createService = async (req, res) => {
   }
 };
 
+const updateService = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { price, name, description, image } = req.body;
+    const updatedService = await Service.findByIdAndUpdate( id, { price, name, description, image },
+      { new: true } // Trả về dữ liệu sau khi cập nhật
+    );
+    if (!updatedService) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+    res.json(updatedService);
+  } catch (err) {
+    console.error('Error updating service:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+const deleteService = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedService = await Service.findByIdAndDelete(id);
+    if (!deletedService) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+    res.json({ message: 'Service deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting service:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 // Create a new service (just in case you need it)
 // const createService = async (req, res) => {
 //   try {
@@ -60,4 +90,4 @@ const createService = async (req, res) => {
 //   }
 // };
 
-module.exports = { createService, getAllServices };
+module.exports = { createService, getAllServices,updateService,deleteService };
