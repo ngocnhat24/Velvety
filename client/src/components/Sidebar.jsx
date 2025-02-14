@@ -9,8 +9,8 @@ const Sidebar = () => {
     { name: "Dashboard", path: "/dashboard" },
     { name: "Customer", path: "/customer-management" },
     { name: "Staff", path: "/staff-management" },
-    { name: "Skin Therapist", path: "/skin-therapist" },
-    { name: "Service Manage", path: "/service-management" },
+    { name: "Therapist", path: "/skin-therapist" },
+    { name: "Service", path: "/service-management" },
   ];
 
   return (
