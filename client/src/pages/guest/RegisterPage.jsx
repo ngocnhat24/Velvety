@@ -53,7 +53,7 @@ export default function RegisterPage() {
         <div className="absolute inset-0 bg-[url(@/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
 
         {/* Register Card */}
-        <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-5 md:p-8 mt-8 mb-8 mx-4">
+        <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-5 mt-5 mb-9 mx-4">
           <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8">
             Register
           </h2>

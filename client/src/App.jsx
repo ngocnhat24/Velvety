@@ -16,7 +16,7 @@ import StaffManagement from './pages/admin/StaffManagement.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import BookingPage from './pages/guest/Booking.jsx';
 import TherapistManagement from './pages/admin/TherapistManagement.jsx';
-
+import ResetPassword from './pages/guest/ResetPassword.jsx';
 axios.defaults.baseURL = 'http://localhost:5000/';
 axios.defaults.withCredentials = true;
 
@@ -29,7 +29,7 @@ function App() {
       <Route path='/blog' element={<Blog />} />
       <Route path='/service' element={<Services />} />
       <Route path='/register' element={<RegisterPage />} />
-      <Route path='/forgot-password' element={<Forgotpassword />} />
+      <Route path='/forgot-password' element={<Forgotpassword/>} />
       <Route path='/quiz' element={<Quiz />} />
       <Route path='/verify' element={<VerifyEmailPage/>} />
       <Route path='/blog/:id' element={<BlogDetail />} />
@@ -39,6 +39,7 @@ function App() {
       <Route path='/staff-management' element={<StaffManagement />} />
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/booking' element={<BookingPage/>} />
+      <Route path='reset-password' element={<ResetPassword/>} />
 
     </Routes>
 

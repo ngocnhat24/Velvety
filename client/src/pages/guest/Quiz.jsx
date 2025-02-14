@@ -11,10 +11,9 @@ const Quiz = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch questions from the backend
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get("/api/questions"); // Adjust the endpoint as necessary
+        const response = await axios.get("/api/questions");
         setQuestions(response.data);
       } catch (error) {
         setError("Failed to load questions. Please try again later.");
@@ -42,11 +41,10 @@ const Quiz = () => {
 
   const handleSubmitQuiz = async () => {
     try {
-      const response = await axios.post("/api/quiz-results", { answers });
-      setQuizResult(response.data.quizResult); // Save the quiz result in state
+      const response = await axios.post("/api/quiz-results/", { answers });
+      setQuizResult(response.data.quizResult);
     } catch (error) {
       console.error("Error submitting quiz:", error);
-      // Log the error details to understand what's wrong
       if (error.response) {
         console.error("Server responded with error:", error.response.data);
       } else if (error.request) {
@@ -84,7 +82,6 @@ const Quiz = () => {
           Skincare Quiz
         </h2>
         
-        {/* Progress Bar */}
         <div className="text-center mb-4">
           <p>
             Question {currentQuestionIndex + 1} of {questions.length}
@@ -148,7 +145,7 @@ const Quiz = () => {
             </button>
           ) : (
             <button
-              className="py-2 px-6 bg-green-400 text-white rounded-lg hover:bg-green-600 transition"
+              className="py-2 px-6 bg-[#fb5b76] text-white rounded-lg hover:bg-[#fd4967] transition"
               onClick={handleSubmitQuiz}
             >
               Submit
@@ -157,7 +154,6 @@ const Quiz = () => {
         </div>
       </div>
 
-      {/* Modal for Results */}
       {quizResult && (
         <div className="fixed inset-0 bg-[#faf5f0] bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
@@ -174,7 +170,6 @@ const Quiz = () => {
           </div>
         </div>
       )}
-
       <Footer />
     </div>
   );

@@ -1,53 +1,91 @@
-export default function Forgotpassword() {
+import React, { useState } from "react";
+import Navbar from "../../components/Navbar";
 
-    return (
-        <div className="main-container w-full h-screen bg-transparent relative mx-auto">
-  {/* Header */}
-  <div className="w-full h-[121px] bg-[#c86c79] relative z-10">
-    <div className="absolute top-[21px] left-[246px] w-[207px] h-[72px] bg-[url(@/assets/images/logo.png)] bg-cover bg-no-repeat" />
-    <nav className="flex justify-end items-center h-full pr-[50px] space-x-8 text-[26px] font-black text-[#ffc0cb]">
-      <a href="/" className="hover:underline">About</a>
-      <a href="/service" className="hover:underline">Services</a>
-      <a href="/blog" className="hover:underline">Blog</a>
-    </nav>
-  </div>
+export default function ForgotPassword() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  {/* Background */}
-  <div className="absolute inset-0 z-0 bg-[#f9faef]" />
-  <div className="absolute top-[121px] left-0 w-full h-[calc(100%-121px)] bg-[url(@/assets/images/forgot-password.png)] bg-cover bg-no-repeat z-1" />
-      
-  {/* Forgot Password Card */}
-  <div className="absolute top-[165px] left-[145px] w-[475px] h-auto bg-[#ffc0cb] bg-opacity-50 rounded-xl shadow-md z-20 p-10">
-    <h2 className="text-center text-[34px] font-bold text-[#000] uppercase mb-[40px]">
-      Forgot Password
-    </h2>
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+    setError(null);
+    setLoading(true);
 
-    {/* Input Field */}
-    <div>
-      <label className="font-bold text-[26px]">Email</label>
-      <input
-        type="email"
-        placeholder="Enter your email"
-        className="w-full h-[60px] px-4 border border-black rounded-full mt-4"
-      />
+    try {
+      const response = await fetch(`http://localhost:5000/api/users/forgot-password `, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Something went wrong");
+
+      setMessage("Password reset link sent! Check your email.");
+      setEmail("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full min-h-screen flex flex-col bg-[#f9faef] relative">
+      {/* Navbar */}
+      <Navbar />
+
+      {/* Background */}
+      <div className="absolute inset-0 bg-[url(@/assets/images/forgotpassword_resetpassword.png)] bg-cover bg-center opacity-40" />
+
+      {/* Forgot Password Section */}
+      <div className="flex flex-grow items-center justify-center relative z-10 px-4">
+        <div className="w-full max-w-md bg-white bg-opacity-90 backdrop-blur-lg shadow-lg rounded-2xl p-8">
+          <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6">
+            Forgot Password
+          </h2>
+
+          {/* Success & Error Messages */}
+          {message && <p className="text-green-600 text-center mb-4">{message}</p>}
+          {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+
+          {/* Email Input */}
+          <form onSubmit={handleResetPassword}>
+            <div className="mb-6">
+              <label className="block text-lg font-semibold mb-2 text-gray-700">Email</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-12 px-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
+                required
+              />
+            </div>
+
+            {/* Reset Button */}
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="w-full h-12 bg-[#c86c79] text-white text-lg font-semibold rounded-full shadow-md hover:bg-[#b25668] transition duration-300 disabled:opacity-50"
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Reset Password"}
+              </button>
+            </div>
+          </form>
+
+          {/* Login Link */}
+          <div className="text-center mt-4 text-gray-700">
+            <span>Remember your password? </span>
+            <a href="/login" className="font-semibold text-[#c86c79] hover:underline">
+              Login
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-
-    {/* Reset Password Button */}
-    <div className="flex justify-center mt-[40px]">
-      <button className="w-[335px] h-[60px] bg-white text-black text-[26px] font-bold rounded-full shadow hover:bg-gray-100">
-        Reset Password
-      </button>
-    </div>
-
-    {/* Footer */}
-    <div className="text-center mt-[20px] text-[17px]">
-      <span>Remember your password? </span>
-      <a href="/login" className="font-bold text-black hover:underline">
-        Login
-      </a>
-    </div>
-  </div>
-</div>
-
-    )
+  );
 }
