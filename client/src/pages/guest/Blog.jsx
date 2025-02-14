@@ -31,7 +31,11 @@ export default function Blog() {
     <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0">
       <Navbar />
 
-      <div className="w-full h-[80vh] bg-[url(@/assets/images/blog_0.png)] bg-cover bg-center bg-no-repeat relative">
+      <div className="w-full h-[70vh] bg-[url(@/assets/images/i_blog_0.png)] bg-cover bg-center bg-no-repeat relative"
+        style={{
+          backgroundAttachment: "fixed",
+          backgroundSize: "cover"
+        }}>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-[1]">
           <span className="block font-['Lato'] text-[70px] font-bold leading-[100px] text-[#fff] whitespace-nowrap">
             Expert Skincare Tips, Trends, & Insights
