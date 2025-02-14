@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
@@ -6,9 +6,18 @@ import Navbar from "../../components/Navbar";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +32,13 @@ export default function LoginPage() {
       console.log("Login successful:", response.data);
       setSuccess("Login successful!");
 
-      // Determine redirect URL based on roleName
+      // Store email if Remember Me is checked
+      if (rememberMe) {
+        localStorage.setItem("rememberedEmail", email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
+
       let redirectUrl;
       switch (response.data.roleName) {
         case "Customer":
@@ -45,7 +60,6 @@ export default function LoginPage() {
           redirectUrl = "/";
       }
 
-      // Redirect the user after a short delay to show the success message
       setTimeout(() => {
         navigate(redirectUrl);
       }, 2000);
@@ -59,28 +73,17 @@ export default function LoginPage() {
     <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
       <Navbar />
 
-      {/* Main Content */}
       <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
-        {/* Background Image */}
         <div className="absolute h-screen inset-0 bg-[url(@/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
 
-        {/* Login Card */}
         <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-8">
           <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8">
             Login
           </h2>
 
-          {/* Error Message */}
-          {error && (
-            <div className="text-center text-red-500 mb-4">{error}</div>
-          )}
+          {error && <div className="text-center text-red-500 mb-4">{error}</div>}
+          {success && <div className="text-center text-green-500 mb-4">{success}</div>}
 
-          {/* Success Message */}
-          {success && (
-            <div className="text-center text-green-500 mb-4">{success}</div>
-          )}
-
-          {/* Input Fields */}
           <form className="flex flex-col gap-4 md:gap-6" onSubmit={handleSubmit}>
             <input
               type="text"
@@ -97,7 +100,21 @@ export default function LoginPage() {
               className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
             />
 
-            {/* Login Button */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="mr-2"
+                />
+                Remember Me
+              </label>
+              <a href="/forgot-password" className="text-[#c86c79] hover:underline">
+                Forgot Password?
+              </a>
+            </div>
+
             <button
               type="submit"
               className="w-full h-[50px] bg-[#c86c79] text-white font-bold rounded-lg shadow hover:bg-[#b25668] transition duration-300"
@@ -106,19 +123,14 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Footer */}
           <div className="text-center mt-8 text-gray-700">
             <span>Don’t have an account?</span>{" "}
-            <a
-              href="/register"
-              className="font-bold text-[#c86c79] hover:underline"
-            >
+            <a href="/register" className="font-bold text-[#c86c79] hover:underline">
               Register
             </a>
           </div>
         </div>
       </div>
     </div>
-
   );
 }

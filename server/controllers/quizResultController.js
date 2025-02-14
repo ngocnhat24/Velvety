@@ -3,13 +3,19 @@ const Question = require("../models/Question");
 
 // Function to determine skin type based on answer weights
 const determineSkinType = (answers) => {
-    let totalWeight = answers.reduce((sum, answer) => sum + (answer.weight || 0), 0);
+    const totalWeight = answers.reduce((sum, answer) => sum + (answer.weight || 0), 0);
+    const minWeight = answers.length * 1; // 17 (if all answers are the lowest weight)
+    const maxWeight = answers.length * 4; // 68 (if all answers are the highest weight)
+    
+    const range = maxWeight - minWeight;
+    const normalizedScore = ((totalWeight - minWeight) / range) * 100;
 
-    if (totalWeight <= 5) return "Dry Skin";
-    if (totalWeight <= 10) return "Combination Skin";
-    if (totalWeight <= 15) return "Normal Skin";
+    if (normalizedScore <= 25) return "Dry Skin";
+    if (normalizedScore <= 50) return "Combination Skin";
+    if (normalizedScore <= 75) return "Normal Skin";
     return "Oily Skin";
 };
+
 
 
 // Save quiz result

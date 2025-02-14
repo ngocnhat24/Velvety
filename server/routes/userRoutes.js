@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, getAllUsers, getUserById, updateUser, deleteUser, verifyEmail, loginUser } = require('../controllers/userController');
+const { createUser, getAllUsers, getUserById, updateUser, deleteUser, verifyEmail, loginUser, forgotPassword, resetPassword } = require('../controllers/userController');
 const router = express.Router();
 
 router.post('/', createUser); // Create a new user
@@ -9,6 +9,9 @@ router.get('/:id', getUserById); // Get user by ID
 router.put('/:id', updateUser); // Update user by ID
 router.delete('/:id', deleteUser); // Delete user by ID
 router.post('/login', loginUser); // Login user
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
+
 
 
 module.exports = router;
