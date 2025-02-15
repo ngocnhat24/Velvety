@@ -4,37 +4,52 @@ import Sidebar from "../../components/Sidebar";
 
 export default function StaffManagement() {
   const [staffMembers, setStaffMembers] = useState([]);
-  const [newStaff, setNewStaff] = useState({ username: "", name: "", email: "", phone: "" });
+  const [newStaff, setNewStaff] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    roleName: "Customer",
+    phoneNumber: "",
+    verified: false,
+    verificationToken: "",
+    resetPasswordToken: "",
+    resetPasswordExpires: "",
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Lấy danh sách nhân viên từ API
   useEffect(() => {
-    axios.get("http://localhost:5000/api/staff")
+    axios
+      .get("http://localhost:5000/api/staff")
       .then((res) => setStaffMembers(res.data))
       .catch((err) => console.error(err));
   }, []);
 
   // Xóa nhân viên
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:5000/api/staff/${id}`)
+    axios
+      .delete(`http://localhost:5000/api/staff/${id}`)
       .then(() => setStaffMembers(staffMembers.filter(staff => staff._id !== id)))
       .catch(err => console.error(err));
   };
 
   // Cập nhật nhân viên
   const handleUpdate = (staff) => {
-    const newName = prompt("Nhập tên nhân viên mới:", staff.name);
+    const newFirstName = prompt("Nhập tên đầu tiên mới:", staff.firstName);
+    const newLastName = prompt("Nhập họ tên mới:", staff.lastName);
     const newEmail = prompt("Nhập email mới:", staff.email);
-    const newPhone = prompt("Nhập số điện thoại mới:", staff.phone);
-    const newUsername = prompt("Nhập username mới:", staff.username);
+    const newPhoneNumber = prompt("Nhập số điện thoại mới:", staff.phoneNumber);
+    const newRoleName = prompt("Nhập vai trò mới:", staff.roleName);
 
-    if (newName && newEmail && newPhone && newUsername) {
+    if (newFirstName && newLastName && newEmail && newPhoneNumber && newRoleName) {
       axios
         .put(`http://localhost:5000/api/staff/${staff._id}`, {
-          username: newUsername,
-          name: newName,
+          firstName: newFirstName,
+          lastName: newLastName,
           email: newEmail,
-          phone: newPhone,
+          phoneNumber: newPhoneNumber,
+          roleName: newRoleName,
         })
         .then((res) => {
           setStaffMembers(
@@ -53,8 +68,19 @@ export default function StaffManagement() {
       .post("http://localhost:5000/api/staff", newStaff)
       .then((res) => {
         setStaffMembers([...staffMembers, res.data]);
-        setNewStaff({ username: "", name: "", email: "", phone: "" }); // Reset form after adding
-        setIsModalOpen(false); // Đóng modal sau khi thêm
+        setNewStaff({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          roleName: "Customer",
+          phoneNumber: "",
+          verified: false,
+          verificationToken: "",
+          resetPasswordToken: "",
+          resetPasswordExpires: "",
+        });
+        setIsModalOpen(false);
       })
       .catch((err) => console.error(err));
   };
@@ -81,21 +107,21 @@ export default function StaffManagement() {
             <div className="bg-white p-6 rounded shadow-lg w-96">
               <h3 className="text-xl font-semibold mb-4">Add New Staff</h3>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Username</label>
+                <label className="block text-sm font-medium text-gray-700">First Name</label>
                 <input
                   type="text"
                   className="border p-2 w-full mb-2 rounded"
-                  placeholder="Username"
-                  value={newStaff.username}
-                  onChange={(e) => setNewStaff({ ...newStaff, username: e.target.value })}
+                  placeholder="First Name"
+                  value={newStaff.firstName}
+                  onChange={(e) => setNewStaff({ ...newStaff, firstName: e.target.value })}
                 />
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-gray-700">Last Name</label>
                 <input
                   type="text"
                   className="border p-2 w-full mb-2 rounded"
-                  placeholder="Name"
-                  value={newStaff.name}
-                  onChange={(e) => setNewStaff({ ...newStaff, name: e.target.value })}
+                  placeholder="Last Name"
+                  value={newStaff.lastName}
+                  onChange={(e) => setNewStaff({ ...newStaff, lastName: e.target.value })}
                 />
                 <label className="block text-sm font-medium text-gray-700">Email</label>
                 <input
@@ -105,14 +131,34 @@ export default function StaffManagement() {
                   value={newStaff.email}
                   onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
                 />
+                <label className="block text-sm font-medium text-gray-700">Password</label>
+                <input
+                  type="password"
+                  className="border p-2 w-full mb-2 rounded"
+                  placeholder="Password"
+                  value={newStaff.password}
+                  onChange={(e) => setNewStaff({ ...newStaff, password: e.target.value })}
+                />
                 <label className="block text-sm font-medium text-gray-700">Phone</label>
                 <input
                   type="text"
-                  className="border p-2 w-full mb-4 rounded"
+                  className="border p-2 w-full mb-2 rounded"
                   placeholder="Phone"
-                  value={newStaff.phone}
-                  onChange={(e) => setNewStaff({ ...newStaff, phone: e.target.value })}
+                  value={newStaff.phoneNumber}
+                  onChange={(e) => setNewStaff({ ...newStaff, phoneNumber: e.target.value })}
                 />
+                <label className="block text-sm font-medium text-gray-700">Role</label>
+                <select
+                  className="border p-2 w-full mb-4 rounded"
+                  value={newStaff.roleName}
+                  onChange={(e) => setNewStaff({ ...newStaff, roleName: e.target.value })}
+                >
+                  <option value="Customer">Customer</option>
+                  <option value="Staff">Staff</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Therapist">Therapist</option>
+                  <option value="Admin">Admin</option>
+                </select>
               </div>
               <div className="flex justify-between">
                 <button
@@ -137,10 +183,12 @@ export default function StaffManagement() {
           <thead>
             <tr className="bg-pink-300">
               <th className="border p-2">ID</th>
-              <th className="border p-2">Username</th> {/* Hiển thị Username */}
-              <th className="border p-2">Name</th>
+              <th className="border p-2">First Name</th>
+              <th className="border p-2">Last Name</th>
               <th className="border p-2">Email</th>
               <th className="border p-2">Phone</th>
+              <th className="border p-2">Role</th>
+              <th className="border p-2">Verified</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
@@ -148,10 +196,12 @@ export default function StaffManagement() {
             {staffMembers.map((staff) => (
               <tr key={staff._id} className="text-center border-b">
                 <td className="border p-2">{staff._id}</td>
-                <td className="border p-2">{staff.username}</td> {/* Hiển thị Username */}
-                <td className="border p-2">{staff.name}</td>
+                <td className="border p-2">{staff.firstName}</td>
+                <td className="border p-2">{staff.lastName}</td>
                 <td className="border p-2">{staff.email}</td>
-                <td className="border p-2">{staff.phone}</td>
+                <td className="border p-2">{staff.phoneNumber}</td>
+                <td className="border p-2">{staff.roleName}</td>
+                <td className="border p-2">{staff.verified ? "Yes" : "No"}</td>
                 <td className="border p-2">
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded mr-2 hover:bg-red-700"

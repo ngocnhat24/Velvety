@@ -17,6 +17,7 @@ import Dashboard from './pages/admin/Dashboard.jsx';
 import BookingPage from './pages/guest/Booking.jsx';
 import TherapistManagement from './pages/admin/TherapistManagement.jsx';
 import ResetPassword from './pages/guest/ResetPassword.jsx';
+import Consultant from './pages/guest/Consultant.jsx';
 axios.defaults.baseURL = 'http://localhost:5000/';
 axios.defaults.withCredentials = true;
 
@@ -40,6 +41,7 @@ function App() {
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/booking' element={<BookingPage/>} />
       <Route path='reset-password' element={<ResetPassword/>} />
+      <Route path='consultant' element={<Consultant/>} />
 
     </Routes>
 
