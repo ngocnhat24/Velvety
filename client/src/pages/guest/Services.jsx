@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ServiceCard from "../../components/ServiceCard";
-import { useState, useEffect } from "react";
-import axios from "axios";
 
 export default function Services() {
   const [services, setServices] = useState([]);
@@ -19,6 +18,12 @@ export default function Services() {
         console.error("Error fetching services:", error);
       });
   }, []);
+
+  const handleChoose = (serviceName) => {
+    console.log(`Service chosen: ${serviceName}`);
+    // Add your logic for handling the service choice here
+  };
+
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0">
       <Navbar />
@@ -78,7 +83,7 @@ export default function Services() {
 
       {/* Service cards section */}
       <div className="w-full px-4 flex justify-center ">
-        <div className="w-full max-w-[1200px] px-4 md:px-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[30px] mt-4 mb-[20px] mx-auto place-items-center">
+        <div className="w-full max-w-[1200px] px-4 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-[60px] gap-y-[20px] mt-4 mb-[40px] mx-auto place-items-center">
           {services.map((service, index) => (
             <ServiceCard
               key={index}
@@ -94,6 +99,5 @@ export default function Services() {
       {/* Footer */}
       <Footer />
     </div>
-
   );
 }

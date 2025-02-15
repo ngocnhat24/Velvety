@@ -2,32 +2,32 @@ import React from 'react';
 
 const ServiceCard = ({ image, name, description, price, onChoose }) => {
   return (
-    <div className="flex flex-col items-center justify-between w-[420.667px] h-[400px] relative">
+    <div className="flex flex-col items-center justify-between w-[300px] h-[400px] relative font-['Lato'] bg-white p-6 rounded-lg shadow-lg border border-gray-200">
       {/* Image */}
       <div
-        className="w-[300.667px] h-[500.667px] bg-cover bg-no-repeat rounded-[200.333px]"
+        className="w-[200px] h-[200px] bg-cover bg-no-repeat rounded-full"
         style={{
           backgroundImage: `url(${image})`,
         }}
       ></div>
       {/* Title */}
-      <span className="font-['Newsreader'] text-[16px] font-bold leading-[20px] text-[#000] text-center mt-4">
+      <span className="text-[18px] font-bold leading-[20px] text-[#AB152A] text-center mt-4">
         {name}
       </span>
       {/* Description */}
-      <span className="font-['Newsreader'] text-[16px] font-light leading-[20px] text-[#000] text-center ">
-       {description} <br></br>
+      <span className="text-[14px] font-light leading-[20px] text-[#000] text-center">
+        {description} <br></br>
       </span>
       {/* Price */}
-      <span className="font-['Inter'] text-[16px] font-normal leading-[19px] text-[#000] mt-2">
+      <span className="text-[16px] font-normal leading-[19px] text-[#000] mt-2">
         {price} $
       </span>
       {/* Choose Button */}
       <button
-        className="w-[169.333px] h-[44px] bg-[#f7f5f4] rounded-[162.667px] border-solid border-[1.333px] border-[#000] mt-4"
+        className="w-[169px] h-[44px] bg-[#ffc0cb] rounded-full border-solid border-[1.333px] flex items-center justify-center hover:bg-[#ff8a8a] transition duration-300 mt-[10px]"
         onClick={onChoose}
       >
-        <span className="font-['Lato'] text-[20px] font-normal leading-[24px] text-[#000]">
+        <span className="text-[20px] font-bold leading-[24px] text-[#C54759]">
           Choose
         </span>
       </button>
