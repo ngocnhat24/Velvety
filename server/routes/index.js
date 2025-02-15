@@ -9,7 +9,7 @@ const blogRoutes = require('./blogRoutes');
 const questionRoutes = require('./questionRoutes');
 const managerRoutes = require("./managerRoutes");
 const grapistRoutes = require("./grapistRoutes");
-const calendarRoutes = require("./therapistRoutes");
+const calendarRoutes = require("./calendarRoutes");
 const consultantRoutes = require("./consultantRoutes");
 
 const router = express.Router();
@@ -20,7 +20,7 @@ router.use('/feedbacks', feedbackRoutes);
 router.use('/services', serviceRoutes);
 router.use('/quiz-results', quizResultRoutes);
 router.use('/payments', paymentRoutes);
-router.use('/blogs',blogRoutes);
+router.use('/blogs', blogRoutes);
 router.use('/questions', questionRoutes);
 router.use('/managers', managerRoutes);
 router.use('/grapists', grapistRoutes);
