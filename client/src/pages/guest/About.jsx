@@ -88,7 +88,6 @@ export default function About() {
         <div className="w-[804.862px] h-[692.155px] bg-[url(@/assets/images/about_2.png)] bg-cover bg-no-repeat absolute top-[245.302px] left-0 z-[23]">
           <div className="w-[648.398px] h-[637.79px] relative overflow-hidden z-[22] mt-0 mr-0 mb-0 ml-[78.233px]" />
         </div>
-        <div className="w-[3.978px] h-[118.011px] bg-[url(@/assets/images/76b9820e-c87d-4375-9a3b-7be14533f7e7.png)] bg-cover bg-no-repeat absolute top-[277.126px] left-[868.506px] z-[15]" />
         <span className="flex w-[705.414px] h-[115.359px] justify-start items-center font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] absolute top-[278.445px] left-[906.964px] text-left uppercase z-[17]">
           It’s almost overwhelming for “us” to recognize Velvety  has become
           a natural brand trusted and shared from one generation to the next. {" "}
