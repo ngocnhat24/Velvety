@@ -9,17 +9,17 @@ export default function Consultant() {
   const consultants = [
     {
       name: "Josh",
-      image: "src/assets/images/josh.png",
+      image: "/images/josh.png",
       note: "Reviva’s director of education offers decades of experience and vast array of skincare knowledge & experience",
     },
     {
       name: "Mike",
-      image: "src/assets/images/mike.png",
+      image: "/images/mike.png",
       note: "Reviva’s director of education offers decades of experience and vast array of skincare knowledge & experience",
     },
     {
       name: "Ali",
-      image: "src/assets/images/ali.png",
+      image: "/images/ali.png",
       note: "Reviva’s director of education offers decades of experience and vast array of skincare knowledge & experience",
     },
   ];
