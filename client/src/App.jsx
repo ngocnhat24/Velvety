@@ -18,6 +18,9 @@ import BookingPage from './pages/guest/Booking.jsx';
 import TherapistManagement from './pages/manager/TherapistManagement.jsx';
 import ResetPassword from './pages/guest/ResetPassword.jsx';
 import Consultant from './pages/guest/Consultant.jsx';
+import BlogManagement from './pages/manager/BlogManagement.jsx';
+import QuizManagement from './pages/manager/QuestionManagement.jsx';
+import QuestionManagement from './pages/manager/QuestionManagement.jsx';
 axios.defaults.baseURL = 'http://localhost:5000/';
 axios.defaults.withCredentials = true;
 
@@ -42,7 +45,8 @@ function App() {
       <Route path='/booking' element={<BookingPage/>} />
       <Route path='reset-password' element={<ResetPassword/>} />
       <Route path='consultant' element={<Consultant/>} />
-
+      <Route path='blog-management' element={<BlogManagement/>} />
+      <Route path='question-management' element={<QuestionManagement/>} />
     </Routes>
 
   );
