@@ -31,7 +31,7 @@ export default function Blog() {
     <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0">
       <Navbar />
 
-      <div className="w-full h-[70vh] bg-[url(./src/assets/images/i_blog_0.png)] bg-cover bg-center bg-no-repeat relative"
+      <div className="w-full h-[70vh] bg-[url(/images/i_blog_0.png)] bg-cover bg-center bg-no-repeat relative"
         style={{
           backgroundAttachment: "fixed",
           backgroundSize: "cover"
@@ -50,11 +50,11 @@ export default function Blog() {
       </div>
 
       <div className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
-        <div className="w-[300px] h-[1px] bg-[url(./src/assets/images/line.png)] bg-cover bg-no-repeat flex-1" />
+        <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
         <span className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
           READ MORE
         </span>
-        <div className="w-[300px] h-[1px] bg-[url(./src/assets/images/line.png)] bg-cover bg-no-repeat flex-1" />
+        <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
       {/* Render blog posts */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-[30px] mb-[30px] mx-auto px-4 max-w-screen-xl">

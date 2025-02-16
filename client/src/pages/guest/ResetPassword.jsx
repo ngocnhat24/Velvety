@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { useLocation } from "react-router-dom";
+
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
@@ -15,7 +16,26 @@ export default function ResetPassword() {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+  const [errors, setErrors] = useState({});
+
+  // Password validation function
+  const validatePasswords = () => {
+    let newErrors = {};
+
+    if (newPassword.length < 8) {
+      newErrors.newPassword = "Password must be at least 8 characters long.";
+    }
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(newPassword)) {
+      newErrors.newPassword =
+        "Password must contain uppercase, lowercase, number, and special character.";
+    }
+    if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -23,13 +43,10 @@ export default function ResetPassword() {
     setError(null);
     setLoading(true);
 
-    // Validate passwords match
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
+    if (!validatePasswords()) {
       setLoading(false);
       return;
     }
-
 
     try {
       const response = await fetch(`/api/users/reset-password?token=${token}`, {
@@ -56,7 +73,7 @@ export default function ResetPassword() {
       <Navbar />
 
       {/* Background */}
-      <div className="absolute inset-0 bg-[url(./src/assets/images/forgotpassword_resetpassword.png)] bg-cover bg-center opacity-40" />
+      <div className="absolute inset-0 bg-[url(/images/forgotpassword_resetpassword.png)] bg-cover bg-center opacity-40" />
 
       {/* Reset Password Section */}
       <div className="flex flex-grow items-center justify-center relative z-10 px-4">
@@ -78,10 +95,14 @@ export default function ResetPassword() {
                 type="password"
                 placeholder="Enter new password"
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  setErrors((prev) => ({ ...prev, newPassword: "" })); // Clear error on change
+                }}
                 className="w-full h-12 px-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
                 required
               />
+              {errors.newPassword && <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>}
             </div>
 
             {/* Confirm Password Input */}
@@ -91,10 +112,14 @@ export default function ResetPassword() {
                 type="password"
                 placeholder="Confirm new password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setErrors((prev) => ({ ...prev, confirmPassword: "" })); // Clear error on change
+                }}
                 className="w-full h-12 px-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
                 required
               />
+              {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
             </div>
 
             {/* Reset Button */}

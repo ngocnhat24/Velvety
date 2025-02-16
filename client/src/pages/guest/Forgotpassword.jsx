@@ -38,7 +38,7 @@ export default function ForgotPassword() {
       <Navbar />
 
       {/* Background */}
-      <div className="absolute inset-0 bg-[url(./src/assets/images/forgotpassword_resetpassword.png)] bg-cover bg-center opacity-40" />
+      <div className="absolute inset-0 bg-[url(/images/forgotpassword_resetpassword.png)] bg-cover bg-center opacity-40" />
 
       {/* Forgot Password Section */}
       <div className="flex flex-grow items-center justify-center relative z-10 px-4">
