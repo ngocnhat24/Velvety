@@ -9,10 +9,14 @@ exports.createUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password, roleName, phoneNumber } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    // Check if email or phone number already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
+      return res.status(400).json({
+        message: existingUser.email === email 
+          ? "Email already in use" 
+          : "Phone number already in use",
+      });
     }
 
     // Hash password
