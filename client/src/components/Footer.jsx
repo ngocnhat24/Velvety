@@ -11,10 +11,10 @@ const Footer = () => {
 
       {/* Mạng xã hội */}
       <div className="flex justify-center space-x-6 mb-8">
-        <div className="w-10 h-10 bg-[url(@/assets/images/facebook.png)] bg-cover"></div>
-        <div className="w-10 h-10 bg-[url(@/assets/images/instagram.png)] bg-cover"></div>
-        <div className="w-10 h-10 bg-[url(@/assets/images/twitter.png)] bg-cover"></div>
-        <div className="w-10 h-10 bg-[url(@/assets/images/youtube.png)] bg-cover"></div>
+        <div className="w-10 h-10 bg-[url(@/assets/images/Facebook.png)] bg-cover"></div>
+        <div className="w-10 h-10 bg-[url(@/assets/images/Instagram.png)] bg-cover"></div>
+        <div className="w-10 h-10 bg-[url(@/assets/images/Twitter.png)] bg-cover"></div>
+        <div className="w-10 h-10 bg-[url(@/assets/images/Youtube.png)] bg-cover"></div>
       </div>
 
       {/* Grid 4 cột */}
