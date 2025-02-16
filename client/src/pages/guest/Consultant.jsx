@@ -29,7 +29,6 @@ export default function Consultant() {
       <Navbar />
       <div className="w-full h-[97.333px] bg-[#ffc0cb] relative z-[2] flex items-center justify-center">
         <div className="flex items-center">
-          <div className="w-[50px] h-[50px] bg-[url(../assets/images/e2f4cb23d15d0b89c721b683e5988c0c85b40335.png)] bg-cover bg-no-repeat rounded-full mr-4"></div>
           <span className="text-[32px] font-bold leading-[32.01px] text-[#C54759] text-center whitespace-nowrap z-[2]">
             Choose your consultant
           </span>
