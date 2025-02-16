@@ -119,7 +119,7 @@ export default function RegisterPage() {
     <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
       <Navbar />
       <div className="flex items-center justify-center h-auto max-h-screen overflow-auto relative flex-grow">
-        <div className="absolute inset-0 bg-[url(src/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
+        <div className="absolute inset-0 bg-[url(./src/assets/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
         <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-5 mt-5 mb-9 mx-4">
           <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8">
             Register

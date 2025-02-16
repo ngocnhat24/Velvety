@@ -7,7 +7,7 @@ export default function About() {
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative mx-auto my-0">
       <Navbar />
-      <div className="w-full h-[50vh] bg-[url(src/assets/images/about_1.png)] bg-cover bg-no-repeat relative z-[1] "
+      <div className="w-full h-[50vh] bg-[url(./src/assets/images/about_1.png)] bg-cover bg-no-repeat relative z-[1] "
         style={{
           backgroundAttachment: "fixed"
         }}
@@ -85,7 +85,7 @@ export default function About() {
           “secret for beautiful skin” with their daughters, and now with their
           granddaughters as well. {" "}
         </span>
-        <div className="w-[804.862px] h-[692.155px] bg-[url(src/assets/images/about_2.png)] bg-cover bg-no-repeat absolute top-[245.302px] left-0 z-[23]">
+        <div className="w-[804.862px] h-[692.155px] bg-[url(./src/assets/images/about_2.png)] bg-cover bg-no-repeat absolute top-[245.302px] left-0 z-[23]">
           <div className="w-[648.398px] h-[637.79px] relative overflow-hidden z-[22] mt-0 mr-0 mb-0 ml-[78.233px]" />
         </div>
         <span className="flex w-[705.414px] h-[115.359px] justify-start items-center font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] absolute top-[278.445px] left-[906.964px] text-left uppercase z-[17]">
@@ -135,7 +135,7 @@ export default function About() {
         Stephen Strassler applying Reviva skin care to a model {" "}
       </span>
       <div className="flex w-[879.122px] h-[80.884px] justify-between items-center relative z-[21] mt-[0.84px] mr- mb-auto ml-[975.908px]">
-        <div className="w-[5.978px] h-[90.884px] shrink-0 bg-[url(src/assets/images/line.png)] bg-cover bg-no-repeat relative z-[16]" />
+        <div className="w-[5.978px] h-[90.884px] shrink-0 bg-[url(./src/assets/images/line.png)] bg-cover bg-no-repeat relative z-[16]" />
         <span className="flex w-[840.663px] h-[64px] justify-start items-center shrink-0 font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left uppercase z-[21]">
           Velvety  has been creating superior natural skin care for nearly
           half a century – and we’re just getting started. {" "}

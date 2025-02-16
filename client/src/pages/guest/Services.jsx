@@ -29,7 +29,7 @@ export default function Services() {
       <Navbar />
 
       {/* Section with background image */}
-      <div className="w-full h-[70vh] bg-[url(src/assets/images/service_0.png)] bg-cover bg-center bg-no-repeat relative"
+      <div className="w-full h-[70vh] bg-[url(./src/assets/images/service_0.png)] bg-cover bg-center bg-no-repeat relative"
         style={{
           backgroundAttachment: "fixed"
         }}>
@@ -54,7 +54,7 @@ export default function Services() {
 
 
         <div className="w-full max-w-[1384px] h-auto relative z-[6] mt-[54px] mx-auto text-center">
-          <div className="w-[1000px] h-[1px] bg-[url(src/assets/images/line.png)] bg-cover bg-no-repeat absolute top-0 left-1/2 transform -translate-x-1/2 z-[10]" />
+          <div className="w-[1000px] h-[1px] bg-[url(./src/assets/images/line.png)] bg-cover bg-no-repeat absolute top-0 left-1/2 transform -translate-x-1/2 z-[10]" />
           <span className="w-full max-w-[1339px] h-auto font-['Lato'] text-[50px] font-normal text-[#000] tracking-[-1.87px] block pt-[30px] z-[6]">
             We look forward to meeting you…
           </span>
@@ -69,7 +69,7 @@ export default function Services() {
 
       <div className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
 
-        <div className="w-[300px] h-[1px] bg-[url(src/assets/images/line.png)] bg-cover bg-no-repeat flex-1" />
+        <div className="w-[300px] h-[1px] bg-[url(./src/assets/images/line.png)] bg-cover bg-no-repeat flex-1" />
 
 
         <span className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
@@ -77,7 +77,7 @@ export default function Services() {
         </span>
 
 
-        <div className="w-[300px] h-[1px] bg-[url(src/assets/images/line.png)] bg-cover bg-no-repeat flex-1" />
+        <div className="w-[300px] h-[1px] bg-[url(./src/assets/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
 
 

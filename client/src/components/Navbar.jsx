@@ -11,7 +11,7 @@ const Navbar = () => {
   return (
     <div className="w-full h-[100px] bg-[#F9FAEF] flex items-center justify-between px-6 md:px-12 lg:px-10 shadow-md relative z-10">
       {/* Logo */}
-      <div className="w-auto h-[52px] bg-[url(@/assets/images/logo.png)] bg-cover bg-no-repeat w-[150px] md:w-[150px] lg:w-[150px] z-20"></div>
+      <div className="w-auto h-[52px] bg-[url(./src/assets/images/logo.png)] bg-cover bg-no-repeat w-[150px] md:w-[150px] lg:w-[150px] z-20"></div>
 
       {/* Mobile Menu Button */}
       <button
