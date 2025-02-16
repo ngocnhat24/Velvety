@@ -7,8 +7,8 @@ const consultantSchema = new mongoose.Schema({
         comment: { type: String },
         createdAt: { type: Date, default: Date.now }
     }],
-    note: { type: String }, // New field for note
-    image: { type: String } // New field for image
+    note: { type: String },
+    image: { type: String }
 });
 
 // Virtual field for average rating
