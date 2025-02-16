@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://velvety-426i.vercel.app',
         changeOrigin: true,
         secure: false,
       }, // Proxy all requests starting with "/api" to the backend
