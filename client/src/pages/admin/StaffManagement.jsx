@@ -21,7 +21,7 @@ export default function StaffManagement() {
   // Lấy danh sách nhân viên từ API
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/staff")
+      .get("/api/staff")
       .then((res) => setStaffMembers(res.data))
       .catch((err) => console.error(err));
   }, []);

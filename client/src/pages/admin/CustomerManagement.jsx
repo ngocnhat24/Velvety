@@ -9,7 +9,7 @@ export default function Customer() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/customers")
+    axios.get("/api/customers")
       .then((res) => setCustomers(res.data))
       .catch((err) => console.error(err));
   }, []);

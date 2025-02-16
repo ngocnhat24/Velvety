@@ -26,7 +26,7 @@ export default function RegisterPage() {
     setError(""); // Clear previous error
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users", {
+      const response = await axios.post("/api/users", {
         ...formData,
         roleName: "Customer", // Assuming "Customer" role for registration
       });

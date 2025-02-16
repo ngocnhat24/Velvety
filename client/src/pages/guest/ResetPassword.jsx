@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import { useLocation } from "react-router-dom";
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 export default function ResetPassword() {
-  const { token } = useParams(); // Get the token from the URL
+  const query = useQuery();
+  const token = query.get("token");
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,8 +30,9 @@ export default function ResetPassword() {
       return;
     }
 
+
     try {
-      const response = await fetch(`http://localhost:5000/api/reset-password`, {
+      const response = await fetch(`/api/users/reset-password?token=${token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword }),

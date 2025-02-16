@@ -8,13 +8,13 @@ export default function TherapistManagement() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/skin-therapists")
+    axios.get("/api/skin-therapists")
       .then((res) => setTherapists(res.data))
       .catch((err) => console.error(err));
   }, []);
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:5000/api/skin-therapists/${id}`)
+    axios.delete(`/api/skin-therapists/${id}`)
       .then(() => setTherapists(therapists.filter(therapist => therapist._id !== id)))
       .catch(err => console.error(err));
   };

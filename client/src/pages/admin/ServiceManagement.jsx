@@ -10,7 +10,7 @@ export default function ServiceManagement() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/services")
+    axios.get("/api/services")
       .then((res) => setServices(res.data))
       .catch((err) => console.error("Lỗi khi lấy dữ liệu:", err))
       .finally(() => setLoading(false));
