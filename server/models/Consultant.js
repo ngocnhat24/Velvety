@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 const consultantSchema = new mongoose.Schema({
-    specialization: { type: String, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     ratings: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // The person giving the rating
         rating: { type: Number, required: true, min: 1, max: 5 },
         comment: { type: String },
         createdAt: { type: Date, default: Date.now }
-    }]
+    }],
+    note: { type: String }, // New field for note
+    image: { type: String } // New field for image
 });
 
 // Virtual field for average rating
