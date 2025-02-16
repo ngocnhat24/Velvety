@@ -9,17 +9,17 @@ export default function Consultant() {
   const consultants = [
     {
       name: "Josh",
-      image: "../assets/images/07ff4aebfa5130c987eaa466c5493d182f7b52cb.png",
+      image: "src/assets/images/josh.png",
       note: "Reviva’s director of education offers decades of experience and vast array of skincare knowledge & experience",
     },
     {
       name: "Mike",
-      image: "../assets/images/a15c83e15f73f9264c1f39566adb62de7681b1cf.png",
+      image: "src/assets/images/mike.png",
       note: "Reviva’s director of education offers decades of experience and vast array of skincare knowledge & experience",
     },
     {
       name: "Ali",
-      image: "../assets/images/f7870737069e215bcf7eec9a1280ce87196eb1e4.png",
+      image: "src/assets/images/ali.png",
       note: "Reviva’s director of education offers decades of experience and vast array of skincare knowledge & experience",
     },
   ];
