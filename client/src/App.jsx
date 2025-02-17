@@ -20,7 +20,7 @@ import ResetPassword from './pages/guest/ResetPassword.jsx';
 import Consultant from './pages/guest/Consultant.jsx';
 import BlogManagement from './pages/manager/BlogManagement.jsx';
 import QuestionManagement from './pages/manager/QuestionManagement.jsx';
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true; 
 
 function App() {
