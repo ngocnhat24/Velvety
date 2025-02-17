@@ -17,8 +17,8 @@ app.use(function (req, res, next) {
   next();
 });
 app.use(cors({
-  origin: 'https://velvety-five.vercel.app', // http://localhost:5173 thay cái này nào khi anh em làm để thấy kết quả trực tiếp trên local
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // làm xong local để lại https://velvety-five.vercel.app này rồi mới commit
+  origin: 'http://localhost:5173', // Replace with your frontend's URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
