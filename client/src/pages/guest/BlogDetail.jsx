@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom'; // For navigating back
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 export default function BlogDetail() {
   const { id } = useParams(); // Get the blog post ID from the URL
@@ -25,7 +27,10 @@ export default function BlogDetail() {
   };
 
   return blogPost ? (
-    <div className="main-container w-full h-full bg-[#f9faef] relative overflow-hidden mx-auto my-0 p-4">
+    <div className="w-full h-full bg-[#f9faef] relative overflow-hidden mx-auto my-0 p-4">
+      {/* Navbar */}
+      <Navbar />
+
       <div className="bg-white shadow-lg rounded-lg max-w-4xl mx-auto p-6 mt-12">
         {/* Back button */}
         <button
@@ -40,9 +45,9 @@ export default function BlogDetail() {
             stroke="currentColor"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="M15 19l-7-7 7-7"
             />
           </svg>
@@ -56,6 +61,9 @@ export default function BlogDetail() {
           <p className="text-base text-[#555] leading-relaxed">{blogPost.content}</p>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   ) : (
     <div className="flex justify-center items-center h-screen">
