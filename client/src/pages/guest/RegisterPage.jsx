@@ -50,9 +50,9 @@ export default function RegisterPage() {
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     setFormData((prev) => ({ ...prev, [name]: value }));
-  
+
     // Clear error message for the specific field when user starts typing
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -74,18 +74,18 @@ export default function RegisterPage() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!isFormValid()) {
       alert("Please fill in all fields correctly.");
       return;
     }
-  
+
     try {
       const response = await axios.post("/api/users", {
         ...formData,
         roleName: "Customer",
       });
-  
+
       if (response.status === 201) {
         alert("Registration successful! Please check your email to verify your account.");
         setFormData({
@@ -102,7 +102,7 @@ export default function RegisterPage() {
     } catch (err) {
       if (err.response) {
         const errorMessage = err.response.data.message;
-  
+
         setErrors((prev) => ({
           ...prev,
           email: errorMessage === "Email already in use" ? "This email is already registered." : prev.email,
@@ -119,7 +119,7 @@ export default function RegisterPage() {
     <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
       <Navbar />
       <div className="flex items-center justify-center h-auto max-h-screen overflow-auto relative flex-grow">
-        <div className="absolute inset-0 bg-[url(/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
+        <div className="absolute inset-0 bg-[url(/images/forgotpassword_resetpassword.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
         <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-5 mt-5 mb-9 mx-4">
           <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8">
             Register
@@ -127,10 +127,10 @@ export default function RegisterPage() {
 
           <form className="flex flex-col gap-4 md:gap-6" onSubmit={handleSubmit}>
             {[{ label: "First Name", name: "firstName", type: "text", placeholder: "Enter first name" },
-              { label: "Last Name", name: "lastName", type: "text", placeholder: "Enter last name" },
-              { label: "Email", name: "email", type: "email", placeholder: "Enter email" },
-              { label: "Password", name: "password", type: "password", placeholder: "Enter password" },
-              { label: "Phone Number", name: "phoneNumber", type: "text", placeholder: "Enter phone number" },
+            { label: "Last Name", name: "lastName", type: "text", placeholder: "Enter last name" },
+            { label: "Email", name: "email", type: "email", placeholder: "Enter email" },
+            { label: "Password", name: "password", type: "password", placeholder: "Enter password" },
+            { label: "Phone Number", name: "phoneNumber", type: "text", placeholder: "Enter phone number" },
             ].map(({ label, name, type, placeholder }) => (
               <div key={name}>
                 <label className="block text-lg font-semibold text-gray-800 mb-1">{label}</label>
@@ -140,11 +140,9 @@ export default function RegisterPage() {
                   value={formData[name]}
                   onChange={handleChange}
                   placeholder={placeholder}
-                  className={`w-full h-[50px] px-4 border ${
-                    errors[name] ? "border-red-500" : "border-gray-300"
-                  } rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 ${
-                    errors[name] ? "focus:ring-red-500" : "focus:ring-[#c86c79]"
-                  }`}
+                  className={`w-full h-[50px] px-4 border ${errors[name] ? "border-red-500" : "border-gray-300"
+                    } rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 ${errors[name] ? "focus:ring-red-500" : "focus:ring-[#c86c79]"
+                    }`}
                   required
                 />
                 {errors[name] && <div className="text-red-500 text-sm mt-1">{errors[name]}</div>}

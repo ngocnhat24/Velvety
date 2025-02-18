@@ -17,8 +17,8 @@ app.use(function (req, res, next) {
   next();
 });
 app.use(cors({
-  origin: 'http://localhost:5173', // Replace with your frontend's URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: process.env.FRONT_END_URL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
