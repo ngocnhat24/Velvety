@@ -35,7 +35,7 @@ function App() {
       <Route path='/quiz' element={<Quiz />} />
       <Route path='/verify' element={<VerifyEmailPage/>} />
       <Route path='/blog/:id' element={<BlogDetail />} />
-      <Route path='/skin-therapist' element={<TherapistManagement/>} />
+      <Route path='/therapist-management' element={<TherapistManagement/>} />
       <Route path='/service-management' element={<ServiceManagement />} />
       <Route path='/staff-management' element={<StaffManagement />} />
       <Route path='/dashboard' element={<Dashboard/>} />

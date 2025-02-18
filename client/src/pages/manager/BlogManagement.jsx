@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/ManagerSidebar";
 import ReactQuill from 'react-quill'; // Import react-quill
 import 'react-quill/dist/quill.snow.css'; // Import CSS cho quill
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'; // Import MUI Dialog components

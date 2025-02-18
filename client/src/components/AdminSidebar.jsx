@@ -2,14 +2,12 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider } from "@mui/material";
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Services", path: "/service-management" },
-    { name: "Blogs", path: "/blog-management" },
-    { name: "Questions", path: "/question-management" },
+    { name: "Therapist", path: "/therapist-management" },
+    { name: "Staff", path: "/staff-management" },
   ];
 
   return (
@@ -29,7 +27,7 @@ const Sidebar = () => {
       {/* Thanh tiêu đề */}
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "left" }}>
-          Menu
+          Admin
         </Typography>
       </Toolbar>
       <Divider sx={{ backgroundColor: "gray" }} />
@@ -48,4 +46,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

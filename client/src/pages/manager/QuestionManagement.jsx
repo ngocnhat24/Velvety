@@ -16,7 +16,7 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/ManagerSidebar";
 
 const QuestionCard = ({ question, onDelete, onEdit }) => {
   return (
