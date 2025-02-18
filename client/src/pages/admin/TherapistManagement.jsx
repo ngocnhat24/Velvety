@@ -25,7 +25,7 @@ export default function TherapistManagement() {
     const newPhone = prompt("Nhập số điện thoại mới:", therapist.phone);
 
     if (newName && newEmail && newPhone) {
-      axios.put(`http://localhost:5000/api/skin-therapists/${therapist._id}`, {
+      axios.put(`/api/skin-therapists/${therapist._id}`, {
         name: newName,
         email: newEmail,
         phone: newPhone,
@@ -37,7 +37,7 @@ export default function TherapistManagement() {
 
   const handleAdd = () => {
     if (newTherapist.username && newTherapist.name && newTherapist.email && newTherapist.phone) {
-      axios.post("http://localhost:5000/api/skin-therapists", newTherapist)
+      axios.post("/api/skin-therapists", newTherapist)
         .then((res) => {
           setTherapists([...therapists, res.data]);
           setNewTherapist({ username: "", name: "", email: "", phone: "" });

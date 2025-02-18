@@ -29,7 +29,7 @@ export default function StaffManagement() {
   // Xóa nhân viên
   const handleDelete = (id) => {
     axios
-      .delete(`http://localhost:5000/api/staff/${id}`)
+      .delete(`/api/staff/${id}`)
       .then(() => setStaffMembers(staffMembers.filter(staff => staff._id !== id)))
       .catch(err => console.error(err));
   };
@@ -44,7 +44,7 @@ export default function StaffManagement() {
 
     if (newFirstName && newLastName && newEmail && newPhoneNumber && newRoleName) {
       axios
-        .put(`http://localhost:5000/api/staff/${staff._id}`, {
+        .put(`/api/staff/${staff._id}`, {
           firstName: newFirstName,
           lastName: newLastName,
           email: newEmail,
@@ -65,7 +65,7 @@ export default function StaffManagement() {
   // Thêm nhân viên mới
   const handleAdd = () => {
     axios
-      .post("http://localhost:5000/api/staff", newStaff)
+      .post("/api/staff", newStaff)
       .then((res) => {
         setStaffMembers([...staffMembers, res.data]);
         setNewStaff({
