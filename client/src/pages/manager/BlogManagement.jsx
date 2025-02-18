@@ -53,7 +53,7 @@ const BlogManagement = () => {
     try {
       await axios.delete(`/api/blogs/${blogToDelete._id}`);
       fetchBlogs();
-      setOpenDeleteDialog(false); 
+      setOpenDeleteDialog(false);
     } catch (error) {
       console.error("Error deleting blog", error);
     }
@@ -124,6 +124,7 @@ const BlogManagement = () => {
                 )}
                 <h4 className="text-lg font-bold">{blog.title}</h4>
                 <p>{blog.description}</p>
+                <div dangerouslySetInnerHTML={{ __html: blog.content }} />
                 <button
                   onClick={() => handleEdit(blog)}
                   className="bg-yellow-500 text-white px-3 py-1 mr-2 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"

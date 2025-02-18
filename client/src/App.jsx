@@ -19,11 +19,13 @@ import ResetPassword from './pages/guest/ResetPassword.jsx';
 import Consultant from './pages/guest/Consultant.jsx';
 import BlogManagement from './pages/manager/BlogManagement.jsx';
 import QuestionManagement from './pages/manager/QuestionManagement.jsx';
+import Calendar from './pages/guest/Calendar.jsx'; // Import Calendar component
+
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-axios.defaults.withCredentials = true; 
+axios.defaults.withCredentials = true;
 
 function App() {
-  
+
   return (
     <Routes>
       <Route index element={<About />} />
@@ -31,21 +33,21 @@ function App() {
       <Route path='/blog' element={<Blog />} />
       <Route path='/service' element={<Services />} />
       <Route path='/register' element={<RegisterPage />} />
-      <Route path='/forgot-password' element={<Forgotpassword/>} />
+      <Route path='/forgot-password' element={<Forgotpassword />} />
       <Route path='/quiz' element={<Quiz />} />
-      <Route path='/verify' element={<VerifyEmailPage/>} />
+      <Route path='/verify' element={<VerifyEmailPage />} />
       <Route path='/blog/:id' element={<BlogDetail />} />
-      <Route path='/therapist-management' element={<TherapistManagement/>} />
+      <Route path='/therapist-management' element={<TherapistManagement />} />
       <Route path='/service-management' element={<ServiceManagement />} />
       <Route path='/staff-management' element={<StaffManagement />} />
-      <Route path='/dashboard' element={<Dashboard/>} />
-      <Route path='/booking' element={<BookingPage/>} />
-      <Route path='reset-password' element={<ResetPassword/>} />
-      <Route path='consultant' element={<Consultant/>} />
-      <Route path='blog-management' element={<BlogManagement/>} />
-      <Route path='question-management' element={<QuestionManagement/>} />
+      <Route path='/dashboard' element={<Dashboard />} />
+      <Route path='/booking' element={<BookingPage />} />
+      <Route path='/reset-password' element={<ResetPassword />} />
+      <Route path='/consultant' element={<Consultant />} />
+      <Route path='/blog-management' element={<BlogManagement />} />
+      <Route path='/question-management' element={<QuestionManagement />} />
+      <Route path='/calendar' element={<Calendar />} /> {/* Add route for Calendar */}
     </Routes>
-
   );
 }
 

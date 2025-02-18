@@ -43,9 +43,9 @@ export default function BlogDetail() {
             stroke="currentColor"
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
               d="M15 19l-7-7 7-7"
             />
           </svg>
@@ -67,7 +67,7 @@ export default function BlogDetail() {
         <div className="text-base text-[#555] leading-relaxed" dangerouslySetInnerHTML={{ __html: blogPost.content }} />
       </div>
       <Footer />
-    </div >
+    </div>
   ) : (
     <div className="flex justify-center items-center h-screen">
       <p className="text-xl text-gray-500">Loading...</p>
