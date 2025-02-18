@@ -27,11 +27,9 @@ export default function BlogDetail() {
   };
 
   return blogPost ? (
-    <div className="w-full h-full bg-[#f9faef] relative overflow-hidden mx-auto my-0 p-4">
-      {/* Navbar */}
+    <div className="main-container w-full h-full bg-[#f9faef] relative overflow-hidden mx-auto my-0 p-0">
       <Navbar />
-
-      <div className="bg-white shadow-lg rounded-lg max-w-4xl mx-auto p-6 mt-12">
+      <div className="bg-white shadow-lg rounded-lg max-w-4xl mx-auto p-6 mt-12 mb-10">
         {/* Back button */}
         <button
           onClick={handleBack}
@@ -55,16 +53,21 @@ export default function BlogDetail() {
         </button>
 
         {/* Blog post content */}
-        <div>
-          <h1 className="text-4xl font-semibold text-[#333] mb-4">{blogPost.title}</h1>
-          <p className="text-lg text-[#777] mb-8">{new Date(blogPost.createdDate).toLocaleDateString()}</p>
-          <p className="text-base text-[#555] leading-relaxed">{blogPost.content}</p>
+        <div className="flex flex-col lg:flex-row items-start lg:items-center">
+          <div className="flex-1 lg:mr-8">
+            <h1 className="text-4xl font-semibold text-[#333] mb-4">{blogPost.title}</h1>
+            <p className="text-lg text-[#777] mb-8">{new Date(blogPost.createdDate).toLocaleDateString()}</p>
+          </div>
+          {blogPost.image && (
+            <div className="flex-shrink-0 w-full lg:w-auto">
+              <img src={blogPost.image} alt={blogPost.title} className="w-full max-w-[300px] h-auto mb-8 rounded-lg mx-auto lg:mx-0" />
+            </div>
+          )}
         </div>
+        <div className="text-base text-[#555] leading-relaxed" dangerouslySetInnerHTML={{ __html: blogPost.content }} />
       </div>
-
-      {/* Footer */}
       <Footer />
-    </div>
+    </div >
   ) : (
     <div className="flex justify-center items-center h-screen">
       <p className="text-xl text-gray-500">Loading...</p>

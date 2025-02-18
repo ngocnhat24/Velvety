@@ -11,7 +11,9 @@ const Navbar = () => {
   return (
     <div className="w-full h-[100px] bg-[#F9FAEF] flex items-center justify-between px-6 md:px-12 lg:px-10 shadow-md relative z-10">
       {/* Logo */}
-      <div className="w-[155px] h-[52px] bg-[url(/images/logo.png)] bg-cover bg-no-repeat  md:w-[150px] lg:w-[150px] z-20"></div>
+      <NavLink to="/" className="w-[155px] h-[52px] z-20">
+        <div className="w-full h-full bg-[url(/images/logo.png)] bg-cover bg-no-repeat md:w-[150px] lg:w-[150px]"></div>
+      </NavLink>
 
       {/* Mobile Menu Button */}
       <button
@@ -43,6 +45,13 @@ const Navbar = () => {
             `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
         >
           Blog
+        </NavLink>
+        <NavLink
+          to="/Consultant"
+          className={({ isActive }) =>
+            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
+        >
+          Consultant
         </NavLink>
         <NavLink
           to="/quiz"
