@@ -7,10 +7,12 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Customer", path: "/customer-management" },
-    { name: "Staff", path: "/staff-management" },
-    { name: "Therapist", path: "/skin-therapist" },
-    { name: "Service", path: "/service-management" },
+    { name: "Customers", path: "/customer-management" },
+    { name: "Staffs", path: "/staff-management" },
+    { name: "Therapists", path: "/skin-therapist" },
+    { name: "Services", path: "/service-management" },
+    { name: "Blogs", path: "/blog-management" },
+    { name: "Questions", path: "/question-management" },
   ];
 
   return (
