@@ -53,7 +53,7 @@ const BlogManagement = () => {
     try {
       await axios.delete(`/api/blogs/${blogToDelete._id}`);
       fetchBlogs();
-      setOpenDeleteDialog(false); // Đóng dialog sau khi xóa
+      setOpenDeleteDialog(false); 
     } catch (error) {
       console.error("Error deleting blog", error);
     }
