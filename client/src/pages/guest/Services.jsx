@@ -45,11 +45,13 @@ export default function Services() {
         </span>
 
         <span className="block w-full max-w-[1200px] h-auto justify-center items-start font-['Lato'] text-[20px] font-normal leading-[38.4px] text-[#000] tracking-[-0.64px] relative z-[3] mt-[42.663px] mx-auto">
-          We believe beautiful skin comes from a long-term approach with a seasonal skincare routine and a healthy lifestyle. Using the right products and applications is key to optimal skin health. Our consultations offer anyone, anywhere, the best advice from our expert team.
+          <span className="text-[30px]">W</span>
+          e believe beautiful skin comes from a long-term approach with a seasonal skincare routine and a healthy lifestyle. Using the right products and applications is key to optimal skin health. Our consultations offer anyone, anywhere, the best advice from our expert team.
         </span>
 
         <span className="block w-full max-w-[1200px] h-auto justify-center items-start font-['Lato'] text-[20px] font-normal leading-[35.2px] text-[#000] tracking-[-0.59px] relative z-[4] mt-[39.331px] mx-auto">
-          During our virtual consultations, together we’ll evaluate your skin conditions, lifestyle, current products, and goals with an expert. You’ll then receive a customized product “prescription” as emailed guidelines and/or instructions.
+          <span className="text-[30px]">D</span>
+          uring our virtual consultations, together we’ll evaluate your skin conditions, lifestyle, current products, and goals with an expert. You’ll then receive a customized product “prescription” as emailed guidelines and/or instructions.
         </span>
 
 
@@ -73,7 +75,7 @@ export default function Services() {
 
 
         <span className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
-          CHOOSE YOUR SERVICE
+          Choose Your Service
         </span>
 
 
