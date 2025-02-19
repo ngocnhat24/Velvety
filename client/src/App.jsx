@@ -15,6 +15,7 @@ import TherapistManagement from './pages/admin/TherapistManagement.jsx';
 import ResetPassword from './pages/guest/ResetPassword.jsx';
 import BlogManagement from './pages/manager/BlogManagement.jsx';
 import QuestionManagement from './pages/manager/QuestionManagement.jsx';
+
 import AboutGuest from './pages/guest/About.jsx';
 import AboutCustomer from './pages/customer/About.jsx';
 import BookingPageGuest from './pages/guest/Booking.jsx';
@@ -23,11 +24,15 @@ import ConsultantGuest from './pages/guest/Consultant.jsx';
 import ConsultantCustomer from './pages/customer/Consultant.jsx';
 import ServiceGuest from './pages/guest/Services.jsx';
 import ServiceCustomer from './pages/customer/Services.jsx';
+
+import Calendar from './pages/guest/Calendar.jsx';
+
+
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-axios.defaults.withCredentials = true; 
+axios.defaults.withCredentials = true;
 
 function App() {
-  
+
   return (
     <Routes>
       <Route index element={<AboutGuest />} />
@@ -36,13 +41,14 @@ function App() {
       <Route path='/service' element={<ServiceGuest />} />
       <Route path='/service-customer' element={<ServiceCustomer />} />
       <Route path='/register' element={<RegisterPage />} />
-      <Route path='/forgot-password' element={<Forgotpassword/>} />
+      <Route path='/forgot-password' element={<Forgotpassword />} />
       <Route path='/quiz' element={<Quiz />} />
-      <Route path='/verify' element={<VerifyEmailPage/>} />
+      <Route path='/verify' element={<VerifyEmailPage />} />
       <Route path='/blog/:id' element={<BlogDetail />} />
-      <Route path='/therapist-management' element={<TherapistManagement/>} />
+      <Route path='/therapist-management' element={<TherapistManagement />} />
       <Route path='/service-management' element={<ServiceManagement />} />
       <Route path='/staff-management' element={<StaffManagement />} />
+
       <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/booking' element={<BookingPageGuest/>} />
       <Route path='/booking-customer' element={<BookingPageCustomer/>} />
@@ -52,8 +58,16 @@ function App() {
       <Route path='blog-management' element={<BlogManagement/>} />
       <Route path='question-management' element={<QuestionManagement/>} />
       <Route path='about-customer' element={<AboutCustomer/>} />
-    </Routes>
 
+      <Route path='/dashboard' element={<Dashboard />} />
+      <Route path='/booking' element={<BookingPage />} />
+      <Route path='/reset-password' element={<ResetPassword />} />
+      <Route path='/consultant' element={<Consultant />} />
+      <Route path='/blog-management' element={<BlogManagement />} />
+      <Route path='/question-management' element={<QuestionManagement />} />
+      <Route path='/calendar' element={<Calendar />} />
+
+    </Routes>
   );
 }
 

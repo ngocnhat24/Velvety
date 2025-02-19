@@ -3,10 +3,12 @@ const Blog = require("../models/Blog");
 // Create a new blog post
 exports.createBlogPost = async (req, res) => {
   try {
-    const { title, content, author } = req.body;
+    const { title, image, description, content, author } = req.body;
 
     const newPost = new Blog({
       title,
+      image,
+      description,
       content,
       author,
       createdDate: new Date(),
@@ -50,12 +52,12 @@ exports.getBlogPostById = async (req, res) => {
 // Update a blog post
 exports.updateBlogPost = async (req, res) => {
   const { postId } = req.params;
-  const { title, content, author } = req.body;
+  const { title, image, description, content, author } = req.body;
 
   try {
     const updatedPost = await Blog.findByIdAndUpdate(
       postId,
-      { title, content, author, updatedDate: new Date() },
+      { title, image, description, content, author, updatedDate: new Date() },
       { new: true }
     );
 

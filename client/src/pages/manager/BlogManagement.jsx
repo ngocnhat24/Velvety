@@ -12,6 +12,7 @@ const BlogManagement = () => {
   const { register, handleSubmit, reset, setValue } = useForm();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Trạng thái mở dialog
   const [blogToDelete, setBlogToDelete] = useState(null); // Blog cần xóa
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
 
   useEffect(() => {
     fetchBlogs();
@@ -53,7 +54,7 @@ const BlogManagement = () => {
     try {
       await axios.delete(`/api/blogs/${blogToDelete._id}`);
       fetchBlogs();
-      setOpenDeleteDialog(false); 
+      setOpenDeleteDialog(false);
     } catch (error) {
       console.error("Error deleting blog", error);
     }
@@ -68,6 +69,10 @@ const BlogManagement = () => {
     setOpenDeleteDialog(false); // Đóng dialog
     setBlogToDelete(null); // Xóa blog cần xóa
   };
+
+  const filteredBlogs = blogs.filter(blog =>
+    blog.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="flex">
@@ -111,9 +116,18 @@ const BlogManagement = () => {
         </form>
 
         <div className="mt-6">
-          <h3 className="text-xl font-semibold mb-4">Blog List</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Blog List</h3>
+            <input
+              type="text"
+              placeholder="Search Blogs"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="p-2 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {blogs.map((blog) => (
+            {filteredBlogs.map((blog) => (
               <div key={blog._id} className="border p-4">
                 {blog.image && (
                   <img
@@ -124,15 +138,16 @@ const BlogManagement = () => {
                 )}
                 <h4 className="text-lg font-bold">{blog.title}</h4>
                 <p>{blog.description}</p>
+                {/* <div dangerouslySetInnerHTML={{ __html: blog.content }} /> */}
                 <button
                   onClick={() => handleEdit(blog)}
-                  className="bg-yellow-500 text-white px-3 py-1 mr-2 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+                  className="bg-yellow-500 text-white px-3 py-1 mr-2 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 rounded mt-4"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => openDeleteConfirmation(blog)} // Mở dialog khi click delete
-                  className="bg-red-500 text-white px-3 py-1 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+                  className="bg-red-500 text-white px-3 py-1 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 rounded mt-4"
                 >
                   Delete
                 </button>
