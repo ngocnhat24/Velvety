@@ -14,9 +14,12 @@ export default function LoginPage() {
 
   // Kiểm tra nếu người dùng đã đăng nhập và có token trong localStorage
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      navigate("/about-customer", { state: { token } }); // Chuyển đến About Customer nếu đã có token
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    // const savedPassword = localStorage.getItem("rememberedPassword");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      // setPassword(savedPassword);
+      setRememberMe(true);
     }
   }, [navigate]);
 
@@ -39,21 +42,22 @@ export default function LoginPage() {
         localStorage.removeItem("authToken");
       }
 
-      // Xử lý điều hướng theo vai trò người dùng
-      const roleRedirect = {
-        "Customer": "/about-customer",
-        "Staff": "/staff",
-        "Manager": "/manager",
-        "Admin": "/admin",
-        "Therapist": "/therapist",
-      };
+      // Redirect based on user role
+      const userRole = response.data.role;
+      let redirectUrl = "/";
+      if (userRole === "Manager") {
+        redirectUrl = "/dashboard";
+      } else if (userRole === "Staff") {
+        redirectUrl = "/services";
+      } else if (userRole === "Grapist") {
+        redirectUrl = "/home";
+      } else if (userRole === "Admin") {
+        redirectUrl = "/staff-management";  
+      } else if (userRole === "Customer") {
+        redirectUrl = "/about";
+      }
 
-      const redirectUrl = roleRedirect[role] || "/"; // Nếu không có role hợp lệ, chuyển về trang mặc định
-
-      // Điều hướng đến trang phù hợp sau khi đăng nhập thành công và gửi token qua state
-      setTimeout(() => {
-        navigate(redirectUrl, { state: { token } });
-      }, 1500);
+      navigate(redirectUrl);
     } catch (err) {
       setError(err.response?.data?.message || "Invalid email or password");
     } finally {

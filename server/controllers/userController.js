@@ -5,11 +5,12 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+// Đăng ký tài khoản
 exports.createUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password, roleName, phoneNumber } = req.body;
 
-    // Check if email or phone number already exists
+    // Kiểm tra email hoặc số điện thoại đã tồn tại chưa
     const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
     if (existingUser) {
       return res.status(400).json({
@@ -19,13 +20,13 @@ exports.createUser = async (req, res) => {
       });
     }
 
-    // Hash password
+    // Hash mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate a random verification token
+    // Tạo mã xác thực email
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
-    // Create user
+    // Tạo user
     const user = await User.create({
       firstName,
       lastName,
@@ -33,21 +34,21 @@ exports.createUser = async (req, res) => {
       password: hashedPassword,
       roleName,
       phoneNumber,
-      verified: false, // User is unverified at first
-      verificationToken, // Store the token
+      verified: false,
+      verificationToken,
     });
 
-    // Send verification email
+    // Gửi email xác thực
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL, // Sender email
-        pass: process.env.EMAIL_PASSWORD, // App password (not normal password)
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
 
     const verificationUrl = `http://localhost:5173/verify?token=${verificationToken}`;
-    const mailOptions = {
+    await transporter.sendMail({
       from: process.env.EMAIL,
       to: user.email,
       subject: "Verify Your Email",
@@ -59,9 +60,7 @@ exports.createUser = async (req, res) => {
         </a>
         <p>If you did not sign up, ignore this email.</p>
       `,
-    };
-
-    await transporter.sendMail(mailOptions);
+    });
 
     res.status(201).json({ message: "User registered! Please verify your email." });
   } catch (error) {
@@ -69,41 +68,28 @@ exports.createUser = async (req, res) => {
   }
 };
 
+// Xác thực email
 exports.verifyEmail = async (req, res) => {
   try {
-    console.log("Received Token:", req.query.token);
-
-    const token = req.query.token;
-    if (!token) {
-      return res.status(400).json({ message: "No token provided" });
-    }
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ message: "No token provided" });
 
     const user = await User.findOne({ verificationToken: token });
-    console.log("User Found:", user);
-
-    if (!user) {
-      return res.json({ message: "Email already verified or invalid token." }); // Do not return 400 error
+    if (!user || user.verified) {
+      return res.json({ message: "Email already verified or invalid token." });
     }
 
-    if (user.verified) {
-      return res.json({ message: "Email already verified." });
-    }
-
-    // Verify the user
     user.verified = true;
     user.verificationToken = null;
     await user.save();
-    console.log("User verified:", user.email);
 
     res.json({ message: "Email verified successfully! You can now log in." });
   } catch (error) {
-    console.error("Verification Error:", error);
     res.status(500).json({ message: "Verification failed. Try again." });
   }
 };
 
-
-
+// Lấy danh sách tất cả user
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find().populate('roleId');
@@ -113,6 +99,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+// Lấy user theo ID
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).populate('roleId');
@@ -123,6 +110,7 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+// Cập nhật user
 exports.updateUser = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -133,6 +121,7 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+// Xóa user
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -142,85 +131,75 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Check if user exists
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
 
-    // Check if user is verified
-    if (!user.verified) {
-      return res.status(400).json({ message: "Email not verified" });
-    }
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user.verified) return res.status(400).json({ message: "Email not verified" });
 
-    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
+    console.log("User Data:", user);
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { userId: user._id, role: user.roleName }, 
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-    // Redirect URL
+    console.log("Decoded Token:", jwt.decode(token));
+
     let redirectUrl;
     switch (user.roleName) {
       case "Customer":
-        redirectUrl = "http://localhost:5173/customer";
+        redirectUrl = "/customer";
         break;
       case "Staff":
-        redirectUrl = "http://localhost:5173/staff";
+        redirectUrl = "/staff";
         break;
       case "Manager":
-        redirectUrl = "http://localhost:5173/manager";
-        break;
+        redirectUrl = "/manager";
+        break
       case "Admin":
-        redirectUrl = "http://localhost:5173/admin";
+        redirectUrl = "/dashboard";
         break;
       case "Therapist":
-        redirectUrl = "http://localhost:5173/therapist";
+        redirectUrl = "/therapist";
         break;
       default:
-        redirectUrl = "http://localhost:5173";
+        redirectUrl = "/";
     }
-    res.status(200).json({ token, message: "Login successful" });
+
+    res.status(200).json({ token, role: user.roleName, redirectUrl, message: "Login successful" });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+// Quên mật khẩu
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({ message: "Email has not been registered." });
-    }
+    if (!user) return res.status(404).json({ message: "Email has not been registered." });
 
-    // Generate a reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
-
+    user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
 
-    // Send password reset email
+    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
-      },
+      auth: { user: process.env.EMAIL, pass: process.env.EMAIL_PASSWORD },
     });
 
-    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
-    const mailOptions = {
+    await transporter.sendMail({
       from: process.env.EMAIL,
       to: user.email,
       subject: "Password Reset Request",
@@ -232,9 +211,8 @@ exports.forgotPassword = async (req, res) => {
         </a>
         <p>If you did not request this, please ignore this email.</p>
       `,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
     res.status(200).json({ message: "Password reset link sent to your email." });
 
   } catch (error) {
@@ -242,41 +220,37 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
+// Đặt lại mật khẩu
 exports.resetPassword = async (req, res) => {
   try {
-    const { token } = req.query;  // ✅ Extract token from query, not params
+    const { token } = req.query;
     const { newPassword } = req.body;
 
-    if (!token) {
-      return res.status(400).json({ message: "Invalid request. Token is missing." });
-    }
-
-    // Find the user with the given token and check if it's expired
     const user = await User.findOne({
       resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() }, // Ensures token is still valid
+      resetPasswordExpires: { $gt: Date.now() },
     });
 
-    console.log("User Found:", user ? user.email : "No user found");
+    if (!user) return res.status(400).json({ message: "Invalid or expired token." });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token." });
-    }
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-
-    // Remove reset token and expiration time
+    user.password = await bcrypt.hash(newPassword, 10);
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
-
     await user.save();
 
     res.status(200).json({ message: "Password reset successful. You can now log in." });
 
   } catch (error) {
-    console.error("Reset Password Error:", error);
     res.status(500).json({ error: "Something went wrong. Try again." });
+  }
+};
+
+//logout
+exports.logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "Strict" });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Logout failed. Please try again." });
   }
 };
