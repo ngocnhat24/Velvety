@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ServiceCard from "../../components/ServiceCard";
 
-export default function Services() {
+export default function ServiceGuest() {
   const [services, setServices] = useState([]);
+  const navigate = useNavigate();
 
   // Fetch data from the server
   useEffect(() => {
@@ -20,6 +22,13 @@ export default function Services() {
   }, []);
 
   const handleChoose = (serviceName) => {
+    const token = localStorage.getItem("token"); // Lấy token từ localStorage
+
+    if (!token) {
+      navigate("/login"); // Chuyển hướng về trang login nếu không có token
+      return;
+    }
+
     console.log(`Service chosen: ${serviceName}`);
     // Add your logic for handling the service choice here
   };
@@ -30,30 +39,25 @@ export default function Services() {
 
       {/* Section with background image */}
       <div className="w-full h-[70vh] bg-[url(/images/service_0.png)] bg-cover bg-center bg-no-repeat relative"
-        style={{
-          backgroundAttachment: "fixed"
-        }}>
+        style={{ backgroundAttachment: "fixed" }}>
         <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-['Lato'] text-[90px] font-bold leading-[134.4px] text-[#fff] tracking-[-2.24px] text-center z-[1]">
-          You can choose who ever you want
+          You can choose whoever you want
         </span>
       </div>
 
       {/* Main content section */}
       <div className="w-full max-w-[1490px] h-auto font-['Libre_Franklin'] text-[20px] font-bold leading-[43px] tracking-[1px] relative text-center mx-auto mt-[40px]">
-        <span className="block w-full max-w-[1200px] h-auto justify-center items-start font-['Lato'] text-[60px] font-normal leading-[100px] text-[#000] tracking-[-2.24px] relative z-[2] mx-auto">
+        <span className="block w-full max-w-[1200px] h-auto font-['Lato'] text-[60px] font-normal leading-[100px] text-[#000] tracking-[-2.24px] relative z-[2] mx-auto">
           Don’t leave your skincare routine to chance!
         </span>
 
-        <span className="block w-full max-w-[1200px] h-auto justify-center items-start font-['Lato'] text-[20px] font-normal leading-[38.4px] text-[#000] tracking-[-0.64px] relative z-[3] mt-[42.663px] mx-auto">
-          <span className="text-[30px]">W</span>
-          e believe beautiful skin comes from a long-term approach with a seasonal skincare routine and a healthy lifestyle. Using the right products and applications is key to optimal skin health. Our consultations offer anyone, anywhere, the best advice from our expert team.
+        <span className="block w-full max-w-[1200px] h-auto font-['Lato'] text-[20px] font-normal leading-[38.4px] text-[#000] tracking-[-0.64px] relative z-[3] mt-[42.663px] mx-auto">
+          <span className="text-[30px]">W</span>e believe beautiful skin comes from a long-term approach with a seasonal skincare routine and a healthy lifestyle. Using the right products and applications is key to optimal skin health. Our consultations offer anyone, anywhere, the best advice from our expert team.
         </span>
 
-        <span className="block w-full max-w-[1200px] h-auto justify-center items-start font-['Lato'] text-[20px] font-normal leading-[35.2px] text-[#000] tracking-[-0.59px] relative z-[4] mt-[39.331px] mx-auto">
-          <span className="text-[30px]">D</span>
-          uring our virtual consultations, together we’ll evaluate your skin conditions, lifestyle, current products, and goals with an expert. You’ll then receive a customized product “prescription” as emailed guidelines and/or instructions.
+        <span className="block w-full max-w-[1200px] h-auto font-['Lato'] text-[20px] font-normal leading-[35.2px] text-[#000] tracking-[-0.59px] relative z-[4] mt-[39.331px] mx-auto">
+          <span className="text-[30px]">D</span>uring our virtual consultations, together we’ll evaluate your skin conditions, lifestyle, current products, and goals with an expert. You’ll then receive a customized product “prescription” as emailed guidelines and/or instructions.
         </span>
-
 
         <div className="w-full max-w-[1384px] h-auto relative z-[6] mt-[54px] mx-auto text-center">
           <div className="w-[1000px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat absolute top-0 left-1/2 transform -translate-x-1/2 z-[10]" />
@@ -62,26 +66,20 @@ export default function Services() {
           </span>
         </div>
 
-
-        <span className="block w-full max-w-[1200px] h-auto justify-center items-start font-['Lato'] text-[30px] font-normal leading-[64px] text-[#000] relative text-center z-[7] mt-[37.332px] mx-auto">
+        <span className="block w-full max-w-[1200px] h-auto font-['Lato'] text-[30px] font-normal leading-[64px] text-[#000] relative text-center z-[7] mt-[37.332px] mx-auto">
           Reserve your complimentary virtual skincare service today!
         </span>
       </div>
 
-
       <div className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
-
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
-
 
         <span className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
           Choose Your Service
         </span>
 
-
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
-
 
       {/* Service cards section */}
       <div className="w-full px-4 flex justify-center ">
@@ -98,6 +96,7 @@ export default function Services() {
           ))}
         </div>
       </div>
+
       {/* Footer */}
       <Footer />
     </div>

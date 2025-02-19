@@ -5,8 +5,16 @@ const Navbar = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Kiểm tra xem có token hay không
+  const token = localStorage.getItem('token');
+
   // Check if the current path is "/login" or "/register"
   const isLoginPage = location.pathname === "/login" || location.pathname === "/register";
+
+  // Hàm để lấy đường dẫn với -customer nếu có token
+  const getNavLink = (path) => {
+    return token ? `${path}-customer` : path;
+  };
 
   return (
     <div className="w-full h-[100px] bg-[#F9FAEF] flex items-center justify-between px-6 md:px-12 lg:px-10 shadow-md relative z-10">
@@ -26,35 +34,35 @@ const Navbar = () => {
       {/* Navigation Links */}
       <nav className={`flex-col md:flex-row md:flex gap-6 lg:gap-20 text-[18px] lg:text-[25px] font-semibold z-10 ${isMobileMenuOpen ? 'flex bg-[#F9FAEF] p-4 rounded-lg shadow-lg absolute top-[100px] left-0 right-0' : 'hidden'} md:flex`}>
         <NavLink
-          to="/"
+          to={getNavLink("/")}
           className={({ isActive }) =>
             `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
         >
           About
         </NavLink>
         <NavLink
-          to="/service"
+          to={getNavLink("/service")}
           className={({ isActive }) =>
             `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
         >
           Services
         </NavLink>
         <NavLink
-          to="/blog"
+          to={getNavLink("/blog")}
           className={({ isActive }) =>
             `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
         >
           Blog
         </NavLink>
         <NavLink
-          to="/Consultant"
+          to={getNavLink("/Consultant")}
           className={({ isActive }) =>
             `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
         >
           Consultant
         </NavLink>
         <NavLink
-          to="/quiz"
+          to={getNavLink("/quiz")}
           className={({ isActive }) =>
             `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
         >
