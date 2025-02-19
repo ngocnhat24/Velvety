@@ -13,8 +13,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
+    // const savedPassword = localStorage.getItem("rememberedPassword");
     if (savedEmail) {
       setEmail(savedEmail);
+      // setPassword(savedPassword);
       setRememberMe(true);
     }
   }, []);
@@ -39,30 +41,22 @@ export default function LoginPage() {
         localStorage.removeItem("rememberedEmail");
       }
 
-      let redirectUrl;
-      switch (response.data.roleName) {
-        case "Customer":
-          redirectUrl = "/customer";
-          break;
-        case "Staff":
-          redirectUrl = "/staff";
-          break;
-        case "Manager":
-          redirectUrl = "/dashboard";
-          break;
-        case "Admin":
-          redirectUrl = "/dashboard";
-          break;
-        case "Therapist":
-          redirectUrl = "/therapist";
-          break;
-        default:
-          redirectUrl = "/";
+      // Redirect based on user role
+      const userRole = response.data.role;
+      let redirectUrl = "/";
+      if (userRole === "Manager") {
+        redirectUrl = "/services";
+      } else if (userRole === "Staff") {
+        redirectUrl = "/services";
+      } else if (userRole === "Grapist") {
+        redirectUrl = "/home";
+      } else if (userRole === "Admin") {
+        redirectUrl = "/dashboard";  
+      } else if (userRole === "Customer") {
+        redirectUrl = "/about";
       }
 
-      setTimeout(() => {
-        navigate(redirectUrl);
-      }, 2000);
+      navigate(redirectUrl);
     } catch (err) {
       setError("Invalid email or password");
       console.error("Login error:", err);
