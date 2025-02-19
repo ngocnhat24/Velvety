@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
-export default function About() {
+export default function AboutGuest() {
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative mx-auto my-0">
       <Navbar />
