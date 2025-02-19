@@ -46,13 +46,13 @@ export default function LoginPage() {
       const userRole = response.data.role;
       let redirectUrl = "/";
       if (userRole === "Manager") {
-        redirectUrl = "/services";
+        redirectUrl = "/dashboard";
       } else if (userRole === "Staff") {
         redirectUrl = "/services";
       } else if (userRole === "Grapist") {
         redirectUrl = "/home";
       } else if (userRole === "Admin") {
-        redirectUrl = "/dashboard";  
+        redirectUrl = "/staff-management";  
       } else if (userRole === "Customer") {
         redirectUrl = "/about";
       }
