@@ -54,6 +54,7 @@ const QuestionManagement = () => {
   const [editDialog, setEditDialog] = useState({ open: false, question: null });
   const [newQuestion, setNewQuestion] = useState("");
   const [newAnswerOptions, setNewAnswerOptions] = useState([{ answerText: "", weight: 0 }]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetch("/api/questions")
@@ -104,14 +105,14 @@ const QuestionManagement = () => {
       alert("Question text cannot be empty!");
       return;
     }
-  
+
     if (newAnswerOptions.some((option) => option.answerText.trim() === "")) {
       alert("All answer options must have text!");
       return;
     }
-  
+
     const questionData = { questionText: newQuestion, answerOptions: newAnswerOptions };
-  
+
     // Kiểm tra nếu đang chỉnh sửa câu hỏi
     if (editDialog.question) {
       console.log("Updating question:", questionData); // Kiểm tra dữ liệu đang sửa
@@ -164,7 +165,10 @@ const QuestionManagement = () => {
         });
     }
   };
-  
+
+  const filteredQuestions = questions.filter((question) =>
+    question.questionText.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f4f6f8" }}>
@@ -173,9 +177,20 @@ const QuestionManagement = () => {
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Question Management
         </Typography>
-        <Button variant="contained" color="primary" sx={{ mb: "20px" }} onClick={() => setEditDialog({ open: true, question: null })}>
-          Add New Question
-        </Button>
+        <Box sx={{ display: "flex", alignItems: "center", mb: "20px" }}>
+          <Button variant="contained" color="primary" onClick={() => setEditDialog({ open: true, question: null })}>
+            Add New Question
+          </Button>
+          <TextField
+            label="Search Questions"
+            variant="outlined"
+            size="small"
+            sx={{ ml: 2 }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </Box>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
             <CircularProgress />
@@ -186,7 +201,7 @@ const QuestionManagement = () => {
           </Alert>
         ) : (
           <Grid container spacing={3}>
-            {questions.map((question) => (
+            {filteredQuestions.map((question) => (
               <Grid item xs={12} sm={6} key={question._id}>
                 <QuestionCard question={question} onDelete={handleDelete} onEdit={handleEdit} />
               </Grid>

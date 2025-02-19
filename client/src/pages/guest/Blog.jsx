@@ -64,7 +64,7 @@ export default function Blog() {
             key={post._id}
             image={post.image}
             title={post.title}
-description={post.description}
+            description={post.description}
             createdDate={post.createdDate}
             onReadMore={() => handleReadMore(post._id)}
           />

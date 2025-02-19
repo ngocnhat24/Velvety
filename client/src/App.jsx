@@ -19,7 +19,7 @@ import ResetPassword from './pages/guest/ResetPassword.jsx';
 import Consultant from './pages/guest/Consultant.jsx';
 import BlogManagement from './pages/manager/BlogManagement.jsx';
 import QuestionManagement from './pages/manager/QuestionManagement.jsx';
-import Calendar from './pages/guest/Calendar.jsx'; // Import Calendar component
+import Calendar from './pages/guest/Calendar.jsx';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -46,7 +46,7 @@ function App() {
       <Route path='/consultant' element={<Consultant />} />
       <Route path='/blog-management' element={<BlogManagement />} />
       <Route path='/question-management' element={<QuestionManagement />} />
-      <Route path='/calendar' element={<Calendar />} /> {/* Add route for Calendar */}
+      <Route path='/calendar' element={<Calendar />} />
     </Routes>
   );
 }
