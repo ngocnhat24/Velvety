@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, Card, CardContent, Button, TextField } from "@mui/material";
 
-const BookingPageGuest = () => {
+const BookingPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -58,4 +58,4 @@ const BookingPageGuest = () => {
   );
 };
 
-export default BookingPageGuest;
+export default BookingPage;

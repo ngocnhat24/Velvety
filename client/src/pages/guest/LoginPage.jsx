@@ -9,8 +9,10 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Kiểm tra nếu người dùng đã đăng nhập và có token trong localStorage
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
     // const savedPassword = localStorage.getItem("rememberedPassword");
@@ -19,26 +21,25 @@ export default function LoginPage() {
       // setPassword(savedPassword);
       setRememberMe(true);
     }
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
 
     try {
-      const response = await axios.post("/api/users/login", {
-        email,
-        password,
-      });
+      const response = await axios.post("/api/users/login", { email, password });
+      const { token, message, role } = response.data;
 
-      // Handle successful login
-      console.log("Login successful:", response.data);
-      setSuccess("Login successful!");
+      setSuccess(message || "Login successful!");
 
-      // Store email if Remember Me is checked
+      // Lưu token vào localStorage nếu người dùng chọn nhớ
       if (rememberMe) {
-        localStorage.setItem("rememberedEmail", email);
+        localStorage.setItem("authToken", token);
       } else {
-        localStorage.removeItem("rememberedEmail");
+        localStorage.removeItem("authToken");
       }
 
       // Redirect based on user role
@@ -58,29 +59,27 @@ export default function LoginPage() {
 
       navigate(redirectUrl);
     } catch (err) {
-      setError("Invalid email or password");
-      console.error("Login error:", err);
+      setError(err.response?.data?.message || "Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
       <Navbar />
-
       <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
         <div className="absolute h-screen inset-0 bg-[url(/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
-
         <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-8">
           <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8">
             Login
           </h2>
-
           {error && <div className="text-center text-red-500 mb-4">{error}</div>}
           {success && <div className="text-center text-green-500 mb-4">{success}</div>}
 
           <form className="flex flex-col gap-4 md:gap-6" onSubmit={handleSubmit}>
             <input
-              type="text"
+              type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -111,9 +110,11 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full h-[50px] bg-[#c86c79] text-white font-bold rounded-lg shadow hover:bg-[#b25668] transition duration-300"
+              disabled={loading}
+              className={`w-full h-[50px] text-white font-bold rounded-lg shadow transition duration-300
+                ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#c86c79] hover:bg-[#b25668]'}`}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 

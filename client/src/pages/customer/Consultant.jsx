@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
-export default function ConsultantGuest() {
+export default function ConsultantCustomer() {
   const navigate = useNavigate();
   const [visibleNoteIndex, setVisibleNoteIndex] = useState(null);
 
@@ -40,18 +40,6 @@ export default function ConsultantGuest() {
 
   const handleViewMore = (index) => {
     setVisibleNoteIndex(visibleNoteIndex === index ? null : index);
-  };
-
-  const handleBookingNow = () => {
-    // Kiểm tra xem có token trong localStorage không
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      // Nếu không có token, điều hướng người dùng đến trang đăng nhập
-      navigate("/login");
-    } else {
-      // Nếu có token, điều hướng người dùng đến trang booking service
-      navigate("/service");
-    }
   };
 
   return (
@@ -94,7 +82,7 @@ export default function ConsultantGuest() {
                 </button>
                 <button
                   className="w-[120px] h-[36px] bg-[#ffc0cb] rounded-full border-solid border-[1px] flex items-center justify-center hover:bg-[#ff8a8a] transition duration-300"
-                  onClick={handleBookingNow}
+                  onClick={() => navigate("/service")}
                 >
                   <span className="text-[16px] font-bold leading-[20px] text-[#C54759]">
                     Booking Now

@@ -8,13 +8,34 @@ export default function ServiceManagement() {
   const [editService, setEditService] = useState(null);
   const [newService, setNewService] = useState({ name: "", description: "", price: "", image: "" });
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredServices, setFilteredServices] = useState([]);
+  const [sortOrder, setSortOrder] = useState("default");
 
   useEffect(() => {
     axios.get("/api/services")
-      .then((res) => setServices(res.data))
+      .then((res) => {
+        setServices(res.data);
+        setFilteredServices(res.data);
+      })
       .catch((err) => console.error("Lỗi khi lấy dữ liệu:", err))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    let sortedServices = [...services];
+    if (sortOrder === "lowToHigh") {
+      sortedServices.sort((a, b) => a.price - b.price);
+    } else if (sortOrder === "highToLow") {
+      sortedServices.sort((a, b) => b.price - a.price);
+    }
+    setFilteredServices(
+      sortedServices.filter(service =>
+        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm, services, sortOrder]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa dịch vụ này?")) return;
@@ -43,7 +64,7 @@ export default function ServiceManagement() {
         name: editService.name,
         description: editService.description,
         price: editService.price,
-        image: editService.image, // Thêm trường image
+        image: editService.image,
       });
 
       setServices((prevServices) =>
@@ -56,7 +77,6 @@ export default function ServiceManagement() {
     }
   };
 
-  // Xử lý thêm dịch vụ mới
   const handleAddService = async () => {
     if (!newService.name || !newService.description || !newService.price || !newService.image) {
       alert("Vui lòng nhập đầy đủ thông tin!");
@@ -79,9 +99,26 @@ export default function ServiceManagement() {
       <div className="flex-1 p-6 bg-white">
         <h2 className="text-2xl font-bold mb-4">Service Management</h2>
 
-        {/* Nút thêm dịch vụ */}
+        <div className="flex mb-4 space-x-4">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search services..."
+          />
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="p-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="lowToHigh">Price: Low to High</option>
+            <option value="highToLow">Price: High to Low</option>
+          </select>
+        </div>
+
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-700"
+          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-700 shadow-sm"
           onClick={() => setIsAddModalOpen(true)}
         >
           Add Service
@@ -99,12 +136,12 @@ export default function ServiceManagement() {
                 <th className="border p-2">Service Name</th>
                 <th className="border p-2">Description</th>
                 <th className="border p-2">Price</th>
-                <th className="border p-2">Image</th> {/* Cột mới */}
+                <th className="border p-2">Image</th>
                 <th className="border p-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {services.map((service) => (
+              {filteredServices.map((service) => (
                 <tr key={service._id} className="text-center border-b">
                   <td className="border p-2">{service._id}</td>
                   <td className="border p-2">{service.name}</td>
@@ -112,7 +149,7 @@ export default function ServiceManagement() {
                   <td className="border p-2">{service.price}</td>
                   <td className="border p-2">
                     {service.image ? <img src={service.image} alt={service.name} className="w-16 h-16 object-cover" /> : "No Image"}
-                  </td> {/* Hiển thị ảnh */}
+                  </td>
                   <td className="border p-2">
                     <button
                       className="bg-red-500 text-white px-3 py-1 rounded mr-2 hover:bg-red-700"
@@ -133,7 +170,6 @@ export default function ServiceManagement() {
           </table>
         )}
 
-        {/* Modal chỉnh sửa dịch vụ */}
         {editService && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg w-1/3">
@@ -173,7 +209,6 @@ export default function ServiceManagement() {
           </div>
         )}
 
-        {/* Modal thêm dịch vụ */}
         {isAddModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg w-1/3">
