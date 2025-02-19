@@ -48,10 +48,10 @@ export default function LoginPage() {
           redirectUrl = "/staff";
           break;
         case "Manager":
-          redirectUrl = "/manager";
+          redirectUrl = "/dashboard";
           break;
         case "Admin":
-          redirectUrl = "/admin";
+          redirectUrl = "/dashboard";
           break;
         case "Therapist":
           redirectUrl = "/therapist";

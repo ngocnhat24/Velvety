@@ -10,7 +10,7 @@ const questionRoutes = require('./questionRoutes');
 const managerRoutes = require("./managerRoutes");
 const calendarRoutes = require("./calendarRoutes");
 const consultantRoutes = require("./consultantRoutes");
-
+const authRoutes = require('./authRoutes');
 const router = express.Router();
 
 router.use('/users', userRoutes);
@@ -24,6 +24,7 @@ router.use('/questions', questionRoutes);
 router.use('/managers', managerRoutes);
 router.use('/calendars', calendarRoutes);
 router.use('/consultants', consultantRoutes);
+router.use('/auth', authRoutes);
 
 module.exports = router;
 
