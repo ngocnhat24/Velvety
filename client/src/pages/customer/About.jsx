@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import NavbarCus from "../../components/NavbarCus";
 
 export default function AboutCustomer() {
   const location = useLocation();
@@ -25,7 +25,7 @@ export default function AboutCustomer() {
 
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative mx-auto my-0">
-      <Navbar />
+      <NavbarCus />
       <div
         className="w-full h-[50vh] bg-[url(/images/about_1.png)] bg-cover bg-no-repeat relative z-[1]"
         style={{

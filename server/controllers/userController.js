@@ -14,8 +14,8 @@ exports.createUser = async (req, res) => {
     const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
     if (existingUser) {
       return res.status(400).json({
-        message: existingUser.email === email 
-          ? "Email already in use" 
+        message: existingUser.email === email
+          ? "Email already in use"
           : "Phone number already in use",
       });
     }
@@ -145,7 +145,7 @@ exports.loginUser = async (req, res) => {
     console.log("User Data:", user);
 
     const token = jwt.sign(
-      { userId: user._id, role: user.roleName }, 
+      { userId: user._id, role: user.roleName },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -248,7 +248,7 @@ exports.resetPassword = async (req, res) => {
 //logout
 exports.logoutUser = async (req, res) => {
   try {
-    res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "Strict" });
+    res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "Lax" });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     res.status(500).json({ error: "Logout failed. Please try again." });
