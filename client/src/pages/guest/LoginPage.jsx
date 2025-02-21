@@ -52,9 +52,9 @@ export default function LoginPage() {
       } else if (userRole === "Grapist") {
         redirectUrl = "/home";
       } else if (userRole === "Admin") {
-        redirectUrl = "/staff-management";  
+        redirectUrl = "/staff-management";
       } else if (userRole === "Customer") {
-        redirectUrl = "/about";
+        redirectUrl = "/about-customer";
       }
 
       navigate(redirectUrl);
