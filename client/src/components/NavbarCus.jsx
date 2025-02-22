@@ -13,20 +13,21 @@ const NavbarCus = () => {
 
     const getNavLink = (path) => token ? `${path}-customer` : path;
 
+    //Logout
     const handleLogout = async () => {
         try {
             const response = await fetch("http://localhost:5000/api/users/logout", {
                 method: "POST",
-                credentials: "include", // Cho phép gửi cookie nếu có
+                credentials: "include",
                 headers: { "Content-Type": "application/json" }
             });
 
-            const data = await response.json();
-
             if (response.ok) {
-                localStorage.removeItem("token"); // Xóa token trên frontend
-                navigate("/login"); // Điều hướng về trang login
+                localStorage.removeItem("token");
+                sessionStorage.clear();
+                navigate("/login");
             } else {
+                const data = await response.json();
                 console.error("Logout failed:", data.error);
             }
         } catch (error) {
