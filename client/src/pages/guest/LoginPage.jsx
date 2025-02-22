@@ -55,6 +55,8 @@ export default function LoginPage() {
         redirectUrl = "/staff-management";
       } else if (userRole === "Customer") {
         redirectUrl = "/about-customer";
+      }else if (userRole === "11") {
+        redirectUrl = "/11";
       }
 
       navigate(redirectUrl);
