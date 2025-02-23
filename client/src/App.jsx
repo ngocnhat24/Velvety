@@ -44,15 +44,15 @@ function App() {
       <Route path='/therapist-management' element={<TherapistManagement />} />
       <Route path='/service-management' element={<ServiceManagement />} />
       <Route path='/staff-management' element={<StaffManagement />} />
-      <Route path='/dashboard' element={<Dashboard />} />
-      <Route path='/booking' element={<BookingPageGuest />} />
-      <Route path='/booking-customer' element={<BookingPageCustomer />} />
-      <Route path='reset-password' element={<ResetPassword />} />
-      <Route path='consultant' element={<ConsultantGuest />} />
-      <Route path='consultant-customer' element={<ConsultantCustomer />} />
-      <Route path='blog-management' element={<BlogManagement />} />
-      <Route path='question-management' element={<QuestionManagement />} />
-      <Route path='about-customer' element={<AboutCustomer />} />
+      <Route path='/dashboard' element={<Dashboard/>} />
+      <Route path='/booking' element={<BookingPageGuest/>} />
+      <Route path='/booking-customer' element={<BookingPageCustomer/>} />
+      <Route path='reset-password' element={<ResetPassword/>} />
+      <Route path='consultant' element={<ConsultantGuest/>} />
+      <Route path='consultant-customer' element={<ConsultantCustomer/>} />
+      <Route path='blog-management' element={<BlogManagement/>} />
+      <Route path='question-management' element={<QuestionManagement/>} />
+      <Route path='about-customer' element={<AboutCustomer/>} />
       <Route path='calendar' element={<Calendar />} />
     </Routes>
 

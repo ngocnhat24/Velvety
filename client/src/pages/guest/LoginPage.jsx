@@ -68,12 +68,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto">
+    <div className="main-container w-full h-screen bg-[#f9faef] relative mx-auto ">
       <Navbar />
       <div className="flex items-center justify-center h-[calc(100%-121px)] relative">
         <div className="absolute h-screen inset-0 bg-[url(/images/login.png)] bg-cover bg-center bg-no-repeat opacity-50 z-0" />
         <div className="relative z-10 w-full max-w-[400px] bg-white bg-opacity-90 rounded-xl shadow-lg p-6 md:p-8">
-          <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8">
+          <h2 className="text-center text-2xl font-bold text-[#c86c79] uppercase mb-6 md:mb-8 ">
             Login
           </h2>
           {error && <div className="text-center text-red-500 mb-4">{error}</div>}

@@ -32,7 +32,7 @@ const Navbar = () => {
       </button>
 
       {/* Navigation Links */}
-      <nav className={`flex-col md:flex-row md:flex gap-6 lg:gap-20 text-[18px] lg:text-[25px] font-semibold z-10 ${isMobileMenuOpen ? 'flex bg-[#F9FAEF] p-4 rounded-lg shadow-lg absolute top-[100px] left-0 right-0' : 'hidden'} md:flex`}>
+      <nav className={`flex-col md:flex-row md:flex gap-6 lg:gap-20 pacifico-regular text-[18px] lg:text-[25px] font-semibold z-10 ${isMobileMenuOpen ? 'flex bg-[#F9FAEF] p-4 rounded-lg shadow-lg absolute top-[100px] left-0 right-0' : 'hidden'} md:flex`}>
         <NavLink
           to={getNavLink("/")}
           className={({ isActive }) =>
@@ -72,7 +72,7 @@ const Navbar = () => {
 
       {/* Conditional Login Button */}
       {!isLoginPage && (
-        <a href="/login" className="hidden md:block bg-[#e78999] text-[#faf5f0] text-[18px] lg:text-[25px] font-semibold px-4 lg:px-6 py-2 rounded-full shadow-sm hover:opacity-80">
+        <a href="/login" className="hidden md:block bg-[#e78999] text-[#faf5f0] text-[18px] lg:text-[25px] pacifico-regular font-semibold px-4 lg:px-6 py-2 rounded-full shadow-sm hover:opacity-80">
           Login
         </a>
       )}

@@ -21,26 +21,19 @@ export default function ServiceGuest() {
       });
   }, []);
 
-  const handleChoose = (serviceName) => {
-    const token = localStorage.getItem("token"); // Lấy token từ localStorage
 
-    if (!token) {
-      navigate("/login"); // Chuyển hướng về trang login nếu không có token
-      return;
-    }
-
-    console.log(`Service chosen: ${serviceName}`);
-    // Add your logic for handling the service choice here
+  const handleChoose = (serviceId) => {
+    navigate(`/services/${serviceId}`);
   };
 
   return (
-    <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0">
+    <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0 -smooth ">
       <Navbar />
 
       {/* Section with background image */}
       <div className="w-full h-[70vh] bg-[url(/images/service_0.png)] bg-cover bg-center bg-no-repeat relative"
         style={{ backgroundAttachment: "fixed" }}>
-        <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-['Lato'] text-[90px] font-bold leading-[134.4px] text-[#fff] tracking-[-2.24px] text-center z-[1]">
+        <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-outline-2 -smooth pacifico-regular text-[90px] font-bold leading-[134.4px] text-[#fff] tracking-[-2.24px] text-center z-[1]">
           You can choose whoever you want
         </span>
       </div>
@@ -84,14 +77,14 @@ export default function ServiceGuest() {
       {/* Service cards section */}
       <div className="w-full px-4 flex justify-center ">
         <div className="w-full max-w-[1200px] px-4 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-[60px] gap-y-[20px] mt-4 mb-[40px] mx-auto place-items-center">
-          {services.map((service, index) => (
+          {services.map((service) => (
             <ServiceCard
-              key={index}
+              key={service._id}
               image={service.image}
               name={service.name}
               description={service.description}
               price={service.price}
-              onChoose={() => handleChoose(service.name)}
+              onChoose={() => handleChoose(service._id)}
             />
           ))}
         </div>

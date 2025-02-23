@@ -45,6 +45,60 @@
   100% { transform: rotate(360deg); }
 }
 
+@layer base {
+  .font-outline-2 {
+    color: white;
+   text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+     
+  }
+  .font-outline-4 {
+    -webkit-text-stroke: 4px black;
+  }
+}
+
+.meow-script-regular {
+  font-family: "Meow Script", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.pacifico-regular {
+  font-family: "Pacifico", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.ole-regular {
+  font-family: "Ole", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.sigmar-regular {
+  font-family: "Sigmar", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.league-script-regular {
+  font-family: "League Script", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.-smooth {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; 
+}
+
+.-autosmooth {
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
 
 
   

@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom'; // for navigation
 
 export default function Blog() {
   const [blogPosts, setBlogPosts] = useState([]);
-  const [selectedPost, setSelectedPost] = useState(null);
   const navigate = useNavigate(); // Hook to programmatically navigate
 
   // Fetch blog posts data from server
@@ -37,7 +36,7 @@ export default function Blog() {
           backgroundSize: "cover"
         }}>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-[1]">
-          <span className="block font-['Lato'] text-[70px] font-bold leading-[100px] text-[#fff] whitespace-nowrap">
+          <span className="block font-['Lato'] text-[70px] font-bold leading-[100px] pacifico-regular font-outline-2 -smooth text-[#fff] whitespace-nowrap">
             Expert Skincare Tips, Trends, & Insights
           </span>
           <span className="block font-['Lato'] text-[23px] font-normal leading-[30px] text-[#fff] mt-4 px-4 mx-auto">

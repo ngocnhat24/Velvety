@@ -59,7 +59,7 @@ export default function ConsultantGuest() {
       <Navbar />
       <div className="w-full h-[97.333px] bg-[#ffc0cb] relative z-[2] flex items-center justify-center">
         <div className="flex items-center">
-          <span className="text-[32px] font-bold leading-[32.01px] text-[#C54759] text-center whitespace-nowrap z-[2]">
+          <span className="text-[32px] font-bold leading-[32.01px] text-[#C54759] pacifico-regular -smooth text-center whitespace-nowrap z-[2]">
             Choose your consultant
           </span>
         </div>
@@ -110,7 +110,7 @@ export default function ConsultantGuest() {
           className="w-[169px] h-[44px] bg-[#ffc0cb] rounded-full border-solid border-[1.333px] flex items-center justify-center hover:bg-[#ff8a8a] transition duration-300"
           onClick={() => navigate("/service")}
         >
-          <span className="text-[20px] font-bold leading-[24px] text-[#C54759]">
+          <span className="text-[20px] font-bold leading-[24px] text-[#C54759] pacifico-regular">
             Close
           </span>
         </button>

@@ -11,7 +11,7 @@ export default function AboutGuest() {
           backgroundAttachment: "fixed"
         }}
       >
-        <span className="flex w-full h-auto justify-center items-start font-['Lato'] text-[10vw] font-bold leading-[180px] text-[#fff] tracking-[-2.23px] absolute top-[20%] left-[50%] transform -translate-x-1/2 text-center whitespace-nowrap z-[1]">
+        <span className="flex w-full h-auto justify-center items-start pacifico-regular text-[10vw] font-bold leading-[220px] font-outline-2 -smooth text-[#ffffff] tracking-[-2.23px] absolute top-[20%] left-[50%] transform -translate-x-1/2 text-center whitespace-nowrap z-[1]">
           Our Story
         </span>
       </div>

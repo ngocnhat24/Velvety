@@ -78,7 +78,7 @@ const Quiz = () => {
     <div className="bg-gray-100 min-h-screen flex flex-col items-center">
       <Navbar />
       <div className="bg-white p-6 m-8 rounded-xl shadow-lg max-w-3xl w-full">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
+        <h2 className="text-3xl font-semibold text-center pacifico-regular text-gray-800 mb-8">
           Skincare Quiz
         </h2>
         
@@ -122,7 +122,7 @@ const Quiz = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center pacifico-regular">
           {currentQuestionIndex > 0 && (
             <button
               className="py-2 px-6 bg-[#f1baba] text-white rounded-lg hover:bg-[#e78999] transition"
@@ -157,7 +157,7 @@ const Quiz = () => {
       {quizResult && (
         <div className="fixed inset-0 bg-[#faf5f0] bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 pacifico-regular">
               Your Skin Type: {quizResult.skinType}
             </h3>
             <p>{quizResult.recommendation}</p>
