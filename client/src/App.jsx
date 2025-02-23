@@ -23,11 +23,12 @@ import ConsultantGuest from './pages/guest/Consultant.jsx';
 import ConsultantCustomer from './pages/customer/Consultant.jsx';
 import ServiceGuest from './pages/guest/Services.jsx';
 import ServiceCustomer from './pages/customer/Services.jsx';
+import Calendar from './pages/customer/Calendar.jsx';
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-axios.defaults.withCredentials = true; 
+axios.defaults.withCredentials = true;
 
 function App() {
-  
+
   return (
     <Routes>
       <Route index element={<AboutGuest />} />
@@ -36,22 +37,23 @@ function App() {
       <Route path='/service' element={<ServiceGuest />} />
       <Route path='/service-customer' element={<ServiceCustomer />} />
       <Route path='/register' element={<RegisterPage />} />
-      <Route path='/forgot-password' element={<Forgotpassword/>} />
+      <Route path='/forgot-password' element={<Forgotpassword />} />
       <Route path='/quiz' element={<Quiz />} />
-      <Route path='/verify' element={<VerifyEmailPage/>} />
+      <Route path='/verify' element={<VerifyEmailPage />} />
       <Route path='/blog/:id' element={<BlogDetail />} />
-      <Route path='/therapist-management' element={<TherapistManagement/>} />
+      <Route path='/therapist-management' element={<TherapistManagement />} />
       <Route path='/service-management' element={<ServiceManagement />} />
       <Route path='/staff-management' element={<StaffManagement />} />
-      <Route path='/dashboard' element={<Dashboard/>} />
-      <Route path='/booking' element={<BookingPageGuest/>} />
-      <Route path='/booking-customer' element={<BookingPageCustomer/>} />
-      <Route path='reset-password' element={<ResetPassword/>} />
-      <Route path='consultant' element={<ConsultantGuest/>} />
-      <Route path='consultant-customer' element={<ConsultantCustomer/>} />
-      <Route path='blog-management' element={<BlogManagement/>} />
-      <Route path='question-management' element={<QuestionManagement/>} />
-      <Route path='about-customer' element={<AboutCustomer/>} />
+      <Route path='/dashboard' element={<Dashboard />} />
+      <Route path='/booking' element={<BookingPageGuest />} />
+      <Route path='/booking-customer' element={<BookingPageCustomer />} />
+      <Route path='reset-password' element={<ResetPassword />} />
+      <Route path='consultant' element={<ConsultantGuest />} />
+      <Route path='consultant-customer' element={<ConsultantCustomer />} />
+      <Route path='blog-management' element={<BlogManagement />} />
+      <Route path='question-management' element={<QuestionManagement />} />
+      <Route path='about-customer' element={<AboutCustomer />} />
+      <Route path='calendar' element={<Calendar />} />
     </Routes>
 
   );
