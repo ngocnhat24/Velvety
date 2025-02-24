@@ -1,4 +1,6 @@
 import './App.css'
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route } from "react-router-dom";
 import LoginPage from './pages/guest/LoginPage.jsx';
 import Blog from './pages/guest/Blog.jsx';
@@ -30,7 +32,10 @@ axios.defaults.withCredentials = true;
 function App() {
 
   return (
-    <Routes>
+    <div>
+       <ToastContainer position="top-right" autoClose={3000} />
+
+       <Routes>
       <Route index element={<AboutGuest />} />
       <Route path='/login' element={<LoginPage />} />
       <Route path='/blog' element={<Blog />} />
@@ -55,6 +60,9 @@ function App() {
       <Route path='about-customer' element={<AboutCustomer/>} />
       <Route path='calendar' element={<Calendar />} />
     </Routes>
+
+    </div>
+   
 
   );
 }

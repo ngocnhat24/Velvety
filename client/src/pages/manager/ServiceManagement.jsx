@@ -1,324 +1,185 @@
-import React, { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useForm } from "react-hook-form";
 import Sidebar from "../../components/ManagerSidebar";
-import ReactQuill from 'react-quill'; // Import react-quill
-import 'react-quill/dist/quill.snow.css'; // Import CSS cho quill
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function ServiceManagement() {
+const ServiceManagement = () => {
   const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editService, setEditService] = useState(null);
-  const [newService, setNewService] = useState({ name: "", description: "", detaildescription: "", price: "", image: "", treatmentsteps: "", resultimage: "", sensationimage: "", posttreatmentcare: "" });
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredServices, setFilteredServices] = useState([]);
-  const [sortOrder, setSortOrder] = useState("default");
+  const [editingService, setEditingService] = useState(null);
+  const { register, handleSubmit, reset, setValue, watch } = useForm({
+    defaultValues: {
+      detaildescription: "",
+      treatmentsteps: "",
+      posttreatmentcare: "",
+    }});
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  
 
   useEffect(() => {
-    axios.get("/api/services")
-      .then((res) => {
-        setServices(res.data);
-        setFilteredServices(res.data);
-      })
-      .catch((err) => console.error("Error fetching services:", err))
-      .finally(() => setLoading(false));
+    fetchServices();
   }, []);
 
   useEffect(() => {
-    let sortedServices = [...services];
-    if (sortOrder === "lowToHigh") {
-      sortedServices.sort((a, b) => a.price - b.price);
-    } else if (sortOrder === "highToLow") {
-      sortedServices.sort((a, b) => b.price - a.price);
+    console.log("Editing Service Data:", editingService);
+  }, [editingService]);
+
+  useEffect(() => {
+    if (editingService) {
+      setValue("detaildescription", editingService.detaildescription || "");
+      setValue("treatmentsteps", editingService.treatmentsteps || ""); 
+      setValue("posttreatmentcare", editingService.posttreatmentcare || ""); 
     }
-    setFilteredServices(
-      sortedServices.filter(service =>
-        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [searchTerm, services, sortOrder]);
+  }, [editingService, setValue]);  // Depend on `editingService` and `setValue`
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) return;
-
+  const fetchServices = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/services/${id}`);
-      setServices((prevServices) => prevServices.filter(service => service._id !== id));
-    } catch (err) {
-      console.error("Lỗi khi xóa dịch vụ:", err);
+      const response = await axios.get("/api/services");
+      setServices(response.data);
+    } catch (error) {
+      console.error("Error fetching services", error);
+      toast.error("Failed to load services.");
     }
   };
 
-  const openEditModal = (service) => {
-    setEditService(service);
-  };
-
-  const closeEditModal = () => {
-    setEditService(null);
-  };
-
-  const handleUpdate = async () => {
-    if (!editService) return;
-
+  const onSubmit = async (data) => {
     try {
-      const res = await axios.put(`api/services/${editService._id}`, {
-        name: editService.name,
-        description: editService.description,
-        detaildescription: editService.detaildescription,
-        price: editService.price,
-        image: editService.image,
-        effectimage: editService.effectimage,
-        treatmentsteps: editService.treatmentsteps,
-        resultimage: editService.resultimage,
-        sensationimage: editService.sensationimage,
-        posttreatmentcare: editService.posttreatmentcare
-      });
-
-      setServices((prevServices) =>
-        prevServices.map(service => (service._id === editService._id ? res.data : service))
-      );
-
-      closeEditModal();
-    } catch (err) {
-      console.error("Error updating service:", err);
+      if (editingService) {
+        await axios.put(`/api/services/${editingService._id}`, data);
+        toast.success("Service updated successfully!");
+      } else {
+        await axios.post("/api/services", data);
+        toast.success("Service created successfully!");
+      }
+      reset();
+      setEditingService(null);
+      fetchServices();
+    } catch (error) {
+      console.error("Error saving service", error);
+      toast.error("Failed to save service.");
     }
   };
 
-  const handleAddService = async () => {
-    if (!newService.name || !newService.description || !newService.price || !newService.image) {
-      alert("Please enter all required fields.");
-      return;
-    }
+  const handleEdit = (service) => {
+    setEditingService(service);
+    reset(); // Clear previous state completely
+    setTimeout(() => {
+      setValue("name", service.name || "");
+      setValue("price", service.price || "");
+      setValue("image", service.image || "");
+      setValue("effectimage", service.effectimage || "");
+      setValue("resultimage", service.resultimage || "");
+      setValue("sensationimage", service.sensationimage || "");
+      setValue("description", service.description || "");
+      setValue("detaildescription", service.detaildescription || "");
+      setValue("treatmentsteps", service.treatmentsteps || ""); 
+      setValue("posttreatmentcare", service.posttreatmentcare || ""); 
+    }, 0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
+  const handleDelete = async () => {
     try {
-      const res = await axios.post("/api/services", newService);
-      setServices([...services, res.data]);
-      setIsAddModalOpen(false);
-      setNewService({ name: "", description: "", detaildescription: "", price: "", image: "", effectimage: "", treatmentsteps: "", resultimage: "", sensationimage: "", posttreatmentcare: ""  });
-    } catch (err) {
-      console.error("Error adding service:", err);
+      await axios.delete(`/api/services/${serviceToDelete._id}`);
+      toast.success("Service deleted successfully!");
+      fetchServices();
+      setOpenDeleteDialog(false);
+    } catch (error) {
+      console.error("Error deleting service", error);
+      toast.error("Failed to delete service.");
     }
   };
+
+  const openDeleteConfirmation = (service) => {
+    setServiceToDelete(service);
+    setOpenDeleteDialog(true);
+  };
+
+  const closeDeleteConfirmation = () => {
+    setOpenDeleteDialog(false);
+    setServiceToDelete(null);
+  };
+
+  const filteredServices = services
+    .filter(service => service.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+
+    
 
   return (
-    <div className="flex h-screen">
+    <div className="flex">
       <Sidebar />
-      <div className="flex-1 p-6 bg-white">
+      <div className="p-6 w-full">
+        <ToastContainer />
         <h2 className="text-2xl font-bold mb-4">Service Management</h2>
-
-        <div className="flex mb-4 space-x-4">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Search services..."
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-gray-100 p-4 rounded">
+          <input {...register("name", { required: true })} placeholder="Name" className="w-full p-2 border" />
+          <input {...register("price", { required: true })} placeholder="Price" className="w-full p-2 border" />
+          <input {...register("image")} placeholder="Image URL" className="w-full p-2 border" />
+          {editingService?.image && <img src={editingService.image} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
+          <input {...register("effectimage")} placeholder="Effect Image URL" className="w-full p-2 border" />
+          <input {...register("resultimage")} placeholder="Result Image URL" className="w-full p-2 border" />
+          <input {...register("sensationimage")} placeholder="Sensation Image URL" className="w-full p-2 border" />
+          <input {...register("description")} placeholder="Description" className="w-full p-2 border" />
+          <ReactQuill
+            value={watch("detaildescription") || ""}
+            onChange={(value) => setValue("detaildescription", value)}
+            placeholder="Detailed Description"
           />
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className="p-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="lowToHigh">Price: Low to High</option>
-            <option value="highToLow">Price: High to Low</option>
-          </select>
+          <ReactQuill
+            value={watch("treatmentsteps") || ""}
+            onChange={(value) => setValue("treatmentsteps", value)}
+            placeholder="Treatment Steps"
+          />
+          <ReactQuill
+            value={watch("posttreatmentcare") || ""}
+            onChange={(value) => setValue("posttreatmentcare", value)}
+            placeholder="Post Treatment Care"
+          />
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">{editingService ? "Update" : "Create"} Service</button>
+        </form>
+
+        <div className="mt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Service List</h3>
+            <div className="flex space-x-2">
+              <input type="text" placeholder="Search Services" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="p-2 border rounded w-64" />
+              <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} className="bg-gray-500 text-white px-4 py-2 rounded">
+                {sortOrder === "asc" ? "Sort Z-A" : "Sort A-Z"}
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredServices.map((service) => (
+              <div key={service._id} className="border p-4">
+                {service.image && <img src={service.image} alt="Service" className="w-10 h-10 object-cover mb-2" />}
+                <h4 className="text-lg font-bold">{service.name}</h4>
+                <p>{service.description}</p>
+                <button onClick={() => handleEdit(service)} className="bg-yellow-500 text-white px-3 py-1 mr-2 rounded mt-4">Edit</button>
+                <button onClick={() => openDeleteConfirmation(service)} className="bg-red-500 text-white px-3 py-1 rounded mt-4">Delete</button>
+              </div>
+            ))}
+          </div>
         </div>
-
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-700 shadow-sm"
-          onClick={() => setIsAddModalOpen(true)}
-        >
-          Add Service
-        </button>
-        
-
-        {loading ? (
-          <div className="flex justify-center items-center">
-            <div className="spinner"></div>
-          </div>
-        ) : (
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-pink-300">
-                <th className="border p-2">Service Name</th>
-                <th className="border p-2">Description</th>
-                <th className="border p-2">Detail Description</th>
-                <th className="border p-2">Price</th>
-                <th className="border p-2">Image</th>
-                <th className="border p-2">Effect Image</th>
-                <th className="border p-2">Treatment Steps</th>
-                <th className="border p-2">Result Image</th>
-                <th className="border p-2">Sensation Image</th>
-                <th className="border p-2">Post Treatment Care</th>
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredServices.map((service) => (
-                <tr key={service._id} className="text-center border-b">
-                  <td className="border p-2">{service.name}</td>
-                  <td className="border p-2">{service.description}</td>
-                  <td className="border p-2">{service.detaildescription}</td>
-                  <td className="border p-2">{service.price}</td>
-                  <td className="border p-2">
-                    {service.image ? <img src={service.image} alt={service.name} className="w-10 h-10 object-cover" /> : "No Image"}
-                  </td>
-                  <td className="border p-2">
-                    {service.image ? <img src={service.effectimage} alt={service.name} className="w-10 h-10 object-cover" /> : "No Image"}
-                  </td>
-                  <td className="border p-2">{service.treatmentsteps}</td>
-                  <td className="border p-2">
-                    {service.resultimage ? <img src={service.resultimage} alt={service.name} className="w-auto h-auto object-cover" /> : "No Image"}
-                  </td>
-                  <td className="border p-2">{service.sensationimage ? <img src={service.sensationimage} alt={service.name} className="w-16 h-16 object-cover" /> : "No Image"}</td>
-                  <td className="border p-2">{service.posttreatmentcare}</td>
-                  <td className="border p-2">
-                    <button
-                      className="bg-red-500 text-white px-3 py-1 rounded mr-2 hover:bg-red-700"
-                      onClick={() => handleDelete(service._id)}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700"
-                      onClick={() => openEditModal(service)}
-                    >
-                      Update
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
-        {editService && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg w-1/3">
-              <h2 className="text-xl font-bold mb-4">Edit Service</h2>
-              <input
-                type="text"
-                value={editService.name}
-                onChange={(e) => setEditService({ ...editService, name: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Service Name"
-              />
-              <textarea
-                value={editService.description}
-                onChange={(e) => setEditService({ ...editService, description: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Description"
-              />
-                <textarea
-                value={editService.detaildescription}
-                onChange={(e) => setEditService({ ...editService, detaildescription: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Detail Description"
-              />
-              <input
-                type="number"
-                value={editService.price}
-                onChange={(e) => setEditService({ ...editService, price: e.target.value })}
-                className="w-full p-2 border rounded mb-4"
-                placeholder="Price"
-              />
-              <input
-                type="text"
-                value={editService.image}
-                onChange={(e) => setEditService({ ...editService, image: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Image URL"
-              />
-              <input
-                type="text"
-                value={editService.effectimage}
-                onChange={(e) => setEditService({ ...editService, effectimage: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Effect Image URL"
-              />
-              <textarea
-                value={editService.treatmentsteps}
-                onChange={(e) => setEditService({ ...editService, treatmentsteps: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Treatment Steps"
-              />
-              <input
-                type="text"
-                value={editService.resultimage}
-                onChange={(e) => setEditService({ ...editService, resultimage: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Result Image URL"
-              />
-                <input
-                type="text"
-                value={editService.sensationimage}
-                onChange={(e) => setEditService({ ...editService, sensationimage: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Sensation Image URL"
-              />
-                  <textarea
-                value={editService.posttreatmentcare}
-                onChange={(e) => setEditService({ ...editService, posttreatmentcare: e.target.value })}
-                className="w-full p-2 border rounded mb-2"
-                placeholder="Post Treatment Care"
-              />
-              
-              
-              <div className="flex justify-end">
-                <button className="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-700" onClick={closeEditModal}>Cancel</button>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={handleUpdate}>Save</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {isAddModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg w-1/3">
-              <h2 className="text-xl font-bold mb-4">Add Service</h2>
-              <input type="text" value={newService.name} onChange={(e) => setNewService({ ...newService, name: e.target.value })} className="w-full p-2 border rounded mb-2" placeholder="Service Name" />
-              <textarea value={newService.description} onChange={(e) => setNewService({ ...newService, description: e.target.value })} className="w-full p-2 border rounded mb-2" placeholder="Description" />
-              <textarea value={newService.detaildescription} onChange={(e) => setNewService({ ...newService, detaildescription: e.target.value })} className="w-full p-2 border rounded mb-2" placeholder="Detail Desription" />
-              <input type="number" value={newService.price} onChange={(e) => setNewService({ ...newService, price: e.target.value })} className="w-full p-2 border rounded mb-4" placeholder="Price" />
-              <input
-                type="text"
-                value={newService.image}
-                onChange={(e) => setNewService({ ...newService, image: e.target.value })}
-                className="w-full p-2 border rounded mb-4"
-                placeholder="Image URL"
-              />
-              <input
-                type="text"
-                value={newService.effectimage}
-                onChange={(e) => setNewService({ ...newService, effectimage: e.target.value })}
-                className="w-full p-2 border rounded mb-4"
-                placeholder="Effect Image URL"
-              />
-              <textarea value={newService.treatmentsteps} onChange={(e) => setNewService({ ...newService, treatmentsteps: e.target.value })} className="w-full p-2 border rounded mb-2" placeholder="Treatment Steps" />
-              <input
-                type="text"
-                value={newService.resultimage}
-                onChange={(e) => setNewService({ ...newService, resultimage: e.target.value })}
-                className="w-full p-2 border rounded mb-4"
-                placeholder="Result Image URL"
-              />
-              <input
-                type="text"
-                value={newService.sensationimage}
-                onChange={(e) => setNewService({ ...newService, sensationimage: e.target.value })}
-                className="w-full p-2 border rounded mb-4"
-                placeholder="Sensation Image URL"
-              />
-              <textarea value={newService.posttreatmentcare} onChange={(e) => setNewService({ ...newService, posttreatmentcare: e.target.value })} className="w-full p-2 border rounded mb-2" placeholder="Post Treatment Care" />
-              <div className="flex justify-end">
-                <button className="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-700" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
-                <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700" onClick={handleAddService}>Add</button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      <Dialog open={openDeleteDialog} onClose={closeDeleteConfirmation}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>Are you sure you want to delete this service?</DialogContent>
+        <DialogActions>
+          <Button onClick={closeDeleteConfirmation} color="primary">Cancel</Button>
+          <Button onClick={handleDelete} color="secondary">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
-}
+};
+
+export default ServiceManagement;
