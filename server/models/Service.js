@@ -8,10 +8,8 @@ const serviceSchema = new Schema({
   detaildescription: { type: String, default: "" },
   image: { type: String, default: "" },
   effectimage: { type: String, default: "" },
-  treatmentsteps: [{ type: String, default: "" }],
   resultimage: { type: String, default: "" },
   sensationimage: { type: String, default: "" },
-  posttreatmentcare: [{ type: String, default: "" }]
 }, { timestamps: true }); // Add timestamps for createdAt and updatedAt
 
 module.exports = mongoose.model("Service", serviceSchema);
