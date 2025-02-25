@@ -20,8 +20,8 @@ const getAllServices = async (req, res) => {
 
 const createService = async (req, res) => {
   try {
-    const {  price, name, description, detaildescription, image, effectimage, treatmentsteps, resultimage, sensationimage, posttreatmentcare } = req.body;
-    const newService = new Service({  price, name, description, detaildescription, image, effectimage, treatmentsteps, resultimage, sensationimage, posttreatmentcare });
+    const { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage } = req.body;
+    const newService = new Service({ price, name, description, detaildescription, image, effectimage, resultimage, sensationimage });
     await newService.save();
     res.status(201).json(newService);  // Return the created service
   } catch (err) {
@@ -33,8 +33,8 @@ const createService = async (req, res) => {
 const updateService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { price, name, description, detaildescription, image, effectimage, treatmentsteps, resultimage, sensationimage, posttreatmentcare  } = req.body;
-    const updatedService = await Service.findByIdAndUpdate( id, { price, name, description, detaildescription, image, effectimage, treatmentsteps, resultimage, sensationimage, posttreatmentcare },
+    const { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage } = req.body;
+    const updatedService = await Service.findByIdAndUpdate(id, { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage },
       { new: true } // Trả về dữ liệu sau khi cập nhật
     );
     if (!updatedService) {
@@ -71,4 +71,4 @@ const getServiceById = async (req, res) => {
   }
 };
 
-module.exports = { createService, getAllServices,updateService,deleteService, getServiceById};
+module.exports = { createService, getAllServices, updateService, deleteService, getServiceById };

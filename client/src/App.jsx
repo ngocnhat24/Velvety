@@ -18,12 +18,10 @@ import ResetPassword from './pages/guest/ResetPassword.jsx';
 import BlogManagement from './pages/manager/BlogManagement.jsx';
 import QuestionManagement from './pages/manager/QuestionManagement.jsx';
 import About from './pages/guest/About.jsx';
-import BookingPageGuest from './pages/guest/Booking.jsx';
 import BookingPageCustomer from './pages/customer/Booking.jsx';
 import ConsultantGuest from './pages/guest/Consultant.jsx';
 import ConsultantCustomer from './pages/customer/Consultant.jsx';
 import ServiceGuest from './pages/guest/Services.jsx';
-import ServiceCustomer from './pages/customer/Services.jsx';
 import Calendar from './pages/customer/Calendar.jsx';
 import ProtectedRoute from "./components/ProtectedRoute";
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
@@ -33,11 +31,11 @@ function App() {
 
   return (
     <div>
-       <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
 
       <Routes>
         {/* Default route */}
-        <Route index element={<About/>} />
+        <Route index element={<About />} />
 
         {/* Other Routes */}
         <Route path='/about' element={<About />} />
@@ -46,19 +44,17 @@ function App() {
         <Route path='/forgot-password' element={<Forgotpassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/verify' element={<VerifyEmailPage />} />
-        
+
         {/* Guest Pages */}
         <Route path='/blog' element={<Blog />} />
         <Route path='/blog/:id' element={<BlogDetail />} />
         <Route path='/services' element={<ServiceGuest />} />
-        <Route path='/booking' element={<BookingPageGuest />} />
         <Route path='/consultant' element={<ConsultantGuest />} />
         <Route path='/quiz' element={<Quiz />} />
 
         {/* Customer Pages */}
         <Route element={<ProtectedRoute allowedRoles={["Customer"]} />}>
-          <Route path='/service-customer' element={<ServiceCustomer />} />
-          <Route path='/booking-customer' element={<BookingPageCustomer />} />
+          <Route path='/booking' element={<BookingPageCustomer />} />
           <Route path='/calendar' element={<Calendar />} />
           <Route path='/consultant-customer' element={<ConsultantCustomer />} />
           <Route path='/quiz' element={<Quiz />} />
@@ -80,7 +76,7 @@ function App() {
       </Routes>
 
     </div>
-   
+
 
   );
 }

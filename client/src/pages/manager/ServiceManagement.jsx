@@ -14,14 +14,13 @@ const ServiceManagement = () => {
   const { register, handleSubmit, reset, setValue, watch } = useForm({
     defaultValues: {
       detaildescription: "",
-      treatmentsteps: "",
-      posttreatmentcare: "",
-    }});
+    }
+  });
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  
+
 
   useEffect(() => {
     fetchServices();
@@ -34,8 +33,6 @@ const ServiceManagement = () => {
   useEffect(() => {
     if (editingService) {
       setValue("detaildescription", editingService.detaildescription || "");
-      setValue("treatmentsteps", editingService.treatmentsteps || ""); 
-      setValue("posttreatmentcare", editingService.posttreatmentcare || ""); 
     }
   }, [editingService, setValue]);  // Depend on `editingService` and `setValue`
 
@@ -79,8 +76,6 @@ const ServiceManagement = () => {
       setValue("sensationimage", service.sensationimage || "");
       setValue("description", service.description || "");
       setValue("detaildescription", service.detaildescription || "");
-      setValue("treatmentsteps", service.treatmentsteps || ""); 
-      setValue("posttreatmentcare", service.posttreatmentcare || ""); 
     }, 0);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -111,7 +106,7 @@ const ServiceManagement = () => {
     .filter(service => service.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
 
-    
+
 
   return (
     <div className="flex">
@@ -132,16 +127,6 @@ const ServiceManagement = () => {
             value={watch("detaildescription") || ""}
             onChange={(value) => setValue("detaildescription", value)}
             placeholder="Detailed Description"
-          />
-          <ReactQuill
-            value={watch("treatmentsteps") || ""}
-            onChange={(value) => setValue("treatmentsteps", value)}
-            placeholder="Treatment Steps"
-          />
-          <ReactQuill
-            value={watch("posttreatmentcare") || ""}
-            onChange={(value) => setValue("posttreatmentcare", value)}
-            placeholder="Post Treatment Care"
           />
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">{editingService ? "Update" : "Create"} Service</button>
         </form>
