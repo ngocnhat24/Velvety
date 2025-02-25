@@ -1,17 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Navbar from "../../components/Navbar";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import axios from "axios";
 
 const SkincareBooking = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedTime, setSelectedTime] = useState(null);
+    const [events, setEvents] = useState([]);
+    const [availableTimes, setAvailableTimes] = useState([]);
 
     const times = [
         "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
         "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
     ];
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const response = await axios.get("/api/calendars/events");
+                setEvents(response.data);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        };
+
+        fetchEvents();
+    }, []);
+
+    useEffect(() => {
+        const updateAvailableTimes = () => {
+            const now = new Date();
+            const selectedDay = new Date(selectedDate);
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+            if (selectedDay.toDateString() === now.toDateString()) {
+                const filteredTimes = times.filter(time => {
+                    const [hour, minute] = time.split(/[: ]/);
+                    const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
+                    return timeInMinutes > currentTime;
+                });
+                setAvailableTimes(filteredTimes);
+            } else {
+                setAvailableTimes(times);
+            }
+        };
+
+        updateAvailableTimes();
+    }, [selectedDate]);
 
     const handleTimeSelect = (time) => {
         setSelectedTime(time);
@@ -25,6 +62,16 @@ const SkincareBooking = () => {
     const handleCancel = () => {
         // Add cancel logic here
         setSelectedTime(null);
+    };
+
+    const isTimeDisabled = (time) => {
+        const now = new Date();
+        const selectedDay = new Date(selectedDate);
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const [hour, minute] = time.split(/[: ]/);
+        const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
+
+        return selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime;
     };
 
     return (
@@ -49,6 +96,7 @@ const SkincareBooking = () => {
                                     className={`border p-2 rounded-lg text-xs font-medium ${selectedTime === time ? 'bg-pink-400 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
                                     onClick={() => handleTimeSelect(time)}
                                     aria-label={`Select time ${time}`}
+                                    disabled={isTimeDisabled(time)}
                                 >
                                     {time}
                                 </button>
@@ -71,6 +119,14 @@ const SkincareBooking = () => {
                             </button>
                         </div>
                     </div>
+                </div>
+                <div>
+                    <h1></h1>
+                    <ul>
+                        {events.map((event) => (
+                            <li key={event._id}>{event.name}</li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         </div>
