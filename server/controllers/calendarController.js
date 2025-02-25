@@ -39,7 +39,18 @@ exports.createEvent = async (req, res) => {
 
 exports.getEvents = async (req, res) => {
     try {
-        const events = await Calendar.find();
+        const { service, consultant } = req.query;
+        const query = {};
+
+        if (service) {
+            query.service = service;
+        }
+
+        if (consultant) {
+            query.consultant = consultant;
+        }
+
+        const events = await Calendar.find(query);
         res.status(200).json(events);
     } catch (error) {
         res.status(500).json({ message: error.message });

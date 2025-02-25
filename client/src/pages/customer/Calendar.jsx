@@ -10,6 +10,8 @@ const SkincareBooking = () => {
     const [selectedTime, setSelectedTime] = useState(null);
     const [events, setEvents] = useState([]);
     const [availableTimes, setAvailableTimes] = useState([]);
+    const [selectedService, setSelectedService] = useState("");
+    const [selectedConsultant, setSelectedConsultant] = useState("");
 
     const times = [
         "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -19,15 +21,22 @@ const SkincareBooking = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await axios.get("/api/calendars/events");
+                const response = await axios.get("/api/calendars/events", {
+                    params: {
+                        service: selectedService,
+                        consultant: selectedConsultant
+                    }
+                });
                 setEvents(response.data);
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
         };
 
-        fetchEvents();
-    }, []);
+        if (selectedService && selectedConsultant) {
+            fetchEvents();
+        }
+    }, [selectedService, selectedConsultant]);
 
     useEffect(() => {
         const updateAvailableTimes = () => {
@@ -35,15 +44,22 @@ const SkincareBooking = () => {
             const selectedDay = new Date(selectedDate);
             const currentTime = now.getHours() * 60 + now.getMinutes();
 
+            let filteredTimes;
             if (selectedDay.toDateString() === now.toDateString()) {
-                const filteredTimes = times.filter(time => {
+                filteredTimes = times.filter(time => {
                     const [hour, minute] = time.split(/[: ]/);
                     const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
                     return timeInMinutes > currentTime;
                 });
-                setAvailableTimes(filteredTimes);
             } else {
-                setAvailableTimes(times);
+                filteredTimes = times;
+            }
+
+            setAvailableTimes(filteredTimes);
+            if (filteredTimes.length > 0) {
+                setSelectedTime(filteredTimes[0]);
+            } else {
+                setSelectedTime(null);
             }
         };
 
@@ -74,6 +90,14 @@ const SkincareBooking = () => {
         return selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime;
     };
 
+    const tileDisabled = ({ date, view }) => {
+        // Disable past dates
+        if (view === 'month') {
+            return date < new Date().setHours(0, 0, 0, 0);
+        }
+        return false;
+    };
+
     return (
         <div className="bg-[#F8F4F2] min-h-screen">
             <Navbar />
@@ -85,6 +109,7 @@ const SkincareBooking = () => {
                             onChange={setSelectedDate}
                             value={selectedDate}
                             className="border rounded-lg p-2"
+                            tileDisabled={tileDisabled}
                         />
                     </div>
                     <div className="flex-1">
@@ -93,7 +118,7 @@ const SkincareBooking = () => {
                             {times.map((time, index) => (
                                 <button
                                     key={index}
-                                    className={`border p-2 rounded-lg text-xs font-medium ${selectedTime === time ? 'bg-pink-400 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                                    className={`border p-2 rounded-lg text-xs font-medium ${selectedTime === time ? 'bg-pink-400 text-white' : 'bg-gray-100 hover:bg-gray-200'} ${isTimeDisabled(time) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     onClick={() => handleTimeSelect(time)}
                                     aria-label={`Select time ${time}`}
                                     disabled={isTimeDisabled(time)}

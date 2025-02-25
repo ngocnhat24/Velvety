@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const consultantSchema = new mongoose.Schema({
+const { Schema } = mongoose;
+const consultantSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     ratings: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // The person giving the rating
@@ -18,4 +19,4 @@ consultantSchema.virtual('averageRating').get(function () {
     return avg.toFixed(1);
 });
 
-const Consultant = mongoose.model('Consultant', consultantSchema);
+module.exports = mongoose.model("Consultant", consultantSchema);
