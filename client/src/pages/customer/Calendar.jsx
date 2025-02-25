@@ -12,6 +12,7 @@ const SkincareBooking = () => {
     const [availableTimes, setAvailableTimes] = useState([]);
     const [selectedService, setSelectedService] = useState("");
     const [selectedConsultant, setSelectedConsultant] = useState("");
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const times = [
         "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -71,12 +72,32 @@ const SkincareBooking = () => {
     };
 
     const handleConfirm = () => {
-        // Add confirmation logic here
-        alert(`Confirmed booking for ${selectedDate.toDateString()} at ${selectedTime}`);
+        setShowConfirmModal(true);
+    };
+
+    const handleConfirmBooking = () => {
+        setShowConfirmModal(false);
+        const successMessage = document.createElement('div');
+        successMessage.innerText = `Successfully booked for ${selectedDate.toDateString()} at ${selectedTime}`;
+        successMessage.style.position = 'fixed';
+        successMessage.style.top = '10%';
+        successMessage.style.left = '50%';
+        successMessage.style.transform = 'translate(-50%, -10%)';
+        successMessage.style.backgroundColor = '#4CAF50';
+        successMessage.style.color = 'white';
+        successMessage.style.padding = '10px';
+        successMessage.style.borderRadius = '5px';
+        successMessage.style.zIndex = '1000';
+        successMessage.style.fontSize = '14px';
+        document.body.appendChild(successMessage);
+
+        setTimeout(() => {
+            document.body.removeChild(successMessage);
+            window.location.href = "/payment"; // Replace with your payment page URL
+        }, 2000);
     };
 
     const handleCancel = () => {
-        // Add cancel logic here
         setSelectedTime(null);
     };
 
@@ -154,6 +175,31 @@ const SkincareBooking = () => {
                     </ul>
                 </div>
             </div>
+
+            {showConfirmModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h2 className="text-xl font-semibold mb-4">Confirm Booking</h2>
+                        <p className="mb-4">Are you sure you want to book for {selectedDate.toDateString()} at {selectedTime}?</p>
+                        <div className="flex justify-center gap-4">
+                            <button
+                                className="bg-pink-500 text-white px-4 py-2 rounded-lg"
+                                onClick={handleConfirmBooking}
+                                aria-label="Confirm booking"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                className="text-gray-500 px-4 py-2 rounded-lg"
+                                onClick={() => setShowConfirmModal(false)}
+                                aria-label="Cancel booking"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
