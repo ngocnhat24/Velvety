@@ -4,19 +4,18 @@ const ProtectedRoute = ({ allowedRoles }) => {
   const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
   const roleName = localStorage.getItem("roleName");
 
-  console.log("User role:", roleName);
-  console.log("Allowed roles:", allowedRoles);
+  // Check if the route allows guests (unauthenticated users)
+  const isGuestAllowed = allowedRoles.includes("Guest") && !token;
 
+  // Check if the user is authenticated and their role is allowed
+  const isUserAllowed = token && allowedRoles.includes(roleName);
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  if (isGuestAllowed || isUserAllowed) {
+    return <Outlet />;
   }
 
-  if (!allowedRoles.includes(roleName)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <Outlet />;
+  // Redirect unauthorized users to home page
+  return <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;
