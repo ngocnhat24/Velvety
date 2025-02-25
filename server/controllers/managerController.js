@@ -1,101 +1,53 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const User = require('../models/User');
 
-// Tạo Manager mới
-exports.createManager = async (req, res) => {
-  try {
-    const { firstName, lastName, email, password, phoneNumber } = req.body;
-
-    // Kiểm tra email đã tồn tại chưa
-    const existingManager = await Manager.findOne({ email });
-    if (existingManager) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
-
-    // Hash mật khẩu
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Tạo Manager
-    const manager = await Manager.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      phoneNumber,
-    });
-
-    res.status(201).json({ message: "Manager created successfully", manager });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Lấy danh sách tất cả Manager
+// Get all managers (Admin only)
 exports.getAllManagers = async (req, res) => {
-  try {
-    const managers = await Manager.find();
-    res.status(200).json(managers);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const managers = await User.find({ roleName: "Manager" }).select('-password');
+        res.json(managers);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching managers", error });
+    }
 };
 
-// Lấy thông tin Manager theo ID
+// Get manager by ID
 exports.getManagerById = async (req, res) => {
-  try {
-    const manager = await Manager.findById(req.params.id);
-    if (!manager) return res.status(404).json({ message: "Manager not found" });
-    res.status(200).json(manager);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const manager = await User.findOne({ _id: req.params.id, roleName: "Manager" }).select('-password');
+        if (!manager) return res.status(404).json({ message: "Manager not found" });
+
+        res.json(manager);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching manager", error });
+    }
 };
 
-// Cập nhật thông tin Manager
+// Update manager profile
 exports.updateManager = async (req, res) => {
-  try {
-    const manager = await Manager.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!manager) return res.status(404).json({ message: "Manager not found" });
-    res.status(200).json(manager);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const { firstName, lastName, phoneNumber } = req.body;
+        const updatedManager = await User.findOneAndUpdate(
+            { _id: req.params.id, roleName: "Manager" },
+            { firstName, lastName, phoneNumber, updatedDate: Date.now() },
+            { new: true }
+        ).select('-password');
+
+        if (!updatedManager) return res.status(404).json({ message: "Manager not found" });
+
+        res.json({ message: "Manager profile updated successfully", manager: updatedManager });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating manager profile", error });
+    }
 };
 
-// Xóa Manager
+// Delete manager (Admin only)
 exports.deleteManager = async (req, res) => {
-  try {
-    const manager = await Manager.findByIdAndDelete(req.params.id);
-    if (!manager) return res.status(404).json({ message: "Manager not found" });
-    res.status(200).json({ message: "Manager deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    try {
+        const manager = await User.findOneAndDelete({ _id: req.params.id, roleName: "Manager" });
+        if (!manager) return res.status(404).json({ message: "Manager not found" });
 
-// Đăng nhập Manager
-exports.loginManager = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Kiểm tra Manager có tồn tại không
-    const manager = await Manager.findOne({ email });
-    if (!manager) {
-      return res.status(400).json({ message: "Invalid credentials" });
+        res.json({ message: "Manager deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting manager", error });
     }
-
-    // Kiểm tra mật khẩu
-    const isMatch = await bcrypt.compare(password, manager.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    // Tạo token
-    const token = jwt.sign({ managerId: manager._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    res.status(200).json({ token, message: "Login successful" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };

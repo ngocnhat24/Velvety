@@ -1,16 +1,36 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider } from "@mui/material";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider, Button } from "@mui/material";
+import axios from "axios";
 
 const ManagerSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Services", path: "/service-management" },
     { name: "Blogs", path: "/blog-management" },
     { name: "Questions", path: "/question-management" },
-  ];
+  ];  const handleLogout = () => {
+    if (!window.confirm("Are you sure you want to log out?")) return;
+    axios.post("/api/auth/logout")
+      .then(() => {
+        // ✅ Clear auth data from storage
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("roleName");
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("roleName");
+
+        // ✅ Redirect user to login page
+        navigate("/login");
+      })
+      .catch(error => {
+        console.error("Logout failed:", error.response?.data?.message || error.message);
+      });
+  };
+  
+  
 
   return (
     <Drawer
@@ -44,6 +64,25 @@ const ManagerSidebar = () => {
           </NavLink>
         ))}
       </List>
+
+      {/* Logout Button */}
+      <Button
+        onClick={handleLogout}
+        sx={{
+          position: "absolute",
+          bottom: "10px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "80%",
+          backgroundColor: "#f44336",
+          color: "white",
+          "&:hover": {
+            backgroundColor: "#d32f2f",
+          },
+        }}
+      >
+        Logout
+      </Button>
     </Drawer>
   );
 };

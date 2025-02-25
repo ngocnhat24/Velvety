@@ -1,87 +1,77 @@
 const Consultant = require('../models/Consultant');
+const User = require('../models/User');
 
-exports.getConsultants = async (req, res) => {
+// Get all consultants
+exports.getAllConsultants = async (req, res) => {
     try {
-        const consultants = await Consultant.find();
-        res.status(200).json(consultants);
+        const consultants = await Consultant.find().populate('user', '-password');
+        res.json(consultants);
     } catch (error) {
-        res.status(500).json({ message: "Error retrieving therapist", error });
+        res.status(500).json({ message: "Error fetching consultants", error });
     }
 };
 
+// Get consultant by ID
 exports.getConsultantById = async (req, res) => {
-    const { id } = req.params;
     try {
-        const consultant = await Consultant.findById(id);
-        if (!consultant) {
-            return res.status(404).json({ message: "Therapist not found" });
-        }
-        res.status(200).json(consultant);
+        const consultant = await Consultant.findOne({ _id: req.params.id }).populate('user', '-password');
+        if (!consultant) return res.status(404).json({ message: "Consultant not found" });
+
+        res.json(consultant);
     } catch (error) {
-        res.status(500).json({ message: "Error retrieving", error });
+        res.status(500).json({ message: "Error fetching consultant", error });
     }
 };
 
-exports.createConsultant = async (req, res) => {
-    const { userId, ...consultantData } = req.body;
-
+// Update consultant profile
+exports.updateConsultant = async (req, res) => {
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        const { note, image } = req.body;
+        const updatedConsultant = await Consultant.findOneAndUpdate(
+            { _id: req.params.id },
+            { note, image },
+            { new: true }
+        ).populate('user', '-password');
 
-        const newConsultant = new Consultant({
-            ...consultantData,
-            user: user._id
+        if (!updatedConsultant) return res.status(404).json({ message: "Consultant not found" });
+
+        res.json({ message: "Consultant profile updated successfully", consultant: updatedConsultant });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating consultant profile", error });
+    }
+};
+
+// Delete consultant (Admin only)
+exports.deleteConsultant = async (req, res) => {
+    try {
+        const consultant = await Consultant.findOneAndDelete({ _id: req.params.id });
+        if (!consultant) return res.status(404).json({ message: "Consultant not found" });
+
+        await User.findByIdAndDelete(consultant.user); // Delete associated user account
+        res.json({ message: "Consultant deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting consultant", error });
+    }
+};
+
+// Add rating to consultant
+exports.addRating = async (req, res) => {
+    try {
+        const { rating, comment } = req.body;
+        const consultant = await Consultant.findById(req.params.id);
+
+        if (!consultant) return res.status(404).json({ message: "Consultant not found" });
+
+        consultant.ratings.push({
+            user: req.user.id,
+            rating,
+            comment,
+            createdAt: new Date()
         });
 
-        const savedConsultant = await newConsultant.save();
-        res.status(201).json(savedConsultant);
+        await consultant.save();
+        res.json({ message: "Rating added successfully", consultant });
     } catch (error) {
-        res.status(400).json({ message: "Error creating", error });
-    }
-};
-
-exports.updateConsultant = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const updatedConsultant = await Consultant.findByIdAndUpdate(id, req.body, { new: true });
-        if (!updatedConsultant) {
-            return res.status(404).json({ message: "Therapist not found" });
-        }
-        res.status(200).json(updatedConsultant);
-    } catch (error) {
-        res.status(400).json({ message: "Error updating", error });
-    }
-};
-
-exports.deleteConsultant = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const deletedConsultant = await Consultant.findByIdAndDelete(id);
-        if (!deletedConsultant) {
-            return res.status(404).json({ message: "Therapist not found" });
-        }
-        res.status(200).json({ message: "Therapist deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error deleting", error });
-    }
-};
-
-exports.selectConsultant = async (req, res) => {
-    const { consultantId } = req.body;
-    try {
-        // Check if the consultant exists
-        const consultant = await Consultant.findById(consultantId);
-
-        if (consultant) {
-            res.redirect('/calendar');
-        } else {
-            res.status(404).json({ message: 'Therapist not found' });
-        }
-    } catch (error) {
-        // Handle any errors that occur
-        res.status(500).json({ message: 'Server error', error });
+        res.status(500).json({ message: "Error adding rating", error });
     }
 };

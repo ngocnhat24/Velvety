@@ -17,8 +17,7 @@ import TherapistManagement from './pages/admin/TherapistManagement.jsx';
 import ResetPassword from './pages/guest/ResetPassword.jsx';
 import BlogManagement from './pages/manager/BlogManagement.jsx';
 import QuestionManagement from './pages/manager/QuestionManagement.jsx';
-import AboutGuest from './pages/guest/About.jsx';
-import AboutCustomer from './pages/customer/About.jsx';
+import About from './pages/guest/About.jsx';
 import BookingPageGuest from './pages/guest/Booking.jsx';
 import BookingPageCustomer from './pages/customer/Booking.jsx';
 import ConsultantGuest from './pages/guest/Consultant.jsx';
@@ -26,6 +25,7 @@ import ConsultantCustomer from './pages/customer/Consultant.jsx';
 import ServiceGuest from './pages/guest/Services.jsx';
 import ServiceCustomer from './pages/customer/Services.jsx';
 import Calendar from './pages/customer/Calendar.jsx';
+import ProtectedRoute from "./components/ProtectedRoute";
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
@@ -35,31 +35,49 @@ function App() {
     <div>
        <ToastContainer position="top-right" autoClose={3000} />
 
-       <Routes>
-      <Route index element={<AboutGuest />} />
-      <Route path='/login' element={<LoginPage />} />
-      <Route path='/blog' element={<Blog />} />
-      <Route path='/service' element={<ServiceGuest />} />
-      <Route path='/service-customer' element={<ServiceCustomer />} />
-      <Route path='/register' element={<RegisterPage />} />
-      <Route path='/forgot-password' element={<Forgotpassword />} />
-      <Route path='/quiz' element={<Quiz />} />
-      <Route path='/verify' element={<VerifyEmailPage />} />
-      <Route path='/blog/:id' element={<BlogDetail />} />
-      <Route path='/therapist-management' element={<TherapistManagement />} />
-      <Route path='/service-management' element={<ServiceManagement />} />
-      <Route path='/staff-management' element={<StaffManagement />} />
-      <Route path='/dashboard' element={<Dashboard/>} />
-      <Route path='/booking' element={<BookingPageGuest/>} />
-      <Route path='/booking-customer' element={<BookingPageCustomer/>} />
-      <Route path='reset-password' element={<ResetPassword/>} />
-      <Route path='consultant' element={<ConsultantGuest/>} />
-      <Route path='consultant-customer' element={<ConsultantCustomer/>} />
-      <Route path='blog-management' element={<BlogManagement/>} />
-      <Route path='question-management' element={<QuestionManagement/>} />
-      <Route path='about-customer' element={<AboutCustomer/>} />
-      <Route path='calendar' element={<Calendar />} />
-    </Routes>
+      <Routes>
+        {/* Default route */}
+        <Route index element={<About/>} />
+
+        {/* Other Routes */}
+        <Route path='/about' element={<About />} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/forgot-password' element={<Forgotpassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path='/verify' element={<VerifyEmailPage />} />
+        
+        {/* Guest Pages */}
+        <Route path='/blog' element={<Blog />} />
+        <Route path='/blog/:id' element={<BlogDetail />} />
+        <Route path='/services' element={<ServiceGuest />} />
+        <Route path='/booking' element={<BookingPageGuest />} />
+        <Route path='/consultant' element={<ConsultantGuest />} />
+        <Route path='/quiz' element={<Quiz />} />
+
+        {/* Customer Pages */}
+        <Route element={<ProtectedRoute allowedRoles={["Customer"]} />}>
+          <Route path='/service-customer' element={<ServiceCustomer />} />
+          <Route path='/booking-customer' element={<BookingPageCustomer />} />
+          <Route path='/calendar' element={<Calendar />} />
+          <Route path='/consultant-customer' element={<ConsultantCustomer />} />
+          <Route path='/quiz' element={<Quiz />} />
+        </Route>
+
+        {/* Manager Pages */}
+        <Route element={<ProtectedRoute allowedRoles={["Manager"]} />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/service-management' element={<ServiceManagement />} />
+          <Route path='/blog-management' element={<BlogManagement />} />
+          <Route path='/question-management' element={<QuestionManagement />} />
+        </Route>
+
+        {/* Admin Pages */}
+        <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+          <Route path='/staff-management' element={<StaffManagement />} />
+          <Route path='/therapist-management' element={<TherapistManagement />} />
+        </Route>
+      </Routes>
 
     </div>
    

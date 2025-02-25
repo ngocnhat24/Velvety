@@ -20,7 +20,7 @@ export default function VerifyEmailPage() {
     requestSent.current = true; // Mark as sent
 
     axios
-      .get(`/api/users/verify?token=${token}`)
+      .get(`/api/auth/verify?token=${token}`)
       .then((response) => {
         setMessage(response.data.message);
         setTimeout(() => navigate("/login"), 3000);

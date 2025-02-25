@@ -1,11 +1,18 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const managerController = require("../controllers/managerController");
+const managerController = require('../controllers/managerController');
+const { authenticate, authorize } = require('../middlewares/authMiddleware');
 
-router.post("/", managerController.createManager);
-router.get("/", managerController.getAllManagers);
-router.get("/:id", managerController.getManagerById);
-router.put("/:id", managerController.updateManager);
-router.delete("/:id", managerController.deleteManager);
+// Get all managers (Admin only)
+router.get('/', authenticate, authorize(['Admin']), managerController.getAllManagers);
+
+// Get manager by ID
+router.get('/:id', authenticate, authorize(['Admin', 'Manager']), managerController.getManagerById);
+
+// Update manager profile
+router.put('/:id', authenticate, authorize(['Manager']), managerController.updateManager);
+
+// Delete manager (Admin only)
+router.delete('/:id', authenticate, authorize(['Admin']), managerController.deleteManager);
 
 module.exports = router;

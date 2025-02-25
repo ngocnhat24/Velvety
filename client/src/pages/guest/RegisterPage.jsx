@@ -81,7 +81,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await axios.post("/api/users", {
+      const response = await axios.post("/api/auth/register", {
         ...formData,
         roleName: "Customer",
       });

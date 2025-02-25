@@ -1,14 +1,36 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider } from "@mui/material";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider, Button } from "@mui/material";
+import axios from "axios";
+
+axios.defaults.withCredentials = true; // ✅ Ensure cookies/session data are sent with requests
 
 const AdminSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
     { name: "Therapist", path: "/therapist-management" },
     { name: "Staff", path: "/staff-management" },
   ];
+
+  const handleLogout = () => {
+    if (!window.confirm("Are you sure you want to log out?")) return;
+    axios.post("/api/auth/logout")
+      .then(() => {
+        // ✅ Clear auth data from storage
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("roleName");
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("roleName");
+
+        // ✅ Redirect user to login page
+        navigate("/login");
+      })
+      .catch(error => {
+        console.error("Logout failed:", error.response?.data?.message || error.message);
+      });
+  };
 
   return (
     <Drawer
@@ -24,7 +46,7 @@ const AdminSidebar = () => {
         },
       }}
     >
-      {/* Thanh tiêu đề */}
+      {/* Sidebar Title */}
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "left" }}>
           Admin
@@ -32,7 +54,7 @@ const AdminSidebar = () => {
       </Toolbar>
       <Divider sx={{ backgroundColor: "gray" }} />
 
-      {/* Danh sách menu */}
+      {/* Menu List */}
       <List>
         {menuItems.map((item) => (
           <NavLink key={item.name} to={item.path} style={{ textDecoration: "none", color: "inherit" }}>
@@ -42,6 +64,25 @@ const AdminSidebar = () => {
           </NavLink>
         ))}
       </List>
+
+      {/* Logout Button */}
+      <Button
+        onClick={handleLogout}
+        sx={{
+          position: "absolute",
+          bottom: "10px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "80%",
+          backgroundColor: "#f44336",
+          color: "white",
+          "&:hover": {
+            backgroundColor: "#d32f2f",
+          },
+        }}
+      >
+        Logout
+      </Button>
     </Drawer>
   );
 };

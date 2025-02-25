@@ -1,17 +1,21 @@
 const express = require('express');
-const { createUser, getAllUsers, getUserById, updateUser, deleteUser, verifyEmail, loginUser, forgotPassword, resetPassword, logoutUser } = require('../controllers/userController');
 const router = express.Router();
+const userController = require('../controllers/userController');
+const { authenticate, authorize } = require('../middlewares/authMiddleware');
 
-router.post('/', createUser); // Create a new user
-router.get("/verify", verifyEmail); // Email verification
-router.get('/', getAllUsers); // Get all users
-router.get('/:id', getUserById); // Get user by ID
-router.put('/:id', updateUser); // Update user by ID
-router.delete('/:id', deleteUser); // Delete user by ID
-router.post('/login', loginUser); // Login user
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
-router.post("/logout", logoutUser);
+// Get all users (Admin only)
+router.get('/', authenticate, authorize(['Admin']), userController.getAllUsers);
+
+// Get user by ID
+router.get('/:id', authenticate, userController.getUserById);
+
+// Update user profile
+router.put('/:id', authenticate, userController.updateUser);
+
+// Change password
+router.put('/:id/change-password', authenticate, userController.changePassword);
+
+// Delete user (Admin only)
+router.delete('/:id', authenticate, authorize(['Admin']), userController.deleteUser);
 
 module.exports = router;
-

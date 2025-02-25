@@ -1,26 +1,50 @@
-import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import axios from "axios";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
+  
+  const [token, setToken] = useState(localStorage.getItem("authToken") || sessionStorage.getItem("authToken"));
+  console.log("Token value:", token);
 
-  // Kiểm tra xem có token hay không
-  const token = localStorage.getItem('token');
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setToken(localStorage.getItem("authToken"));
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
-  // Check if the current path is "/login" or "/register"
   const isLoginPage = location.pathname === "/login" || location.pathname === "/register";
 
-  // Hàm để lấy đường dẫn với -customer nếu có token
-  const getNavLink = (path) => {
-    return token ? `${path}-customer` : path;
+  const handleLogout = () => {
+    if (!window.confirm("Are you sure you want to log out?")) return;
+    axios.post("/api/auth/logout")
+      .then(() => {
+        // ✅ Clear auth data from storage
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("roleName");
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("roleName");
+
+        // ✅ Redirect user to login page
+        navigate("/login");
+      })
+      .catch(error => {
+        console.error("Logout failed:", error.response?.data?.message || error.message);
+      });
   };
 
   return (
-    <div className="w-full h-[100px] bg-[#F9FAEF] flex items-center justify-between px-6 md:px-12 lg:px-10 shadow-md relative z-10">
+    <div className="w-full h-[80px] bg-[#F9FAEF] flex items-center justify-between px-6 md:px-12 lg:px-10 shadow-md relative z-10">
       {/* Logo */}
-      <NavLink to="/" className="w-[155px] h-[52px] z-20">
-        <div className="w-full h-full bg-[url(/images/logo.png)] bg-cover bg-no-repeat md:w-[150px] lg:w-[150px]"></div>
+      <NavLink to="/" className="w-[150px] h-[50px]">
+        <div className="w-full h-full bg-[url(/images/logo.png)] bg-cover bg-no-repeat"></div>
       </NavLink>
 
       {/* Mobile Menu Button */}
@@ -32,49 +56,46 @@ const Navbar = () => {
       </button>
 
       {/* Navigation Links */}
-      <nav className={`flex-col md:flex-row md:flex gap-6 lg:gap-20 pacifico-regular text-[18px] lg:text-[25px] font-semibold z-10 ${isMobileMenuOpen ? 'flex bg-[#F9FAEF] p-4 rounded-lg shadow-lg absolute top-[100px] left-0 right-0' : 'hidden'} md:flex`}>
-        <NavLink
-          to={getNavLink("/")}
-          className={({ isActive }) =>
-            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
-        >
-          About
-        </NavLink>
-        <NavLink
-          to={getNavLink("/service")}
-          className={({ isActive }) =>
-            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
-        >
-          Services
-        </NavLink>
-        <NavLink
-          to={getNavLink("/blog")}
-          className={({ isActive }) =>
-            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
-        >
-          Blog
-        </NavLink>
-        <NavLink
-          to={getNavLink("/Consultant")}
-          className={({ isActive }) =>
-            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
-        >
-          Consultant
-        </NavLink>
-        <NavLink
-          to={getNavLink("/quiz")}
-          className={({ isActive }) =>
-            `text-center ${isActive ? 'text-[#fadade]' : 'text-[#E27585]'}`}
-        >
-          Quiz
-        </NavLink>
+      <nav
+        className={`absolute top-[80px] left-0 w-full bg-[#F9FAEF] flex flex-col items-center pacifico-regular gap-4 p-6 shadow-lg rounded-md transition-transform duration-300 md:static md:w-auto md:p-0 md:flex-row md:shadow-none md:gap-10 ${isMobileMenuOpen ? "flex" : "hidden md:flex"}`}
+      >
+        {["About","Services", "Blog", "Consultant", "Quiz"].map((item) => (
+          <NavLink
+            key={item}
+            to={`/${item.toLowerCase()}`} // Removed -customer suffix
+            className={({ isActive }) =>
+              `text-center text-[18px] font-semibold transition-colors ${isActive ? "text-[#fadade]" : "text-[#E27585] hover:text-[#fadade]"}` 
+            }
+          >
+            {item}
+          </NavLink>
+        ))}
       </nav>
 
-      {/* Conditional Login Button */}
+      {/* User Profile / Login Button */}
       {!isLoginPage && (
-        <a href="/login" className="hidden md:block bg-[#e78999] text-[#faf5f0] text-[18px] lg:text-[25px] pacifico-regular font-semibold px-4 lg:px-6 py-2 rounded-full shadow-sm hover:opacity-80">
-          Login
-        </a>
+        <div className="relative">
+          {token ? (
+            <button onClick={() => setIsProfilePopupOpen(!isProfilePopupOpen)}>
+              <i className="fas fa-user text-[#E27585] text-[30px]"></i>
+            </button>
+          ) : (
+            <NavLink to="/login" className="hidden md:block bg-[#e78999] text-white text-[18px] px-4 py-2 rounded-full shadow-sm hover:opacity-80">
+              Login
+            </NavLink>
+          )}
+
+          {isProfilePopupOpen && token && (
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+              <NavLink to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                Profile
+              </NavLink>
+              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                Log out
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
