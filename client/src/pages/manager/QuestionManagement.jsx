@@ -17,6 +17,8 @@ import {
   Alert,
 } from "@mui/material";
 import Sidebar from "../../components/ManagerSidebar";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const QuestionCard = ({ question, onDelete, onEdit }) => {
   return (
@@ -55,6 +57,7 @@ const QuestionManagement = () => {
   const [newQuestion, setNewQuestion] = useState("");
   const [newAnswerOptions, setNewAnswerOptions] = useState([{ answerText: "", weight: 0 }]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     fetch("/api/questions")
@@ -78,7 +81,7 @@ const QuestionManagement = () => {
 
   const confirmDelete = () => {
     const { questionId } = deleteDialog;
-    fetch(`http://localhost:5000/api/questions/${questionId}`, { method: "DELETE" })
+    fetch(`/api/questions/${questionId}`, { method: "DELETE" })
       .then(() => setQuestions(questions.filter((q) => q._id !== questionId)))
       .catch((err) => console.error("Error deleting question:", err));
     setDeleteDialog({ open: false, questionId: null });
@@ -102,12 +105,12 @@ const QuestionManagement = () => {
 
   const handleAdd = () => {
     if (newQuestion.trim() === "") {
-      alert("Question text cannot be empty!");
+      toast.error("Question text cannot be empty!");
       return;
     }
 
     if (newAnswerOptions.some((option) => option.answerText.trim() === "")) {
-      alert("All answer options must have text!");
+      toast.error("All answer options must have text!");
       return;
     }
 
@@ -136,7 +139,7 @@ const QuestionManagement = () => {
         })
         .catch((err) => {
           console.error("Error updating question:", err);
-          alert("Error updating question: " + err.message);
+          toast.error("Error updating question: " + err.message);
         });
     } else {
       console.log("Adding new question:", questionData); // Kiểm tra dữ liệu thêm mới
@@ -161,7 +164,7 @@ const QuestionManagement = () => {
         })
         .catch((err) => {
           console.error("Error adding question:", err);
-          alert("Error adding question: " + err.message);
+          toast.error("Error adding question: " + err.message);
         });
     }
   };
@@ -169,6 +172,13 @@ const QuestionManagement = () => {
   const filteredQuestions = questions.filter((question) =>
     question.questionText.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const sortedQuestions = [...filteredQuestions].sort((a, b) => {
+    return sortOrder === "asc"
+      ? a.questionText.localeCompare(b.questionText)
+      : b.questionText.localeCompare(a.questionText);
+  });
+  
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f4f6f8" }}>
@@ -190,6 +200,9 @@ const QuestionManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="p-2 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+            <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} className="bg-gray-500 text-white px-4 py-2 rounded">
+             {sortOrder === "asc" ? "Sort Z-A" : "Sort A-Z"}
+            </button>   
         </Box>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
@@ -201,7 +214,7 @@ const QuestionManagement = () => {
           </Alert>
         ) : (
           <Grid container spacing={3}>
-            {filteredQuestions.map((question) => (
+            {sortedQuestions.map((question) => (
               <Grid item xs={12} sm={6} key={question._id}>
                 <QuestionCard question={question} onDelete={handleDelete} onEdit={handleEdit} />
               </Grid>
