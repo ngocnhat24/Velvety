@@ -24,6 +24,7 @@ import ConsultantCustomer from './pages/customer/Consultant.jsx';
 import ServiceGuest from './pages/guest/Services.jsx';
 import Calendar from './pages/customer/Calendar.jsx';
 import ProtectedRoute from "./components/ProtectedRoute";
+import ViewBooking from './pages/staff/ViewBooking.jsx';
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
@@ -72,6 +73,11 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route path='/staff-management' element={<StaffManagement />} />
           <Route path='/therapist-management' element={<TherapistManagement />} />
+        </Route>
+
+        {/* Admin Pages */}
+        <Route element={<ProtectedRoute allowedRoles={["Staff"]} />}>
+          <Route path='/view-booking' element={<ViewBooking />} />
         </Route>
       </Routes>
 

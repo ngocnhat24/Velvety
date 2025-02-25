@@ -22,7 +22,7 @@ export default function LoginPage() {
     if (token) {
       let redirectUrl = "/";
       if (roleName === "Manager") redirectUrl = "/dashboard";
-      else if (roleName === "Staff") redirectUrl = "/services";
+      else if (roleName === "Staff") redirectUrl = "/view-booking";
       else if (roleName === "Grapist") redirectUrl = "/home";
       else if (roleName === "Admin") redirectUrl = "/staff-management";
       else if (roleName === "Customer") redirectUrl = "/about";
@@ -67,7 +67,7 @@ export default function LoginPage() {
       // Redirect based on user roleName
       let redirectUrl = "/";
       if (roleName === "Manager") redirectUrl = "/dashboard";
-      else if (roleName === "Staff") redirectUrl = "/services";
+      else if (roleName === "Staff") redirectUrl = "/view-booking";
       else if (roleName === "Consultant") redirectUrl = "/home";
       else if (roleName === "Admin") redirectUrl = "/staff-management";
       else if (roleName === "Customer") redirectUrl = "/about";
