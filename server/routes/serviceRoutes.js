@@ -17,7 +17,7 @@ router.get("/", getAllServices);
 router.get("/:id", getServiceById);
 
 // Protected routes: Only Manager can create, update, and delete services
-router.post("/", createService);
+router.post("/", authenticate, authorize(["Manager"]), createService);
 router.put("/:id", authenticate, authorize(["Manager"]), updateService);
 router.delete("/:id", authenticate, authorize(["Manager"]), deleteService);
 
