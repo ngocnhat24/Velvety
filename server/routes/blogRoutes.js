@@ -6,22 +6,23 @@ const {
   updateBlogPost,
   deleteBlogPost,
 } = require("../controllers/blogController");
+const { authenticate, authorize } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-// Route to create a new blog post
-router.post("/", createBlogPost);
+// Route to create a new blog post (Only Manager)
+router.post("/", authenticate, authorize(["Manager"]), createBlogPost);
 
-// Route to get all blog posts
+// Route to get all blog posts (Anyone)
 router.get("/", getAllBlogPosts);
 
-// Route to get a single blog post by ID
+// Route to get a single blog post by ID (Anyone)
 router.get("/:postId", getBlogPostById);
 
-// Route to update a blog post
-router.put("/:postId", updateBlogPost);
+// Route to update a blog post (Only Manager)
+router.put("/:postId", authenticate, authorize(["Manager"]), updateBlogPost);
 
-// Route to delete a blog post
-router.delete("/:postId", deleteBlogPost);
+// Route to delete a blog post (Only Manager)
+router.delete("/:postId", authenticate, authorize(["Manager"]), deleteBlogPost);
 
 module.exports = router;

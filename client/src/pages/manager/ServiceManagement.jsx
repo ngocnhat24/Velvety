@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import { useForm } from "react-hook-form";
 import Sidebar from "../../components/ManagerSidebar";
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import "react-quill/dist/quill.snow.css";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ServiceManagement = () => {
   const [services, setServices] = useState([]);

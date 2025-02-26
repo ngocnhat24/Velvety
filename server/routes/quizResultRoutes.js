@@ -1,11 +1,15 @@
 const express = require("express");
-const { saveQuizResult, getAllResults, getUserResults, determineSkinType } = require("../controllers/quizResultController");
+const {
+  saveQuizResult,
+  getAllResults,
+  getUserResults,
+} = require("../controllers/quizResultController");
+const { authenticate, authorize } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.post("/", saveQuizResult); // Save quiz result
-router.get("/", getAllResults); // Admin: Get all quiz results
-router.get("/:userId", getUserResults); // Get quiz results for a specific user
-router.get("/determine-skin-type", determineSkinType);
+router.post("/", authenticate, saveQuizResult); // Users must be authenticated to save results
+router.get("/", authenticate, authorize(["Admin"]), getAllResults); // Only admins can fetch all results
+router.get("/:userId", authenticate, getUserResults); // Users can fetch their own results
 
 module.exports = router;

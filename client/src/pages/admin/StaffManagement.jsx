@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import Sidebar from "../../components/AdminSidebar";
 
 export default function StaffManagement() {
@@ -20,11 +20,15 @@ export default function StaffManagement() {
 
   // Lấy danh sách nhân viên từ API
   useEffect(() => {
+    fetchStaffMembers();
+  }, []);
+  
+  const fetchStaffMembers = () => {
     axios
       .get("/api/staff")
       .then((res) => setStaffMembers(res.data))
-      .catch((err) => console.error(err));
-  }, []);
+      .catch((err) => console.error("Error fetching staff:", err));
+  };
 
   // Xóa nhân viên
   const handleDelete = (id) => {

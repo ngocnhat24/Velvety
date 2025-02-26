@@ -11,19 +11,20 @@ exports.createBookingRequest = async (req, res) => {
 
 exports.getAllBookingRequests = async (req, res) => {
   try {
-    const bookingRequests = await BookingRequest.find().populate("serviceID consultantID");
+    const bookingRequests = await BookingRequest.find()
+      .populate('serviceID')
+      .populate('consultantID'); // Renamed from therapistID
     res.status(200).json(bookingRequests);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 exports.assignConsultant = async (req, res) => {
   try {
-    const { consultantId } = req.body;
+    const { consultantID } = req.body; // Renamed field
     const bookingRequest = await BookingRequest.findByIdAndUpdate(
       req.params.id,
-      { consultantId },
+      { consultantID },
       { new: true }
     );
 

@@ -1,9 +1,16 @@
 const express = require('express');
-const { createBookingRequest, getAllBookingRequests, updateBookingRequestStatus } = require('../controllers/bookingRequestController');
+const {
+  createBookingRequest,
+  getAllBookingRequests,
+  assignConsultant,
+  updateBookingRequestStatus
+} = require('../controllers/bookingRequestController');
+
 const router = express.Router();
 
-router.post('/', createBookingRequest); // Create a new booking request
-router.get('/', getAllBookingRequests); // Get all booking requests
-router.put('/:id/status', updateBookingRequestStatus); // Update booking request status
+router.post('/', createBookingRequest);
+router.get('/', getAllBookingRequests);
+router.put('/:id/assign-consultant', assignConsultant); // Updated therapist → consultant
+router.put('/:id/status', updateBookingRequestStatus);
 
 module.exports = router;

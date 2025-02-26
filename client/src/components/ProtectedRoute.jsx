@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = ({ allowedRoles }) => {
-  const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+  const token = localStorage.getItem("authToken") ?? sessionStorage.getItem("authToken");
   const roleName = localStorage.getItem("roleName");
 
   // Check if the route allows guests (unauthenticated users)
@@ -14,8 +14,8 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Outlet />;
   }
 
-  // Redirect unauthorized users to home page
-  return <Navigate to="/" replace />;
+  // Redirect unauthorized users to login page
+  return <Navigate to={token ? "/" : "/login"} replace />;
 };
 
 export default ProtectedRoute;

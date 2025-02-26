@@ -23,7 +23,7 @@ export default function LoginPage() {
       let redirectUrl = "/";
       if (roleName === "Manager") redirectUrl = "/dashboard";
       else if (roleName === "Staff") redirectUrl = "/view-booking";
-      else if (roleName === "Grapist") redirectUrl = "/home";
+      else if (roleName === "Consultant") redirectUrl = "/home";
       else if (roleName === "Admin") redirectUrl = "/staff-management";
       else if (roleName === "Customer") redirectUrl = "/about";
 
@@ -47,7 +47,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/auth/login", { email, password });
+      const response = await axios.post('/api/auth/login', { email, password });
       const { token, message, user } = response.data;
       const { roleName } = user;
 
@@ -60,7 +60,7 @@ export default function LoginPage() {
         localStorage.setItem("rememberedEmail", email);
       } else {
         sessionStorage.setItem("authToken", token);
-        localStorage.setItem("roleName", roleName);
+        sessionStorage.setItem("roleName", roleName);
         localStorage.removeItem("rememberedEmail");
       }
 
@@ -105,6 +105,7 @@ export default function LoginPage() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
             />
 

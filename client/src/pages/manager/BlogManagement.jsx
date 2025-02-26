@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../utils/axiosInstance"; // Use a custom Axios instance with auth
 import { useForm } from "react-hook-form";
 import Sidebar from "../../components/ManagerSidebar";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
-import { toast } from "react-toastify";
+import { toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const BlogManagement = () => {
@@ -15,7 +15,7 @@ const BlogManagement = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc"); // Default: A-Z
+  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     fetchBlogs();
@@ -45,7 +45,7 @@ const BlogManagement = () => {
       fetchBlogs();
     } catch (error) {
       console.error("Error saving blog", error);
-      toast.error("Failed to save blogs!");
+      toast.error("Failed to save blog!");
     }
   };
 
@@ -64,7 +64,7 @@ const BlogManagement = () => {
       setOpenDeleteDialog(false);
     } catch (error) {
       console.error("Error deleting blog", error);
-      toast.error("Failed to delete blogs!");
+      toast.error("Failed to delete blog!");
     }
   };
 
@@ -94,6 +94,7 @@ const BlogManagement = () => {
     <div className="flex">
       <Sidebar />
       <div className="p-6 w-full">
+        <ToastContainer />
         <h2 className="text-2xl font-bold mb-4">Blog Management</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-gray-100 p-4 rounded">
           <input
@@ -180,7 +181,6 @@ const BlogManagement = () => {
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={openDeleteDialog} onClose={closeDeleteConfirmation}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>Are you sure you want to delete this blog?</DialogContent>

@@ -58,11 +58,6 @@ export default function BlogDetail() {
             <h1 className="text-4xl font-semibold text-[#333] mb-4">{blogPost.title}</h1>
             <p className="text-lg text-[#777] mb-8">{new Date(blogPost.createdDate).toLocaleDateString()}</p>
           </div>
-          {blogPost.image && (
-            <div className="flex-shrink-0 w-full lg:w-auto">
-              <img src={blogPost.image} alt={blogPost.title} className="w-full max-w-[300px] h-auto mb-8 rounded-lg mx-auto lg:mx-0" />
-            </div>
-          )}
         </div>
         <div className="text-base text-[#555] leading-relaxed" dangerouslySetInnerHTML={{ __html: blogPost.content }} />
       </div>
