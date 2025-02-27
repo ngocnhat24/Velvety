@@ -71,27 +71,39 @@ exports.createConsultant = async (req, res) => {
             phoneNumber,
         });
 
+        // Save the User and check for errors
         await newUser.save();
+        console.log("User saved:", newUser);
+
+        // Initialize ratings to an empty array if not provided
+        const ratings = [];
 
         // Step 2: Create Consultant using the User's ID
         const newConsultant = new Consultant({
             user: newUser._id, // Link Consultant to User
             note: note || "",  // Default empty if not provided
             image: image || "", // Default empty if not provided
+            ratings: ratings, // Ensure ratings is an empty array
         });
 
+        // Save the Consultant and check for errors
         await newConsultant.save();
+        console.log("Consultant saved:", newConsultant);
 
-        res.status(201).json({ 
-            message: "Consultant created successfully", 
-            consultant: { ...newUser.toObject(), note: newConsultant.note, image: newConsultant.image } 
+        res.status(201).json({
+            message: "Consultant created successfully",
+            consultant: { ...newUser.toObject(), note: newConsultant.note, image: newConsultant.image }
         });
 
     } catch (error) {
-        console.error("Error saving consultant:", error);
-        res.status(500).json({ message: "Error saving consultant", error });
+        console.error("Error saving consultant:", error.message);
+        if (error.name === 'ValidationError') {
+            res.status(400).json({ message: "Validation error", error: error.message });
+        } else {
+            res.status(500).json({ message: "Error saving consultant", error: error.message });
+        }
     }
-};
+};``
 
 // Update Consultant Profile
 exports.updateConsultant = async (req, res) => {

@@ -9,10 +9,13 @@ router.get('/', authenticate, authorize(['Admin']), staffController.getAllStaff)
 // Get staff member by ID
 router.get('/:id', authenticate, authorize(['Admin', 'Staff']), staffController.getStaffById);
 
-// Update staff profile
-router.put('/:id', authenticate, authorize(['Staff']), staffController.updateStaff);
+// Update staff member (Admin only)
+router.put('/:id', authenticate, authorize(['Admin']), staffController.updateStaff);
 
 // Delete staff member (Admin only)
 router.delete('/:id', authenticate, authorize(['Admin']), staffController.deleteStaff);
+
+// Creat staff member (Admin only)
+router.post('/', authenticate, authorize(['Admin']), staffController.createStaff);
 
 module.exports = router;

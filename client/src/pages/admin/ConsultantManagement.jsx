@@ -30,6 +30,8 @@ export default function ConsultantManagement() {
         const res = await axios.get("/api/consultants");
         setConsultants(res.data.map(c => ({
             ...c,
+            note: c.note,
+            image: c.image, 
             verified: c.verified
         })));
     } catch (err) {
