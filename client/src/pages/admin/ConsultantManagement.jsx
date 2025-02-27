@@ -30,8 +30,7 @@ export default function ConsultantManagement() {
         const res = await axios.get("/api/consultants");
         setConsultants(res.data.map(c => ({
             ...c,
-            note: c.note,
-            image: c.image 
+            verified: c.verified
         })));
     } catch (err) {
         toast.error("Failed to fetch consultants");
@@ -50,37 +49,27 @@ export default function ConsultantManagement() {
 
   const handleFormSubmit = async (data) => {
     try {
+        const updatedData = {
+            ...data,
+            verified: Boolean(data.verified), // ✅ Ensure it's a boolean
+        };
+
         if (modalData?._id) {
-            // Update existing consultant
-            const res = await axios.put(`/api/consultants/${modalData._id}`, data);
-            setConsultants((prev) => 
-                prev.map((c) => (c._id === modalData._id ? { ...c, ...data } : c)) // ✅ Preserve existing fields
+            const res = await axios.put(`/api/consultants/${modalData._id}`, updatedData);
+            setConsultants((prev) =>
+                prev.map((c) => (c._id === modalData._id ? { ...c, ...res.data.consultant } : c))
             );
             toast.success("Consultant updated successfully");
         } else {
-            // Add new consultant
             const res = await axios.post("/api/consultants", { 
-                ...data, 
+                ...updatedData, 
                 password: "default123", 
                 roleName: "Consultant" 
             });
-
-            // ✅ Ensure new consultant has all expected fields before adding to state
-            const newConsultant = {
-                _id: res.data.consultant?._id || Date.now().toString(), // Fallback ID
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                phoneNumber: data.phoneNumber,
-                note: data.note || "",
-                image: data.image || "",
-            };
-
-            setConsultants((prev) => [...prev, newConsultant]); // ✅ Immediate UI update
+            setConsultants((prev) => [...prev, res.data.consultant]);
             toast.success("Consultant added successfully");
         }
     } catch (err) {
-        console.error("Error saving consultant:", err);
         toast.error("Error saving consultant");
     }
     setModalData(null);
@@ -103,6 +92,7 @@ export default function ConsultantManagement() {
               <th className="border p-2">Phone</th>
               <th className="border p-2">Note</th>
               <th className="border p-2">Image</th>
+              <th className="border p-2">Verified</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
@@ -115,6 +105,13 @@ export default function ConsultantManagement() {
                 <td className="border p-2">{consultant.phoneNumber}</td>
                 <td className="border p-2">{consultant.note}</td>
                 <td className="border p-2"> {consultant.image ? <img src={consultant.image} alt="Consultant" className="w-16 h-16 object-cover rounded" /> : "No Image"}</td>
+                <td>
+                  {consultant.verified ? (
+                    <span className="text-green-600 font-semibold">Enabled</span>
+                  ) : (
+                    <span className="text-red-600 font-semibold">Disabled</span>
+                  )}
+                </td>
                 <td className="border p-2">
                   <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-700" onClick={() => setModalData(consultant)}>Update</button>
                   <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700" onClick={() => handleDelete(consultant._id)}>Delete</button>
@@ -130,13 +127,31 @@ export default function ConsultantManagement() {
 }
 
 function ConsultantForm({ data, onSubmit, onClose }) {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { ...data, note: data.note || "", image: data.image || "" },
+    defaultValues: {
+      firstName: data.firstName || "",
+      lastName: data.lastName || "",
+      email: data.email || "",
+      phoneNumber: data.phoneNumber || "",
+      note: data.note || "",
+      image: data.image || "",
+      verified: data.verified || false,  // ✅ Ensure `verified` has a default boolean value
+    },
   });
 
   useEffect(() => {
-    reset({ ...data, note: data.note || "", image: data.image || "" });
+    console.log("Fetched Data:", data);  // ✅ Debug backend response
+    console.log("Verified Value from Backend:", data.verified);  
+    reset({
+      firstName: data.firstName || "",
+      lastName: data.lastName || "",
+      email: data.email || "",
+      phoneNumber: data.phoneNumber || "",
+      note: data.note || "",
+      image: data.image || "",
+      verified: !!data.verified, // ✅ Ensure it's always a boolean (true/false)
+    });
   }, [data, reset]);
 
   return (
@@ -150,6 +165,21 @@ function ConsultantForm({ data, onSubmit, onClose }) {
               {errors[field] && <p className="text-red-500 text-sm">{errors[field]?.message}</p>}
             </div>
           ))}
+
+          {/* Verified Toggle */}
+          <div className="flex items-center mt-4">
+            <input
+              type="checkbox"
+              {...register("verified")}
+              id="verified"
+              className="mr-2"
+              checked={watch("verified")}  // ✅ Ensure UI reflects state
+              defaultChecked={data.verified}
+              onChange={(e) => reset({ ...watch(), verified: e.target.checked })}  // ✅ Keep state in sync
+            />
+            <label htmlFor="verified" className="text-sm font-medium">Verified</label>
+          </div>
+
           <div className="flex justify-end space-x-2 mt-4">
             <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700" onClick={onClose}>Cancel</button>

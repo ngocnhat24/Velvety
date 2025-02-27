@@ -69,6 +69,7 @@ function App() {
           <Route path="/services" element={<ServiceGuest />} />
           <Route path="/services/:id" element={<ServiceDetails />} />
           <Route path="/consultant" element={<ConsultantGuest />} />
+          <Route path="/quiz" element={<Quiz />} />
         </Route>
 
         {/* Customer Pages */}
@@ -76,7 +77,6 @@ function App() {
           <Route path="/booking" element={<BookingPageCustomer />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/consultant-customer" element={<ConsultantCustomer />} />
-          <Route path="/quiz" element={<Quiz />} />
         </Route>
 
         {/* Manager Pages */}

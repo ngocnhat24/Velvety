@@ -23,6 +23,7 @@ exports.getAllConsultants = async (req, res) => {
                     lastName: 1,
                     email: 1,
                     phoneNumber: 1,
+                    verified: 1,
                     note: "$consultantData.note",
                     image: "$consultantData.image"
                 }
@@ -95,11 +96,11 @@ exports.createConsultant = async (req, res) => {
 // Update Consultant Profile
 exports.updateConsultant = async (req, res) => {
     try {
-        const { firstName, lastName, email, phoneNumber, note, image } = req.body;
+        const { firstName, lastName, email, phoneNumber, note, image, verified } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.params.id, 
-            { firstName, lastName, email, phoneNumber }, 
+            { firstName, lastName, email, phoneNumber, verified }, 
             { new: true }
         );
 
