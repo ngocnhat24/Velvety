@@ -6,6 +6,8 @@ import axios from "../../utils/axiosInstance";
 import Sidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const schema = yup.object().shape({
   firstName: yup.string().min(2, "First name must be at least 2 letters").required("First name is required"),
@@ -26,15 +28,15 @@ export default function StaffManagement() {
 
   const fetchStaff = async () => {
     try {
-        const res = await axios.get("/api/staff");
-        setStaff(res.data.map(s => ({
-            ...s,
-            verified: s.verified
-        })));
+      const res = await axios.get("/api/staff");
+      setStaff(res.data.map(s => ({
+        ...s,
+        verified: s.verified
+      })));
     } catch (err) {
-        toast.error("Failed to fetch staff");
+      toast.error("Failed to fetch staff");
     }
-};
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -48,73 +50,88 @@ export default function StaffManagement() {
 
   const handleFormSubmit = async (data) => {
     try {
-        const updatedData = {
-            ...data,
-            verified: Boolean(data.verified), // ✅ Ensure it's a boolean
-        };
+      const updatedData = {
+        ...data,
+        verified: Boolean(data.verified), // Ensure it's a boolean
+      };
 
-        if (modalData?._id) {
-            const res = await axios.put(`/api/staff/${modalData._id}`, updatedData);
-            setStaff((prev) =>
-                prev.map((s) => (s._id === modalData._id ? { ...s, ...res.data.staff } : s))
-            );
-            toast.success("Staff updated successfully");
-        } else {
-            const res = await axios.post("/api/staff", { 
-                ...updatedData, 
-                password: "default123", 
-                roleName: "Staff" 
-            });
-            setStaff((prev) => [...prev, res.data.staff]);
-            toast.success("Staff added successfully");
-        }
+      if (modalData?._id) {
+        const res = await axios.put(`/api/staff/${modalData._id}`, updatedData);
+        setStaff((prev) =>
+          prev.map((s) => (s._id === modalData._id ? { ...s, ...res.data.staff } : s))
+        );
+        toast.success("Staff updated successfully");
+      } else {
+        const res = await axios.post("/api/staff", { 
+          ...updatedData, 
+          password: "default123", 
+          roleName: "Staff" 
+        });
+        setStaff((prev) => [...prev, res.data.staff]);
+        toast.success("Staff added successfully");
+      }
     } catch (err) {
-        toast.error("Error saving staff");
+      toast.error("Error saving staff");
     }
     setModalData(null);
-};
+  };
 
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1 p-6 bg-white">
-        <h2 className="text-2xl font-bold mb-4">Staff Management</h2>
-        <button className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-700" onClick={() => setModalData({})}>
+      <div className="flex-1 p-6 bg-gray-100">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">Staff Management</h2>
+        <button
+          className="bg-blue-500 text-white px-6 py-2 rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300"
+          onClick={() => setModalData({})}
+        >
           Add Staff
         </button>
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-green-300">
-              <th className="border p-2">First Name</th>
-              <th className="border p-2">Last Name</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Phone</th>
-              <th className="border p-2">Verified</th>
-              <th className="border p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {staff.map((member) => (
-              <tr key={member._id} className="text-center border-b hover:bg-gray-100">
-                <td className="border p-2">{member.firstName}</td>
-                <td className="border p-2">{member.lastName}</td>
-                <td className="border p-2">{member.email}</td>
-                <td className="border p-2">{member.phoneNumber}</td>
-                <td>
-                  {member.verified ? (
-                    <span className="text-green-600 font-semibold">Enabled</span>
-                  ) : (
-                    <span className="text-red-600 font-semibold">Disabled</span>
-                  )}
-                </td>
-                <td className="border p-2">
-                  <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-700" onClick={() => setModalData(member)}>Update</button>
-                  <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700" onClick={() => handleDelete(member._id)}>Delete</button>
-                </td>
+        <div className="overflow-x-auto mt-6 bg-white shadow-md rounded-lg">
+          <table className="min-w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border-b p-3 text-left">First Name</th>
+                <th className="border-b p-3 text-left">Last Name</th>
+                <th className="border-b p-3 text-left">Email</th>
+                <th className="border-b p-3 text-left">Phone</th>
+                <th className="border-b p-3 text-left">Verified</th>
+                <th className="border-b p-3 text-left">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {staff.map((member) => (
+                <tr key={member._id} className="hover:bg-gray-100">
+                  <td className="border-b p-3">{member.firstName}</td>
+                  <td className="border-b p-3">{member.lastName}</td>
+                  <td className="border-b p-3">{member.email}</td>
+                  <td className="border-b p-3">{member.phoneNumber}</td>
+                  <td className="p-3 text-sm">
+                    {member.verified ? (
+                      <i className="fas fa-check-circle text-green-500"></i>
+                    ) : (
+                      <i className="fas fa-times-circle text-red-500"></i>
+                    )}
+                  </td>
+                  <td className="border-b p-3">
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2 hover:bg-blue-600 transition-all duration-200"
+                      onClick={() => setModalData(member)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
+                      onClick={() => handleDelete(member._id)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {modalData !== null && <StaffForm data={modalData} onSubmit={handleFormSubmit} onClose={() => setModalData(null)} />}
       </div>
     </div>
@@ -129,30 +146,32 @@ function StaffForm({ data, onSubmit, onClose }) {
       lastName: data.lastName || "",
       email: data.email || "",
       phoneNumber: data.phoneNumber || "",
-      verified: data.verified || false,  // ✅ Ensure `verified` has a default boolean value
+      verified: data.verified || false, // Ensure `verified` has a default boolean value
     },
   });
 
   useEffect(() => {
-    console.log("Fetched Data:", data);  // ✅ Debug backend response
-    console.log("Verified Value from Backend:", data.verified);  
     reset({
       firstName: data.firstName || "",
       lastName: data.lastName || "",
       email: data.email || "",
       phoneNumber: data.phoneNumber || "",
-      verified: !!data.verified, // ✅ Ensure it's always a boolean (true/false)
+      verified: !!data.verified, // Ensure it's always a boolean (true/false)
     });
   }, [data, reset]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg w-1/3">
-        <h2 className="text-xl font-bold mb-4">{data?._id ? "Update" : "Add"} Staff</h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800">{data?._id ? "Update" : "Add"} Staff</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {["firstName", "lastName", "email", "phoneNumber"].map((field) => (
             <div key={field}>
-              <input {...register(field)} className="w-full p-2 border rounded mb-2" placeholder={field.charAt(0).toUpperCase() + field.slice(1)} />
+              <input
+                {...register(field)}
+                className="w-full p-3 border-2 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              />
               {errors[field] && <p className="text-red-500 text-sm">{errors[field]?.message}</p>}
             </div>
           ))}
@@ -164,16 +183,23 @@ function StaffForm({ data, onSubmit, onClose }) {
               {...register("verified")}
               id="verified"
               className="mr-2"
-              checked={watch("verified")}  // ✅ Ensure UI reflects state
-              defaultChecked={data.verified}
-              onChange={(e) => reset({ ...watch(), verified: e.target.checked })}  // ✅ Keep state in sync
+              checked={watch("verified")}
+              onChange={(e) => reset({ ...watch(), verified: e.target.checked })}
             />
             <label htmlFor="verified" className="text-sm font-medium">Verified</label>
           </div>
 
-          <div className="flex justify-end space-x-2 mt-4">
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
-            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700" onClick={onClose}>Cancel</button>
+          <div className="flex justify-end space-x-4 mt-6">
+            <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-all duration-300">
+              Save
+            </button>
+            <button
+              type="button"
+              className="bg-gray-500 text-white px-6 py-2 rounded-full hover:bg-gray-600 transition-all duration-300"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>

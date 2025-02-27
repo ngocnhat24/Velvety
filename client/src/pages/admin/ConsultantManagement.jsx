@@ -6,8 +6,9 @@ import axios from "../../utils/axiosInstance";
 import Sidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
-
+// Validation schema for form inputs
 const schema = yup.object().shape({
   firstName: yup.string().min(2, "First name must be at least 2 letters").required("First name is required"),
   lastName: yup.string().min(2, "Last name must be at least 2 letters").required("Last name is required"),
@@ -27,17 +28,17 @@ export default function ConsultantManagement() {
 
   const fetchConsultants = async () => {
     try {
-        const res = await axios.get("/api/consultants");
-        setConsultants(res.data.map(c => ({
-            ...c,
-            note: c.note,
-            image: c.image, 
-            verified: c.verified
-        })));
+      const res = await axios.get("/api/consultants");
+      setConsultants(res.data.map(c => ({
+        ...c,
+        note: c.note,
+        image: c.image,
+        verified: c.verified
+      })));
     } catch (err) {
-        toast.error("Failed to fetch consultants");
+      toast.error("Failed to fetch consultants");
     }
-};
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -51,77 +52,81 @@ export default function ConsultantManagement() {
 
   const handleFormSubmit = async (data) => {
     try {
-        const updatedData = {
-            ...data,
-            verified: Boolean(data.verified), // ✅ Ensure it's a boolean
-        };
+      const updatedData = {
+        ...data,
+        verified: Boolean(data.verified),
+      };
 
-        if (modalData?._id) {
-            const res = await axios.put(`/api/consultants/${modalData._id}`, updatedData);
-            setConsultants((prev) =>
-                prev.map((c) => (c._id === modalData._id ? { ...c, ...res.data.consultant } : c))
-            );
-            toast.success("Consultant updated successfully");
-        } else {
-            const res = await axios.post("/api/consultants", { 
-                ...updatedData, 
-                password: "default123", 
-                roleName: "Consultant" 
-            });
-            setConsultants((prev) => [...prev, res.data.consultant]);
-            toast.success("Consultant added successfully");
-        }
+      if (modalData?._id) {
+        const res = await axios.put(`/api/consultants/${modalData._id}`, updatedData);
+        setConsultants((prev) =>
+          prev.map((c) => (c._id === modalData._id ? { ...c, ...res.data.consultant } : c))
+        );
+        toast.success("Consultant updated successfully");
+      } else {
+        const res = await axios.post("/api/consultants", {
+          ...updatedData,
+          password: "default123",
+          roleName: "Consultant"
+        });
+        setConsultants((prev) => [...prev, res.data.consultant]);
+        toast.success("Consultant added successfully");
+      }
     } catch (err) {
-        toast.error("Error saving consultant");
+      toast.error("Error saving consultant");
     }
     setModalData(null);
-};
+  };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-100">
       <Sidebar />
-      <div className="flex-1 p-6 bg-white">
-        <h2 className="text-2xl font-bold mb-4">Consultant Management</h2>
-        <button className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-700" onClick={() => setModalData({})}>
+      <div className="flex-1 p-8 bg-white shadow-lg rounded-lg">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Consultant Management</h2>
+        <button className="bg-blue-500  text-white px-6 py-3 rounded-full mb-6 hover:bg-green-600 transition-all duration-300" onClick={() => setModalData({})}>
           Add Consultant
         </button>
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-green-300">
-              <th className="border p-2">First Name</th>
-              <th className="border p-2">Last Name</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Phone</th>
-              <th className="border p-2">Note</th>
-              <th className="border p-2">Image</th>
-              <th className="border p-2">Verified</th>
-              <th className="border p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {consultants.map((consultant) => (
-              <tr key={consultant._id} className="text-center border-b hover:bg-gray-100">
-                <td className="border p-2">{consultant.firstName}</td>
-                <td className="border p-2">{consultant.lastName}</td>
-                <td className="border p-2">{consultant.email}</td>
-                <td className="border p-2">{consultant.phoneNumber}</td>
-                <td className="border p-2">{consultant.note}</td>
-                <td className="border p-2"> {consultant.image ? <img src={consultant.image} alt="Consultant" className="w-16 h-16 object-cover rounded" /> : "No Image"}</td>
-                <td>
-                  {consultant.verified ? (
-                    <span className="text-green-600 font-semibold">Enabled</span>
-                  ) : (
-                    <span className="text-red-600 font-semibold">Disabled</span>
-                  )}
-                </td>
-                <td className="border p-2">
-                  <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-700" onClick={() => setModalData(consultant)}>Update</button>
-                  <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700" onClick={() => handleDelete(consultant._id)}>Delete</button>
-                </td>
+        <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">First Name</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Last Name</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Email</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Phone</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Note</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Image</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Verified</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {consultants.map((consultant) => (
+                <tr key={consultant._id} className="border-b hover:bg-gray-50 transition-all">
+                  <td className="p-3 text-sm">{consultant.firstName}</td>
+                  <td className="p-3 text-sm">{consultant.lastName}</td>
+                  <td className="p-3 text-sm">{consultant.email}</td>
+                  <td className="p-3 text-sm">{consultant.phoneNumber}</td>
+                  <td className="p-3 text-sm">{consultant.note}</td>
+                  <td className="p-3 text-sm">
+                    {consultant.image ? <img src={consultant.image} alt="Consultant" className="w-12 h-12 object-cover rounded-full" /> : "No Image"}
+                  </td>
+                  <td className="p-3 text-sm">
+                    {consultant.verified ? (
+                      <i className="fas fa-check-circle text-green-500"></i>
+                    ) : (
+                      <i className="fas fa-times-circle text-red-500"></i>
+                    )}
+                  </td>
+                  <td className="p-3 text-sm">
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 mr-2" onClick={() => setModalData(consultant)}><FaEdit /></button>
+                    <button className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600" onClick={() => handleDelete(consultant._id)}><FaTrash /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {modalData !== null && <ConsultantForm data={modalData} onSubmit={handleFormSubmit} onClose={() => setModalData(null)} />}
       </div>
     </div>
@@ -138,13 +143,11 @@ function ConsultantForm({ data, onSubmit, onClose }) {
       phoneNumber: data.phoneNumber || "",
       note: data.note || "",
       image: data.image || "",
-      verified: data.verified || false,  // ✅ Ensure `verified` has a default boolean value
+      verified: data.verified || false,
     },
   });
 
   useEffect(() => {
-    console.log("Fetched Data:", data);  // ✅ Debug backend response
-    console.log("Verified Value from Backend:", data.verified);  
     reset({
       firstName: data.firstName || "",
       lastName: data.lastName || "",
@@ -152,43 +155,45 @@ function ConsultantForm({ data, onSubmit, onClose }) {
       phoneNumber: data.phoneNumber || "",
       note: data.note || "",
       image: data.image || "",
-      verified: !!data.verified, // ✅ Ensure it's always a boolean (true/false)
+      verified: !!data.verified,
     });
   }, [data, reset]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg w-1/3">
-        <h2 className="text-xl font-bold mb-4">{data?._id ? "Update" : "Add"} Consultant</h2>
+      <div className="bg-white p-8 rounded-lg w-1/3 shadow-xl">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">{data?._id ? "Update Consultant" : "Add Consultant"}</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           {["firstName", "lastName", "email", "phoneNumber", "note", "image"].map((field) => (
-            <div key={field}>
-              <input {...register(field)} className="w-full p-2 border rounded mb-2" placeholder={field.charAt(0).toUpperCase() + field.slice(1)} />
-              {errors[field] && <p className="text-red-500 text-sm">{errors[field]?.message}</p>}
+            <div key={field} className="mb-4">
+              <input
+                {...register(field)}
+                className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              />
+              {errors[field] && <p className="text-red-500 text-sm mt-1">{errors[field]?.message}</p>}
             </div>
           ))}
 
           {/* Verified Toggle */}
-          <div className="flex items-center mt-4">
+          <div className="flex items-center mb-6">
             <input
               type="checkbox"
               {...register("verified")}
               id="verified"
-              className="mr-2"
-              checked={watch("verified")}  // ✅ Ensure UI reflects state
-              defaultChecked={data.verified}
-              onChange={(e) => reset({ ...watch(), verified: e.target.checked })}  // ✅ Keep state in sync
+              className="mr-3"
+              checked={watch("verified")}
+              onChange={() => reset({ ...watch(), verified: !watch("verified") })}
             />
-            <label htmlFor="verified" className="text-sm font-medium">Verified</label>
+            <label htmlFor="verified" className="text-gray-700 font-medium">Verified</label>
           </div>
 
-          <div className="flex justify-end space-x-2 mt-4">
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
-            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700" onClick={onClose}>Cancel</button>
+          <div className="flex justify-end space-x-4">
+            <button type="submit" className="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600">Save</button>
+            <button type="button" className="bg-gray-500 text-white px-6 py-3 rounded-full hover:bg-gray-600" onClick={onClose}>Cancel</button>
           </div>
         </form>
       </div>
     </div>
   );
 }
-
