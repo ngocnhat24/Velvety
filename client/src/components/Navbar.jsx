@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import axios from "axios";
+import axios from '../utils/axiosInstance';
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
-  
   const [token, setToken] = useState(localStorage.getItem("authToken") || sessionStorage.getItem("authToken"));
-  console.log("Token value:", token);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -20,19 +21,38 @@ const Navbar = () => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserbyId();
+    }
+  }, [userId]); // Chạy lại khi userId thay đổi
+
+  const fetchUserbyId = async () => {
+    try {
+
+      const response = await axios.get(`/api/customers/${userId}`);
+      console.log("API response:", res.data); // ✅ Check response structure
+      setFirstName(response.data.firstName);
+      setLastName(response.data.lastName);
+    } catch (err) {
+      console.error("Error fetching user:", err.response?.data || err.message);
+    }
+  };
+
+
+
   const isLoginPage = location.pathname === "/login" || location.pathname === "/register";
 
   const handleLogout = () => {
     if (!window.confirm("Are you sure you want to log out?")) return;
     axios.post("/api/auth/logout")
       .then(() => {
-        // ✅ Clear auth data from storage
         localStorage.removeItem("authToken");
         localStorage.removeItem("roleName");
         sessionStorage.removeItem("authToken");
         sessionStorage.removeItem("roleName");
-
-        // ✅ Redirect user to login page
         navigate("/login");
       })
       .catch(error => {
@@ -42,12 +62,10 @@ const Navbar = () => {
 
   return (
     <div className="w-full h-[80px] bg-[#F9FAEF] flex items-center justify-between px-6 md:px-12 lg:px-10 shadow-md relative z-10">
-      {/* Logo */}
       <NavLink to="/" className="w-[150px] h-[50px]">
         <div className="w-full h-full bg-[url(/images/logo.png)] bg-cover bg-no-repeat"></div>
       </NavLink>
 
-      {/* Mobile Menu Button */}
       <button
         className="md:hidden text-[#E27585] text-[30px] z-20"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -55,16 +73,15 @@ const Navbar = () => {
         ☰
       </button>
 
-      {/* Navigation Links */}
       <nav
         className={`absolute top-[80px] left-0 w-full bg-[#F9FAEF] flex flex-col items-center pacifico-regular gap-4 p-6 shadow-lg rounded-md transition-transform duration-300 md:static md:w-auto md:p-0 md:flex-row md:shadow-none md:gap-10 ${isMobileMenuOpen ? "flex" : "hidden md:flex"}`}
       >
-        {["About","Services", "Blog", "Consultant", "Quiz"].map((item) => (
+        {["About", "Services", "Blog", "Consultant", "Quiz"].map((item) => (
           <NavLink
             key={item}
-            to={`/${item.toLowerCase()}`} // Removed -customer suffix
+            to={`/${item.toLowerCase()}`}
             className={({ isActive }) =>
-              `text-center text-[18px] font-semibold transition-colors ${isActive ? "text-[#fadade]" : "text-[#E27585] hover:text-[#fadade]"}` 
+              `text-center text-[18px] font-semibold transition-colors ${isActive ? "text-[#fadade]" : "text-[#E27585] hover:text-[#fadade]"}`
             }
           >
             {item}
@@ -72,7 +89,6 @@ const Navbar = () => {
         ))}
       </nav>
 
-      {/* User Profile / Login Button */}
       {!isLoginPage && (
         <div className="relative">
           {token ? (
@@ -87,6 +103,9 @@ const Navbar = () => {
 
           {isProfilePopupOpen && token && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+              <div className="block px-4 py-2 text-gray-800">
+                Welcome, {firstName} {lastName}
+              </div>
               <NavLink to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
                 Profile
               </NavLink>

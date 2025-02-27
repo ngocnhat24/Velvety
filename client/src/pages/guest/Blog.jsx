@@ -68,6 +68,13 @@ export default function Blog() {
             onReadMore={() => handleReadMore(post._id)}
           />
         ))}
+        {/* Booking Now Button */}
+        <button
+          onClick={() => navigate('/services')}
+          className="fixed bottom-4 right-4 px-6 py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition"
+        >
+          Book Now
+        </button>
       </div>
       <Footer />
     </div>

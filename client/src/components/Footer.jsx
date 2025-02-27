@@ -2,76 +2,55 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="w-full bg-[#f7f5f4] py-5 px-2.5 mt-5" style={{ boxShadow: "0 -4px 6px rgba(0, 0, 0, 0.1)" }}>
+    <div className="w-full bg-[#f7f5f4] py-10 px-5" style={{ boxShadow: "0 -4px 6px rgba(0, 0, 0, 0.1)" }}>
 
-      {/* Tiêu đề chính */}
-      <div className="text-center mb-6">
-        <h2 className="text-4xl font-normal tracking-tight">Let's Stay Social</h2>
-      </div>
-
-      {/* Mạng xã hội */}
-      <div className="flex justify-center space-x-6 mb-8">
-        <div className="w-10 h-10 bg-[url(/images/facebook.png)] bg-cover"></div>
-        <div className="w-10 h-10 bg-[url(/images/instagram.png)] bg-cover"></div>
-        <div className="w-10 h-10 bg-[url(/images/twitter.png)] bg-cover"></div>
-        <div className="w-10 h-10 bg-[url(/images/youtube.png)] bg-cover"></div>
-      </div>
-
-      {/* Grid 4 cột */}
-      <div className="max-w-6xl mx-auto grid grid-cols-4 gap-10 text-center">
-        {/* Cột Extras */}
-        <div>
-          <h3 className="text-xl font-bold">Extras</h3>
-          <ul className="mt-2 space-y-1">
-            <li>Store Locator</li>
-            <li>Events</li>
-            <li>FAQs</li>
-          </ul>
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:justify-between">
+        {/* Tiêu đề chính */}
+        <div className="lg:w-1/4 flex flex-col items-start mb-8">
+          <h2 className="text-4xl font-normal tracking-tight pacifico-regular text-[#E27585] whitespace-nowrap mb-4">Take care your skin</h2>
+          <p className="mb-4 text-left">No Parabens, Phthalates, Sulfates, Mineral Oil, Petroleum, or Other Harmful Ingredients - We Promise!</p>
+          <p className="text-lg mb-2 text-left">
+            © 2025 <span className="font-normal tracking-tight pacifico-regular text-[#E27585]">Velvety</span> - The Natural Skin Care Authority®
+          </p>
         </div>
 
-        {/* Cột About */}
-        <div>
-          <h3 className="text-xl font-bold">About</h3>
-          <ul className="mt-2 space-y-1">
-            <li>Our Story</li>
-            <li>Our People</li>
-            <li>Our News</li>
-            <li>Mentions</li>
-          </ul>
+        {/* Divider */}
+        <div className="hidden lg:block lg:w-px bg-gray-300 mx-10"></div>
+
+        {/* Grid 3 cột */}
+        <div className="lg:w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-left">
+          {/* Thông tin dưới cùng */}
+          <div>
+            <h3 className="text-2xl font-normal tracking-tight pacifico-regular text-[#E27585] mb-4">You need support</h3>
+            <p className="text-2xl mt-2.5 mb-5"><strong>0823263509</strong></p>
+            <p><strong>Adress:</strong> Lot E2a-7, Road D1, D1 Street, Long Thanh My, Thu Duc City, Ho Chi Minh City 700000</p>
+            <p className="mt-1.5"><strong>Email:</strong> ngocnhat0103@gmail.com</p>
+          </div>
+
+          {/* Cột Extras */}
+          <div>
+            <h3 className="text-2xl font-normal tracking-tight pacifico-regular text-[#E27585] mb-4">Usefull Link</h3>
+            <ul className="space-y-2">
+              <li><a href="/about" className="hover:text-[#E27585]">About</a></li>
+              <li><a href="/services" className="hover:text-[#E27585]">Service</a></li>
+              <li><a href="/blog" className="hover:text-[#E27585]">Blog</a></li>
+              <li><a href="/consultant" className="hover:text-[#E27585]">Consultant</a></li>
+              <li><a href="/quiz" className="hover:text-[#E27585]">Quiz</a></li>
+            </ul>
+          </div>
+
+          {/* Cột About */}
+          <div>
+            <h3 className="text-2xl font-normal tracking-tight pacifico-regular text-[#E27585] mb-4">Customer Support</h3>
+            <ul className="space-y-2">
+              <li><a href="/about" className="hover:text-[#E27585]">About</a></li>
+              <li><a href="/services" className="hover:text-[#E27585]">Service</a></li>
+              <li><a href="/blog" className="hover:text-[#E27585]">Blog</a></li>
+              <li><a href="/consultant" className="hover:text-[#E27585]">Consultant</a></li>
+              <li><a href="/quiz" className="hover:text-[#E27585]">Quiz</a></li>
+            </ul>
+          </div>
         </div>
-
-        {/* Cột Results */}
-        <div>
-          <h3 className="text-xl font-bold">Results</h3>
-          <ul className="mt-2 space-y-1">
-            <li>Testimonials</li>
-            <li>Nature + Science</li>
-            <li>Skincare Trusted</li>
-            <li>For Generations</li>
-          </ul>
-        </div>
-
-        {/* Cột What's New */}
-        <div>
-          <h3 className="text-xl font-bold">What's New</h3>
-          <ul className="mt-2 space-y-1">
-            <li>2024 Catalog</li>
-            <li>Reviva's Reward Points</li>
-            <li>Reviva's Newest Products</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Chia cắt bằng đường line */}
-      <div className="w-full max-w-6xl mx-auto h-px bg-gray-300 my-8"></div>
-
-      {/* Thông tin dưới cùng */}
-      <div className="max-w-6xl mx-auto text-center text-gray-700">
-        <p>No Parabens, Phthalates, Sulfates, Mineral Oil, Petroleum, or Other Harmful Ingredients - We Promise!</p>
-        <p className="mt-4 text-lg">
-          © 2025 <span className="font-bold">Velvety</span> - The Natural Skin Care Authority®
-        </p>
-        <p className="mt-2">1788 South Metro Pkwy | Dayton, Ohio 45459 | Toll-Free: 800.257.7774 | Phone: 856.428.3885</p>
       </div>
     </div>
   )
