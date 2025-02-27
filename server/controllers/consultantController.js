@@ -1,11 +1,34 @@
 const Consultant = require('../models/Consultant');
 const User = require('../models/User');
-const { validationResult } = require('express-validator');
+const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
 
 // Get all consultants
 exports.getAllConsultants = async (req, res) => {
     try {
-        const consultants = await Consultant.find().populate('user', '-password');
+        const consultants = await User.aggregate([
+            { $match: { roleName: "Consultant" } }, // Filter consultants
+            {
+                $lookup: {
+                    from: "consultants", // Collection name of Consultant
+                    localField: "_id", // User's ID
+                    foreignField: "user", // Consultant's userId field
+                    as: "consultantData"
+                }
+            },
+            { $unwind: { path: "$consultantData", preserveNullAndEmptyArrays: true } }, // Flatten consultantData
+            {
+                $project: {
+                    firstName: 1,
+                    lastName: 1,
+                    email: 1,
+                    phoneNumber: 1,
+                    note: "$consultantData.note",
+                    image: "$consultantData.image"
+                }
+            }
+        ]);
+
         res.json(consultants);
     } catch (error) {
         res.status(500).json({ message: "Error fetching consultants", error: error.message });
@@ -15,7 +38,7 @@ exports.getAllConsultants = async (req, res) => {
 // Get consultant by ID
 exports.getConsultantById = async (req, res) => {
     try {
-        const consultant = await Consultant.findById(req.params.id).populate('user', '-password');
+        const consultant = await User.findOne({ _id: req.params.id, roleName: "Consultant" }).select('-password');
         if (!consultant) return res.status(404).json({ message: "Consultant not found" });
 
         res.json(consultant);
@@ -24,33 +47,112 @@ exports.getConsultantById = async (req, res) => {
     }
 };
 
-// Update consultant profile
+// Create Consultant
+exports.createConsultant = async (req, res) => {
+    try {
+        console.log("Request Body:", req.body);
+
+        const { firstName, lastName, email, password, phoneNumber, note, image } = req.body;
+
+        let existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "User with this email already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            roleName: "Consultant",
+            phoneNumber,
+        });
+
+        await newUser.save();
+
+        // Step 2: Create Consultant using the User's ID
+        const newConsultant = new Consultant({
+            user: newUser._id, // Link Consultant to User
+            note: note || "",  // Default empty if not provided
+            image: image || "", // Default empty if not provided
+        });
+
+        await newConsultant.save();
+
+        res.status(201).json({ 
+            message: "Consultant created successfully", 
+            consultant: { ...newUser.toObject(), note: newConsultant.note, image: newConsultant.image } 
+        });
+
+    } catch (error) {
+        console.error("Error saving consultant:", error);
+        res.status(500).json({ message: "Error saving consultant", error });
+    }
+};
+
+// Update Consultant Profile
 exports.updateConsultant = async (req, res) => {
     try {
-        const { note, image } = req.body;
-        const updatedConsultant = await Consultant.findByIdAndUpdate(
+        const { firstName, lastName, email, phoneNumber, note, image } = req.body;
+
+        const user = await User.findByIdAndUpdate(
             req.params.id, 
+            { firstName, lastName, email, phoneNumber }, 
+            { new: true }
+        );
+
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const consultant = await Consultant.findOneAndUpdate(
+            { user: req.params.id },
             { note, image },
             { new: true }
-        ).populate('user', '-password');
+        );
 
-        if (!updatedConsultant) return res.status(404).json({ message: "Consultant not found" });
+        if (!consultant) return res.status(404).json({ message: "Consultant not found" });
 
-        res.json({ message: "Consultant profile updated successfully", consultant: updatedConsultant });
+        res.json({ 
+            message: "Consultant updated successfully", 
+            consultant: { ...user.toObject(), note: consultant.note, image: consultant.image } 
+        });
+
     } catch (error) {
         res.status(500).json({ message: "Error updating consultant profile", error: error.message });
     }
 };
 
+
 // Delete consultant (Admin only)
 exports.deleteConsultant = async (req, res) => {
     try {
-        const consultant = await Consultant.findByIdAndDelete(req.params.id);
-        if (!consultant) return res.status(404).json({ message: "Consultant not found" });
+        // Validate ID format
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
 
-        await User.findByIdAndDelete(consultant.user); // Delete associated user account
-        res.json({ message: "Consultant deleted successfully" });
+        console.log("Request ID:", req.params.id);
+        console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(req.params.id));
+        
+        const consultant = await Consultant.findOne({ user: req.params.id });
+        
+        console.log("Consultant found:", consultant);
+
+        if (!consultant) {
+            return res.status(404).json({ message: "Consultant not found" });
+        }
+
+        // Delete Consultant profile
+        await Consultant.findOneAndDelete({ user: req.params.id });
+
+        // Delete the associated User
+        await User.findByIdAndDelete(req.params.id);
+
+        res.json({ message: "Consultant and associated user deleted successfully" });
+
     } catch (error) {
+        console.error("Error deleting consultant:", error);
         res.status(500).json({ message: "Error deleting consultant", error: error.message });
     }
 };
@@ -60,12 +162,12 @@ exports.addRating = async (req, res) => {
     try {
         const { rating, comment } = req.body;
         const consultant = await Consultant.findById(req.params.id);
+
         if (!consultant) return res.status(404).json({ message: "Consultant not found" });
 
         await consultant.addRating(req.user.id, rating, comment);
         res.json({ message: "Rating added/updated successfully", consultant });
     } catch (error) {
-        res.status(500).json({ message: "Error adding rating", error });
+        res.status(500).json({ message: "Error adding rating", error: error.message });
     }
 };
-

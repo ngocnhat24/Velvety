@@ -10,7 +10,7 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { name: "Therapist", path: "/therapist-management" },
+    { name: "Consultant", path: "/consultant-management" },
     { name: "Staff", path: "/staff-management" },
   ];
 

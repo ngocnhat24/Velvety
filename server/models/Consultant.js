@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const consultantSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     ratings: [{
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: false },
         rating: { type: Number, required: true, min: 1, max: 5 },
         comment: { type: String },
         createdAt: { type: Date, default: Date.now }
@@ -34,3 +34,5 @@ consultantSchema.methods.addRating = async function (userId, rating, comment) {
 
     return this.save();
 };
+
+module.exports = mongoose.model("Consultant", consultantSchema);

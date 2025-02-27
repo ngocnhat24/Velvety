@@ -15,7 +15,7 @@ import BlogDetail from "./pages/guest/BlogDetail.jsx";
 import ServiceManagement from "./pages/manager/ServiceManagement.jsx";
 import StaffManagement from "./pages/admin/StaffManagement.jsx";
 import Dashboard from "./pages/manager/Dashboard.jsx";
-import TherapistManagement from "./pages/admin/ConsultantManagement.jsx";
+import ConsultantManagement from "./pages/admin/ConsultantManagement.jsx";
 import ResetPassword from "./pages/guest/ResetPassword.jsx";
 import BlogManagement from "./pages/manager/BlogManagement.jsx";
 import QuestionManagement from "./pages/manager/QuestionManagement.jsx";
@@ -90,7 +90,7 @@ function App() {
         {/* Admin Pages */}
         <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route path="/staff-management" element={<StaffManagement />} />
-          <Route path="/therapist-management" element={<TherapistManagement />} />
+          <Route path="/consultant-management" element={<ConsultantManagement />} />
         </Route>
 
         {/* Staff Pages */}

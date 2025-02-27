@@ -10,8 +10,11 @@ router.get('/', authenticate, consultantController.getAllConsultants);
 // Get consultant by ID
 router.get('/:id', authenticate, consultantController.getConsultantById);
 
+// Create a new consultant (Admin only)
+router.post('/', authenticate, authorize(['Admin']), consultantController.createConsultant);
+
 // Update consultant profile
-router.put('/:id', authenticate, authorize(['Consultant']), consultantController.updateConsultant);
+router.put('/:id', authenticate, authorize(['Consultant', 'Admin']), consultantController.updateConsultant);
 
 // Delete consultant (Admin only)
 router.delete('/:id', authenticate, authorize(['Admin']), consultantController.deleteConsultant);

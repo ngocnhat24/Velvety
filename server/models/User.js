@@ -6,7 +6,7 @@ const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   roleName: { type: String, enum: ["Customer", "Staff", "Manager", "Consultant", "Admin"], required: true },
-  phoneNumber: { type: String },
+  phoneNumber: { type: String , unique: true},
   createdDate: { type: Date, default: Date.now },
   updatedDate: { type: Date, default: Date.now },
   verified: { type: Boolean, default: false }, 
