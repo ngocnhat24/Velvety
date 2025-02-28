@@ -55,25 +55,33 @@ exports.assignService = async (req, res) => {
 
 exports.updateBookingRequestStatus = async (req, res) => {
   try {
+    console.log("Request body:", req.body); // Debug
+
     const bookingRequest = await BookingRequest.findById(req.params.id);
-  
-    if (!bookingRequest) {
-      return res.status(404).json({ message: 'Booking Request not found' });
-    }
+    if (!bookingRequest) return res.status(404).json({ message: 'Booking Request not found' });
+
     const validTransitions = {
-      "not yet": "progressing",
-      "progressing": "finishing",
+      "Pending": "Confirmed",
+      "Confirmed": "Completed",
+      "Completed": "Cancelled",
     };
+
     const currentStatus = bookingRequest.status;
     const newStatus = req.body.status;
+
+    if (!newStatus) return res.status(400).json({ message: "Status is required" });
+
     if (validTransitions[currentStatus] !== newStatus) {
       return res.status(400).json({ message: `Invalid status transition from '${currentStatus}' to '${newStatus}'` });
     }
+
     bookingRequest.status = newStatus;
     await bookingRequest.save();
+
     await logUserActivity("Booking Request Status Updated")(req, res, () => {});
     res.status(200).json(bookingRequest);
   } catch (error) {
+    console.error("Error updating status:", error);
     res.status(500).json({ error: error.message });
   }
 };

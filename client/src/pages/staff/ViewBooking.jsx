@@ -1,43 +1,122 @@
 import React, { useEffect, useState } from "react";
-import StaffSidebar from "../../components/StaffSidebar"; // Đảm bảo đường dẫn đúng
+import StaffSidebar from "../../components/StaffSidebar";
 
 const ViewBooking = () => {
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedConsultant, setSelectedConsultant] = useState(null);
+  const [consultantDetails, setConsultantDetails] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/bookings") 
-      .then((res) => res.json())
-      .then((data) => setBookings(data))
-      .catch((err) => console.error("Error fetching bookings:", err));
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch("/api/booking-requests");
+        if (!response.ok) throw new Error(`Failed to fetch bookings: ${response.status}`);
+        const data = await response.json();
+        setBookings(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookings();
   }, []);
 
+  const handleConsultantClick = async (consultantID) => {
+    try {
+      const response = await fetch(`/api/users/${consultantID}`);
+      if (!response.ok) throw new Error("Failed to fetch consultant details");
+      const data = await response.json();
+      setConsultantDetails(data);
+      setSelectedConsultant(true);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      const response = await fetch(`/api/booking-requests/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Failed to update status");
+      setBookings((prev) => prev.map((booking) => (booking._id === id ? { ...booking, status: newStatus } : booking)));
+    } catch (err) {
+      alert(err.message);
+      setError(err.message);
+    }
+  };
+
   return (
-    <div style={{ display: "flex" }}>
-      <StaffSidebar /> {/* Sidebar hiển thị bên trái */}
-      <div style={{ flex: 1, padding: "20px" }}>
-        <h2>Booking List</h2>
-        <table border="1">
+    <div className="flex">
+      <StaffSidebar />
+      <div className="p-4 w-full">
+        <h1 className="text-2xl font-bold mb-4">View Bookings</h1>
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        <table className="min-w-full bg-white border border-gray-200">
           <thead>
-            <tr>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Therapist</th>
-              <th>Status</th>
+            <tr className="bg-gray-200">
+              <th className="border p-2 text-center">Service Name</th>
+              <th className="border p-2 text-center">Date</th>
+              <th className="border p-2 text-center">Time</th>
+              <th className="border p-2 text-center">Consultant</th>
+              <th className="border p-2 text-center">Status</th>
+              <th className="border p-2 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {bookings.map((booking) => (
-              <tr key={booking._id}>
-                <td>{booking.serviceID?.name || "N/A"}</td>
-                <td>{new Date(booking.date).toLocaleDateString()}</td>
-                <td>{booking.time}</td>
-                <td>{booking.therapistID?.name || "Not Assigned"}</td>
-                <td>{booking.status}</td>
+              <tr key={booking._id} className="border">
+                <td className="border p-2 text-center">{booking.serviceName}</td>
+                <td className="border p-2 text-center">{new Date(booking.date).toLocaleDateString()}</td>
+<td className="border p-2 text-center">{booking.time}</td>
+                <td
+                  className="border p-2 text-center cursor-pointer text-blue-500"
+                  onClick={() => handleConsultantClick(booking.consultantID)}
+                >
+                  {booking.consultantID || "Not Assigned"}
+                </td>
+                <td className="border p-2 text-center">
+                  <span className={`p-1 rounded ${
+                    booking.status === "Pending" ? "bg-yellow-200" :
+                    booking.status === "Confirmed" ? "bg-blue-200" :
+                    booking.status === "Completed" ? "bg-green-200" : "bg-red-200"
+                  }`}>{booking.status}</span>
+                </td>
+                <td className="border p-2 text-center">
+                  <select
+                    value={booking.status}
+                    onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
+                    className="border p-1"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        {selectedConsultant && consultantDetails && (
+          <div className="mt-4 p-4 border border-gray-300">
+            <h3 className="text-xl font-semibold">Consultant Details</h3>
+            <p><strong>First Name:</strong> {consultantDetails.firstName}</p>
+            <p><strong>Last Name:</strong> {consultantDetails.lastName}</p>
+            <p><strong>Email:</strong> {consultantDetails.email}</p>
+            <p><strong>Phone:</strong> {consultantDetails.phoneNumber || "Not Available"}</p>
+            <p><strong>Role:</strong> {consultantDetails.roleName}</p>
+            <p><strong>Verified:</strong> {consultantDetails.verified ? "Yes" : "No"}</p>
+          </div>
+        )}
       </div>
     </div>
   );
