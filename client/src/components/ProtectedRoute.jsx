@@ -2,7 +2,7 @@ import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const token = localStorage.getItem("authToken") ?? sessionStorage.getItem("authToken");
-  const roleName = localStorage.getItem("roleName");
+  const roleName = localStorage.getItem("roleName") ?? sessionStorage.getItem("roleName");
 
   // Check if the route allows guests (unauthenticated users)
   const isGuestAllowed = allowedRoles.includes("Guest") && !token;

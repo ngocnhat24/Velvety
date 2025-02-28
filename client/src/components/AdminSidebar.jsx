@@ -8,6 +8,7 @@ axios.defaults.withCredentials = true; // ✅ Ensure cookies/session data are se
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
 
   const menuItems = [
     { name: "Consultant", path: "/consultant-management" },
@@ -48,10 +49,13 @@ const AdminSidebar = () => {
     >
       {/* Sidebar Title */}
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "left" }}>
-          Admin
-        </Typography>
+      <div className="w-[150px] h-[150px] bg-cover bg-center bg-no-repeat rounded-t-lg" style={{ backgroundImage: `url(https://cdn2.iconfinder.com/data/icons/shopping-colorline/64/admin-512.png)` }} />
       </Toolbar>
+      <Typography variant="h6">
+        <div className="text-center">
+         Welcome Admin <br />{fullName}
+        </div>
+      </Typography>
       <Divider sx={{ backgroundColor: "gray" }} />
 
       {/* Menu List */}
@@ -64,6 +68,26 @@ const AdminSidebar = () => {
           </NavLink>
         ))}
       </List>
+
+
+      {/* Change Password Button */}
+      <Button
+        onClick={() => navigate("/change-password")}
+        sx={{
+          position: "absolute",
+          bottom: "60px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "80%",
+          backgroundColor: "#1976d2",
+          color: "white",
+          "&:hover": {
+            backgroundColor: "#1565c0",
+          },
+        }}
+      >
+        Change Password
+      </Button>
 
       {/* Logout Button */}
       <Button

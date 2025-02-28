@@ -99,7 +99,7 @@ exports.login = async (req, res) => {
 
         const token = generateToken(user);
 
-        res.json({ token, user: { id: user._id, email: user.email, roleName: user.roleName } });
+        res.json({ token, user: { id: user._id, email: user.email, roleName: user.roleName, firstName: user.firstName, lastName: user.lastName } });
     } catch (error) {
         res.status(500).json({ message: "Error logging in", error });
     }
@@ -259,6 +259,26 @@ exports.resetPassword = async (req, res) => {
         } catch (error) {
           console.error("❌ Unexpected error during logout:", error);
           res.status(500).json({ message: "An error occurred during logout" });
+        }
+      };
+      
+      exports.changePassword = async (req, res) => {
+        try {
+          const { currentPassword, newPassword, userId } = req.body;
+          const user = await User.findById(userId);
+      
+          if (!user) return res.status(404).json({ message: "User not found" });
+      
+          const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+          if (!isPasswordValid) return res.status(401).json({ message: "Current password is incorrect" });
+      
+          user.password = await bcrypt.hash(newPassword, 10);
+          await user.save();
+      
+          res.json({ message: "Password changed successfully" });
+        } catch (error) {
+          console.error("❌ Error changing password:", error);
+          res.status(500).json({ message: "An error occurred while changing password" });
         }
       };
       

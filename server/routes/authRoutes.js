@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const { authenticate, authorize } = require("../middlewares/authMiddleware");
 
 // Register a new user
 router.post('/register', authController.register);
@@ -22,5 +23,8 @@ router.post('/resend-verification-email', authController.resendVerificationEmail
 
 // Logout
 router.post('/logout', authController.logout);
+
+// Change Password
+router.post('/change-password',authenticate, authorize(['Manager', 'Admin']), authController.changePassword);
 
 module.exports = router;

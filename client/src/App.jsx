@@ -27,6 +27,7 @@ import ServiceGuest from "./pages/guest/Services.jsx";
 import Calendar from "./pages/customer/Calendar.jsx";
 import ViewBooking from "./pages/staff/ViewBooking.jsx";
 import ServiceDetails from "./pages/guest/ServiceDetails.jsx";
+import ChangePassword from "./components/ChangePassword";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -91,6 +92,11 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route path="/staff-management" element={<StaffManagement />} />
           <Route path="/consultant-management" element={<ConsultantManagement />} />
+        </Route>
+
+        {/* Manager & Admin Shared Pages */}
+        <Route element={<ProtectedRoute allowedRoles={["Manager", "Admin"]} />}>
+          <Route path="/change-password" element={<ChangePassword />} />
         </Route>
 
         {/* Staff Pages */}

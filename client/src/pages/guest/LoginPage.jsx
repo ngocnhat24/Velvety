@@ -51,6 +51,10 @@ export default function LoginPage() {
       const response = await axios.post('/api/auth/login', { email, password });
       const { token, message, user } = response.data;
       const { roleName } = user;
+      const { firstName } = user;
+      const { lastName } = user;
+      const { id } = user;
+      const fullName = `${firstName} ${lastName}`;
 
       setSuccess(message || "Login successful!");
 
@@ -59,9 +63,13 @@ export default function LoginPage() {
         localStorage.setItem("authToken", token);
         localStorage.setItem("roleName", roleName);
         localStorage.setItem("rememberedEmail", email);
+        localStorage.setItem("fullName", fullName);
+        localStorage.setItem("userId", id);
       } else {
         sessionStorage.setItem("authToken", token);
         sessionStorage.setItem("roleName", roleName);
+        sessionStorage.setItem("fullName", fullName);
+        sessionStorage.setItem("userId", id);
         localStorage.removeItem("rememberedEmail");
       }
 
@@ -115,7 +123,7 @@ export default function LoginPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-3 flex items-center text-gray-500"
               >
-                {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20}/>}
+                {showPassword ? <EyeIcon size={20} /> : <EyeOffIcon size={20}/>}
               </button>
             </div>
 

@@ -6,6 +6,7 @@ import axios from "axios";
 const ManagerSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard" },
@@ -46,12 +47,14 @@ const ManagerSidebar = () => {
         },
       }}
     >
-      {/* Thanh tiêu đề */}
-      <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "left" }}>
-          Manager
-        </Typography>
-      </Toolbar>
+     <Toolbar>
+        <div className="w-[150px] h-[150px] bg-cover bg-center bg-no-repeat rounded-t-lg" style={{ backgroundImage: `url(https://cdn0.iconfinder.com/data/icons/avatar-4/512/Manager-1024.png)` }} />
+     </Toolbar>
+     <Typography variant="h6">
+        <div className="text-center">
+             Welcome Manager <br /> {fullName} 
+        </div>
+      </Typography>
       <Divider sx={{ backgroundColor: "gray" }} />
 
       {/* Danh sách menu */}
@@ -64,6 +67,26 @@ const ManagerSidebar = () => {
           </NavLink>
         ))}
       </List>
+
+
+      {/* Change Password Button */}
+      <Button
+        onClick={() => navigate("/change-password")}
+        sx={{
+          position: "absolute",
+          bottom: "60px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "80%",
+          backgroundColor: "#1976d2",
+          color: "white",
+          "&:hover": {
+            backgroundColor: "#1565c0",
+          },
+        }}
+      >
+        Change Password
+      </Button>
 
       {/* Logout Button */}
       <Button
