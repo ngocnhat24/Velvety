@@ -50,7 +50,7 @@ export default function Blog() {
 
       <div className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
-        <span className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
+        <span className="flex-shrink-0 font-['Lato'] text-[40px] text-[#C54759] pacifico-regular leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
           <span className="text-[50px]">L</span>
           earn More
         </span>
@@ -71,7 +71,22 @@ export default function Blog() {
         {/* Booking Now Button */}
         <button
           onClick={() => navigate('/services')}
-          className="fixed bottom-4 right-4 px-6 py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition"
+          className="fixed bottom-4 right-4 px-6 py-3 bg-green-500 text-white rounded-full shadow-lg transition transform focus:outline-none focus:ring-4 focus:ring-green-300 pacifico-regular"
+          style={{
+            background: 'linear-gradient(135deg, #6B8E23, #32CD32)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+            transition: 'all 0.3s ease-in-out',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(135deg, #32CD32, #6B8E23)';
+            e.currentTarget.style.transform = 'scale(1.1) rotate(3deg)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(135deg, #6B8E23, #32CD32)';
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+          }}
         >
           Book Now
         </button>

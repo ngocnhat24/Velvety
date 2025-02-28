@@ -1,8 +1,10 @@
 import React from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 export default function About() {
+  const navigate = useNavigate();
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative mx-auto my-0">
       <Navbar />
@@ -76,7 +78,7 @@ export default function About() {
           </span>
         </div>
 
-        <span className="flex w-[840.663px] h-[256px] justify-start items-center font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] absolute top-0 left-[868.506px] text-left  z-[11]">
+        <span className="flex w-[630px] h-[256px] justify-start items-center font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] absolute top-0 left-[868.506px] text-left  z-[11]">
           But within our walls, visitors quickly discover our ”family” also
           includes other families who have worked here for so long that
           generations spanning mothers and daughters, aunts, nieces, nephews,
@@ -89,11 +91,11 @@ export default function About() {
         <div className="w-[804.862px] h-[692.155px] bg-[url(/images/about_2.png)] bg-cover bg-no-repeat absolute top-[245.302px] left-0 z-[23]">
           <div className="w-[648.398px] h-[637.79px] relative overflow-hidden z-[22] mt-0 mr-0 mb-0 ml-[78.233px]" />
         </div>
-        <span className="flex w-[705.414px] h-[115.359px] justify-start items-center font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] absolute top-[278.445px] left-[906.964px] text-left  z-[17]">
+        <span className="flex w-[600px] h-[115.359px] justify-start items-center font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] absolute top-[278.445px] left-[90px] text-left  z-[17]">
           It’s almost overwhelming for “us” to recognize Velvety has become
           a natural brand trusted and shared from one generation to the next. {" "}
         </span>
-        <div className="w-[840.663px] h-[160px] font-['Libre_Franklin'] text-[18px] font-light leading-[31.823px] tracking-[0.8px] absolute top-[417.676px] left-[868.506px] text-left z-[18]">
+        <div className="w-[600px] h-[160px] font-['Libre_Franklin'] text-[18px] font-light leading-[31.823px] tracking-[0.8px] absolute top-[417.676px] left-[868.506px] text-left z-[18]">
           <span className="font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left ">
             It’s almost overwhelming for “us” to recognize  {" "}
           </span>
@@ -110,7 +112,7 @@ export default function About() {
         <span className="flex h-[36px] justify-start items-center font-['Lato'] text-[22.541440963745117px] font-medium leading-[36px] text-[#000] tracking-[0.9px] absolute top-[615.245px] left-[868.506px] text-left  whitespace-nowrap z-[12]">
           We’re continuing to develop great natural skin care {" "}
         </span>
-        <div className="w-[840.663px] h-[224px] font-['Libre_Franklin'] text-[18px] font-light leading-[31.823px] tracking-[0.8px] absolute top-[690.828px] left-[868.506px] text-left z-[19]">
+        <div className="w-[600px] h-[224px] font-['Libre_Franklin'] text-[18px] font-light leading-[31.823px] tracking-[0.8px] absolute top-[690.828px] left-[868.506px] text-left z-[19]">
           <span className="font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left ">
             Velvety has been creating superior natural skin care for nearly
             half a century – and we’re just getting started. as we enter our
@@ -135,11 +137,10 @@ export default function About() {
       <span className="block h-[27px] font-['Lato'] text-[22.541440963745117px] font-normal leading-[27px] text-[#000] relative text-left whitespace-nowrap z-[24] mt-[13.26px] mr-0 mb-0 ml-[217.455px]">
         Stephen Strassler applying Reviva skin care to a model {" "}
       </span>
-      <div className="flex w-[879.122px] h-[80.884px] justify-between items-center relative z-[21] mt-[0.84px] mr- mb-auto ml-[975.908px]">
-        <div className="w-[5.978px] h-[90.884px] shrink-0 bg-[url(/images/line.png)] bg-cover bg-no-repeat relative z-[16]" />
-        <span className="flex w-[840.663px] h-[64px] justify-start items-center shrink-0 font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left  z-[21]">
+      <div className="flex w-[600px] h-[80.884px] justify-between items-center relative z-[21] mt-[0.84px] mr- mb-auto ml-[900px]">
+        <span className="flex w-[600px] h-[64px] justify-start items-center shrink-0 font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left  z-[21]">
           Velvety has been creating superior natural skin care for nearly
-          half a century – and we’re just getting started. {" "}
+          <br></br>half a century – and we’re just getting started. {" "}
         </span>
       </div>
       <div className="flex w-full max-w-[1085px] h-[37.33px] justify-between items-center relative z-[14] mt-[58.341px] mx-auto">
@@ -183,9 +184,33 @@ export default function About() {
             .
           </span>
         </div>
+        {/* Booking Now Button */}
+        <button
+          onClick={() => navigate('/services')}
+          className="fixed bottom-4 right-4 px-6 py-3 bg-green-500 text-white rounded-full shadow-lg transition transform focus:outline-none focus:ring-4 focus:ring-green-300 pacifico-regular"
+          style={{
+            background: 'linear-gradient(135deg, #6B8E23, #32CD32)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+            transition: 'all 0.3s ease-in-out',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(135deg, #32CD32, #6B8E23)';
+            e.currentTarget.style.transform = 'scale(1.1) rotate(3deg)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(135deg, #6B8E23, #32CD32)';
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+          }}
+        >
+          Book Now
+        </button>
       </div>
       <Footer />
     </div>
 
   );
 }
+
+
