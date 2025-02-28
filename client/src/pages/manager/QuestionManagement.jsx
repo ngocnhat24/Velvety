@@ -20,6 +20,7 @@ import Sidebar from "../../components/ManagerSidebar";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "../../utils/axiosInstance";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const QuestionCard = ({ question, onDelete, onEdit }) => {
   return (
@@ -38,10 +39,10 @@ const QuestionCard = ({ question, onDelete, onEdit }) => {
         ))}
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
           <Button size="small" variant="outlined" color="primary" onClick={() => onEdit(question)}>
-            Edit
+            <FaEdit />
           </Button>
           <Button size="small" variant="outlined" color="error" onClick={() => onDelete(question._id)}>
-            Delete
+            <FaTrash />
           </Button>
         </Box>
       </CardContent>

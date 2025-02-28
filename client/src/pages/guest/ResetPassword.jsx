@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { useLocation } from "react-router-dom";
+import { EyeIcon } from "lucide-react";
+import { EyeOffIcon } from "lucide-react";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -17,6 +19,8 @@ export default function ResetPassword() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Password validation function
   const validatePasswords = () => {
@@ -91,8 +95,9 @@ export default function ResetPassword() {
             {/* New Password Input */}
             <div className="mb-4">
               <label className="block text-lg font-semibold mb-2 text-gray-700">New Password</label>
+              <div className="relative w-full">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter new password"
                 value={newPassword}
                 onChange={(e) => {
@@ -102,14 +107,23 @@ export default function ResetPassword() {
                 className="w-full h-12 px-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              >
+                {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20}/>}
+              </button>
               {errors.newPassword && <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>}
+            </div>
             </div>
 
             {/* Confirm Password Input */}
             <div className="mb-6">
               <label className="block text-lg font-semibold mb-2 text-gray-700">Confirm Password</label>
+              <div className="relative w-full">
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm new password"
                 value={confirmPassword}
                 onChange={(e) => {
@@ -119,7 +133,15 @@ export default function ResetPassword() {
                 className="w-full h-12 px-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              >
+                {showConfirmPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20}/>}
+              </button>
               {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
+            </div>
             </div>
 
             {/* Reset Button */}

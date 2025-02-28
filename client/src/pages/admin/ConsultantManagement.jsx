@@ -83,7 +83,7 @@ export default function ConsultantManagement() {
       <Sidebar />
       <div className="flex-1 p-8 bg-white shadow-lg rounded-lg">
         <h2 className="text-3xl font-bold text-gray-800 mb-6">Consultant Management</h2>
-        <button className="bg-blue-500  text-white px-6 py-3 rounded-full mb-6 hover:bg-green-600 transition-all duration-300" onClick={() => setModalData({})}>
+        <button className="bg-blue-500  text-white px-6 py-3 rounded-full mb-6 hover:bg-blue-600 transition-all duration-300" onClick={() => setModalData({})}>
           Add Consultant
         </button>
         <div className="overflow-x-auto bg-white shadow-lg rounded-lg">

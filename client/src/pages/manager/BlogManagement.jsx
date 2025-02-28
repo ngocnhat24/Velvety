@@ -7,6 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
@@ -166,13 +167,13 @@ const BlogManagement = () => {
                     onClick={() => handleEdit(blog)}
                     className="bg-yellow-500 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
                   >
-                    Edit
+                    <FaEdit />
                   </button>
                   <button
                     onClick={() => openDeleteConfirmation(blog)}
                     className="bg-red-500 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
                   >
-                    Delete
+                    <FaTrash />
                   </button>
                 </div>
               </div>

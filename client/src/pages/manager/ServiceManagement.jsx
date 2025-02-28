@@ -7,6 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const ServiceManagement = () => {
   const [services, setServices] = useState([]);
@@ -147,8 +148,8 @@ const ServiceManagement = () => {
                 {service.image && <img src={service.image} alt="Service" className="w-10 h-10 object-cover mb-2" />}
                 <h4 className="text-lg font-bold">{service.name}</h4>
                 <p>{service.description}</p>
-                <button onClick={() => handleEdit(service)} className="bg-yellow-500 text-white px-3 py-1 mr-2 rounded mt-4">Edit</button>
-                <button onClick={() => openDeleteConfirmation(service)} className="bg-red-500 text-white px-3 py-1 rounded mt-4">Delete</button>
+                <button onClick={() => handleEdit(service)} className="bg-yellow-500 text-white px-3 py-1 mr-2 rounded mt-4"><FaEdit /></button>
+                <button onClick={() => openDeleteConfirmation(service)} className="bg-red-500 text-white px-3 py-1 rounded mt-4"><FaTrash /></button>
               </div>
             ))}
           </div>
