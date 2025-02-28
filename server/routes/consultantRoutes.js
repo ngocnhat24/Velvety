@@ -5,7 +5,7 @@ const consultantController = require('../controllers/consultantController');
 const { authenticate, authorize } = require('../middlewares/authMiddleware');
 
 // Get all consultants
-router.get('/', authenticate, consultantController.getAllConsultants);
+router.get('/', consultantController.getAllConsultants);
 
 // Get consultant by ID
 router.get('/:id', authenticate, consultantController.getConsultantById);
@@ -21,8 +21,8 @@ router.delete('/:id', authenticate, authorize(['Admin']), consultantController.d
 
 // Add rating to consultant (Validation added)
 router.post(
-    '/:id/rate', 
-    authenticate, 
+    '/:id/rate',
+    authenticate,
     authorize(['Customer']),
     [
         body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),

@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ServiceCard from "../../components/ServiceCard";
 
+
 export default function ServiceGuest() {
   const [services, setServices] = useState([]);
   const navigate = useNavigate();
+  const chooseServiceRef = useRef(null);
 
   // Fetch data from the server
   useEffect(() => {
@@ -21,6 +23,25 @@ export default function ServiceGuest() {
       });
   }, []);
 
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Scroll to "Choose Your Service" section on mount
+  useEffect(() => {
+    if (chooseServiceRef.current) {
+      chooseServiceRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => {
+        window.scrollBy({ top: 1200, behavior: "smooth" }); // Tăng giá trị 'top' để cuộn xuống nhiều hơn
+      }, 150); // Trì hoãn một chút để tránh nhảy cuộn
+    }
+  }, []);
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleChoose = (serviceId) => {
     navigate(`/services/${serviceId}`);
@@ -64,12 +85,13 @@ export default function ServiceGuest() {
         </span>
       </div>
 
-      <div className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
+      <div ref={chooseServiceRef} className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
 
-        <span className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px]">
-          Choose Your Service
-        </span>
+        <div className="flex-shrink-0 font-['Lato'] text-[40px] font-normal leading-[48px] text-[#000] tracking-[-0.8px] text-center px-[80px] text-[#C54759] pacifico-regular">
+          <span className="text-[50px]">C</span>
+          hoose Your Service
+        </div>
 
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
