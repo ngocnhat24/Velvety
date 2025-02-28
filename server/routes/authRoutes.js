@@ -25,6 +25,6 @@ router.post('/resend-verification-email', authController.resendVerificationEmail
 router.post('/logout', authController.logout);
 
 // Change Password
-router.post('/change-password',authenticate, authorize(['Manager', 'Admin']), authController.changePassword);
+router.post('/change-password',authenticate, authorize(['Manager', 'Admin', 'Consultant', 'Staff']), authController.changePassword);
 
 module.exports = router;

@@ -1,18 +1,28 @@
 import React from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider, Button } from "@mui/material";
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  Toolbar,
+  Typography,
+  Divider,
+  Button,
+} from "@mui/material";
 import axios from "axios";
 
 const StaffSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const fullName =
+    localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
 
-  const menuItems = [
-    { name: "Booking", path: "/view-booking" },
-
-  ];  const handleLogout = () => {
+  const menuItems = [{ name: "Booking Request", path: "/view-booking" }];
+  const handleLogout = () => {
     if (!window.confirm("Are you sure you want to log out?")) return;
-    axios.post("/api/auth/logout")
+    axios
+      .post("/api/auth/logout")
       .then(() => {
         // Clear auth data from storage
         localStorage.removeItem("authToken");
@@ -23,12 +33,13 @@ const StaffSidebar = () => {
         // Redirect user to login page
         navigate("/login");
       })
-      .catch(error => {
-        console.error("Logout failed:", error.response?.data?.message || error.message);
+      .catch((error) => {
+        console.error(
+          "Logout failed:",
+          error.response?.data?.message || error.message
+        );
       });
   };
-  
-  
 
   return (
     <Drawer
@@ -44,24 +55,54 @@ const StaffSidebar = () => {
         },
       }}
     >
-      {/* Thanh tiêu đề */}
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "left" }}>
-          Staff
-        </Typography>
+        <div
+          className="w-[150px] h-[150px] bg-cover bg-center bg-no-repeat rounded-t-lg"
+          style={{
+            backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/3789/3789820.png)`,
+          }}
+        />
       </Toolbar>
+      <Typography variant="h6">
+        <div className="text-center">
+          Welcome Staff <br /> {fullName}
+        </div>
+      </Typography>
       <Divider sx={{ backgroundColor: "gray" }} />
 
       {/* Danh sách menu */}
       <List>
         {menuItems.map((item) => (
-          <NavLink key={item.name} to={item.path} style={{ textDecoration: "none", color: "inherit" }}>
+          <NavLink
+            key={item.name}
+            to={item.path}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
             <ListItemButton selected={location.pathname === item.path}>
               <ListItemText primary={item.name} />
             </ListItemButton>
           </NavLink>
         ))}
       </List>
+
+      {/* Change Password Button */}
+      <Button
+        onClick={() => navigate("/change-password")}
+        sx={{
+          position: "absolute",
+          bottom: "60px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "80%",
+          backgroundColor: "#1976d2",
+          color: "white",
+          "&:hover": {
+            backgroundColor: "#1565c0",
+          },
+        }}
+      >
+        Change Password
+      </Button>
 
       {/* Logout Button */}
       <Button

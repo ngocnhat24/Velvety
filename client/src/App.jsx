@@ -94,8 +94,8 @@ function App() {
           <Route path="/consultant-management" element={<ConsultantManagement />} />
         </Route>
 
-        {/* Manager & Admin Shared Pages */}
-        <Route element={<ProtectedRoute allowedRoles={["Manager", "Admin"]} />}>
+        {/* Company Shared Pages */}
+        <Route element={<ProtectedRoute allowedRoles={["Manager", "Admin", "Staff", "Consultant"]} />}>
           <Route path="/change-password" element={<ChangePassword />} />
         </Route>
 
