@@ -144,6 +144,11 @@ exports.forgotPassword = async (req, res) => {
         const user = await User.findOne({ email });
     
         if (!user) return res.status(404).json({ message: "Email has not been registered." });
+
+        // Restrict password reset to only customers
+        if (user.roleName !== "Customer") {
+          return res.status(403).json({ message: "Only customers are allowed to reset their password. Please contact admin for assistance." });
+        }
     
         const resetToken = crypto.randomBytes(32).toString("hex");
         user.resetPasswordToken = resetToken;

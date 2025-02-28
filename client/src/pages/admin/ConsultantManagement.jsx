@@ -6,7 +6,7 @@ import axios from "../../utils/axiosInstance";
 import Sidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaLock, FaTrash } from "react-icons/fa";
 
 // Validation schema for form inputs
 const schema = yup.object().shape({
@@ -49,6 +49,18 @@ export default function ConsultantManagement() {
       toast.error("Error deleting consultant");
     }
   };
+
+  const handleResetPassword = async (id) => {
+    if (!window.confirm("Are you sure you want to reset this consultant's password?")) return;
+  
+    try {
+      await axios.post(`/api/consultants/${id}/reset-password`);
+      toast.success("Password has been reset successfully!");
+    } catch (err) {
+      toast.error("Failed to reset password.");
+    }
+  };
+  
 
   const handleFormSubmit = async (data) => {
     try {
@@ -121,6 +133,12 @@ export default function ConsultantManagement() {
                   <td className="p-3 text-sm">
                     <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 mr-2" onClick={() => setModalData(consultant)}><FaEdit /></button>
                     <button className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600" onClick={() => handleDelete(consultant._id)}><FaTrash /></button>
+                    <button
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-full hover:bg-yellow-600 mr-2"
+                      onClick={() => handleResetPassword(consultant._id)}
+                    >
+                      <FaLock />
+                    </button>
                   </td>
                 </tr>
               ))}

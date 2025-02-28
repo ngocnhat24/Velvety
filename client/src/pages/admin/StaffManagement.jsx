@@ -6,7 +6,7 @@ import axios from "../../utils/axiosInstance";
 import Sidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaCheck, FaLock, FaTimes } from "react-icons/fa";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 const schema = yup.object().shape({
@@ -35,6 +35,17 @@ export default function StaffManagement() {
       })));
     } catch (err) {
       toast.error("Failed to fetch staff");
+    }
+  };
+
+  const handleResetPassword = async (id) => {
+    if (!window.confirm("Are you sure you want to reset this staff member's password?")) return;
+  
+    try {
+      await axios.post(`/api/staff/${id}/reset-password`);
+      toast.success("Password has been reset successfully!");
+    } catch (err) {
+      toast.error("Failed to reset password.");
     }
   };
 
@@ -115,16 +126,22 @@ export default function StaffManagement() {
                   </td>
                   <td className="border-b p-3">
                     <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2 hover:bg-blue-600 transition-all duration-200"
+                      className="bg-blue-500 text-white px-4 py-2 rounded-full mr-2 hover:bg-blue-600 transition-all duration-200"
                       onClick={() => setModalData(member)}
                     >
                       <FaEdit />
                     </button>
                     <button
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
+                      className="bg-red-500 text-white px-4 py-2 rounded-full mr-2 hover:bg-red-600 transition-all duration-200"
                       onClick={() => handleDelete(member._id)}
                     >
                       <FaTrash />
+                    </button>
+                    <button
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-full hover:bg-yellow-600 mr-2 transition-all duration-200"
+                      onClick={() => handleResetPassword(member._id)}
+                    >
+                      <FaLock />
                     </button>
                   </td>
                 </tr>

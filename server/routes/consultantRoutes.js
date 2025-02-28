@@ -31,4 +31,9 @@ router.post(
     consultantController.addRating
 );
 
+router.post("/:id/reset-password", authenticate, authorize(['Admin']),consultantController.resetPassword);
+
 module.exports = router;
+
+
+

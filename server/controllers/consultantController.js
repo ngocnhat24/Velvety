@@ -184,3 +184,20 @@ exports.addRating = async (req, res) => {
         res.status(500).json({ message: "Error adding rating", error: error.message });
     }
 };
+
+exports.resetPassword = async (req, res) => {
+    try {
+        const consultant = await User.findOne({ _id: req.params.id, roleName: "Consultant" }).select('-password');
+        if (!consultant) return res.status(404).json({ message: "Consultant not found" });
+    
+        const defaultPassword = "default123";
+        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+    
+        consultant.password = hashedPassword;
+        await consultant.save();
+    
+        res.json({ message: "Password reset successfully" });
+      } catch (error) {
+        res.status(500).json({ message: "Server error" });
+      }
+};

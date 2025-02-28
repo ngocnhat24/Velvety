@@ -86,3 +86,20 @@ exports.createStaff = async (req, res) => {
     }
 };
 
+exports.resetPassword = async (req, res) => {
+    try {
+        const staff = await User.findOne({ _id: req.params.id, roleName: "Staff" }).select('-password');
+        if (!staff) return res.status(404).json({ message: "Staff member not found" });
+    
+        const defaultPassword = "default123";
+        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+    
+        consultant.password = hashedPassword;
+        await consultant.save();
+    
+        res.json({ message: "Password reset successfully" });
+      } catch (error) {
+        res.status(500).json({ message: "Server error" });
+      }
+};
+

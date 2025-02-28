@@ -18,4 +18,6 @@ router.delete('/:id', authenticate, authorize(['Admin']), staffController.delete
 // Creat staff member (Admin only)
 router.post('/', authenticate, authorize(['Admin']), staffController.createStaff);
 
+router.post("/:id/reset-password", authenticate, authorize(['Admin']),staffController.resetPassword);
+
 module.exports = router;

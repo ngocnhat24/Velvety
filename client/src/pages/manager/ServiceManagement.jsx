@@ -121,8 +121,11 @@ const ServiceManagement = () => {
           <input {...register("image")} placeholder="Image URL" className="w-full p-2 border" />
           {editingService?.image && <img src={editingService.image} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
           <input {...register("effectimage")} placeholder="Effect Image URL" className="w-full p-2 border" />
+          {editingService?.effectimage && <img src={editingService.effectimage} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
           <input {...register("resultimage")} placeholder="Result Image URL" className="w-full p-2 border" />
+          {editingService?.resultimage && <img src={editingService.resultimage} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
           <input {...register("sensationimage")} placeholder="Sensation Image URL" className="w-full p-2 border" />
+          {editingService?.sensationimage && <img src={editingService.sensationimage} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
           <input {...register("description")} placeholder="Description" className="w-full p-2 border" />
           <ReactQuill
             value={watch("detaildescription") || ""}
