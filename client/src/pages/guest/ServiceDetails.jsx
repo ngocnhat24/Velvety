@@ -49,6 +49,10 @@ export default function ServiceDetails() {
       setShowLoginModal(true);
       return;
     }
+    localStorage.setItem("serviceId", id);
+    localStorage.setItem("serviceUrl", `/services/${id}/consultant`);
+    navigate(`/services/${id}/consultant`);
+    console.log("Navigating to:", `/services/${id}/consultant`);
   };
 
   const handleLoginRedirect = () => {
