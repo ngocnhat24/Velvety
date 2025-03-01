@@ -9,9 +9,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
   const [token, setToken] = useState(localStorage.getItem("authToken") || sessionStorage.getItem("authToken"));
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
+  const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -20,28 +18,6 @@ const Navbar = () => {
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
-
-
-
-  useEffect(() => {
-    if (userId) {
-      fetchUserbyId();
-    }
-  }, [userId]); // Chạy lại khi userId thay đổi
-
-  const fetchUserbyId = async () => {
-    try {
-
-      const response = await axios.get(`/api/customers/${userId}`);
-      console.log("API response:", res.data); // ✅ Check response structure
-      setFirstName(response.data.firstName);
-      setLastName(response.data.lastName);
-    } catch (err) {
-      console.error("Error fetching user:", err.response?.data || err.message);
-    }
-  };
-
-
 
   const isLoginPage = location.pathname === "/login" || location.pathname === "/register";
 
@@ -104,9 +80,9 @@ const Navbar = () => {
           {isProfilePopupOpen && token && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
               <div className="block px-4 py-2 text-gray-800">
-                Welcome, {firstName} {lastName}
+                Welcome, {fullName}
               </div>
-              <NavLink to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+              <NavLink to="/customer-profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
                 Profile
               </NavLink>
               <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">

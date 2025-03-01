@@ -28,6 +28,7 @@ import Calendar from "./pages/customer/Calendar.jsx";
 import ViewBooking from "./pages/staff/ViewBooking.jsx";
 import ServiceDetails from "./pages/guest/ServiceDetails.jsx";
 import ChangePassword from "./components/ChangePassword";
+import CustomerProfile from "./pages/customer/CustomerProfile.jsx";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -79,6 +80,7 @@ function App() {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/consultant-customer" element={<ConsultantCustomer />} />
           <Route path="/services/:id/consultant" element={<ConsultantCustomer />} />
+          <Route path="/customer-profile" element={<CustomerProfile />} />
         </Route>
 
         {/* Manager Pages */}

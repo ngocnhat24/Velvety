@@ -15,4 +15,7 @@ router.put('/:id', authenticate, authorize(['Customer']), customerController.upd
 // Delete customer (Admin only)
 router.delete('/:id', authenticate, authorize(['Admin']), customerController.deleteCustomer);
 
+// Change password
+router.post('/change-password', authenticate, customerController.changePassword);
+
 module.exports = router;

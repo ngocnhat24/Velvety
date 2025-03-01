@@ -10,7 +10,7 @@ import {
   Divider,
   Button,
 } from "@mui/material";
-import axios from "axios";
+import axios from "../utils/axiosInstance";
 
 const StaffSidebar = () => {
   const location = useLocation();
