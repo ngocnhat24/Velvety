@@ -78,6 +78,7 @@ function App() {
           <Route path="/booking" element={<BookingPageCustomer />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/consultant-customer" element={<ConsultantCustomer />} />
+          <Route path="/services/:id/consultant" element={<ConsultantCustomer />} />
         </Route>
 
         {/* Manager Pages */}

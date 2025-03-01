@@ -34,7 +34,7 @@ export default function ServiceGuest() {
       chooseServiceRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
       setTimeout(() => {
         window.scrollBy({ top: 1200, behavior: "smooth" }); // Tăng giá trị 'top' để cuộn xuống nhiều hơn
-      }, 150); // Trì hoãn một chút để tránh nhảy cuộn
+      }, 180); // Trì hoãn một chút để tránh nhảy cuộn
     }
   }, []);
 
