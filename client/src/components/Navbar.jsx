@@ -19,7 +19,7 @@ const Navbar = () => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const isLoginPage = location.pathname === "/login" || location.pathname === "/register";
+  const isLoginPage = location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/customer-profile" || location.pathname === "/forgot-password";
 
   const handleLogout = () => {
     if (!window.confirm("Are you sure you want to log out?")) return;

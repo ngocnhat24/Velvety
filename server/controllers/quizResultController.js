@@ -10,10 +10,10 @@ const determineSkinType = (answers) => {
     const range = maxWeight - minWeight;
     const normalizedScore = ((totalWeight - minWeight) / range) * 100;
 
-    if (normalizedScore <= 25) return "Dry Skin";
-    if (normalizedScore <= 50) return "Combination Skin";
-    if (normalizedScore <= 75) return "Normal Skin";
-    return "Oily Skin";
+    if (normalizedScore <= 25) return "Dry";
+    if (normalizedScore <= 50) return "Combination";
+    if (normalizedScore <= 75) return "Normal";
+    return "Oily";
 };
 
 

@@ -10,7 +10,7 @@ const CustomerSidebar = () => {
 
   const menuItems = [
     { name: "Account Details", path: "/customer-profile" },
-    { name: "Booking History", path: "/bookings" },
+    { name: "Booking History", path: "/booking-history" },
   ];
 
   const handleLogout = () => {
@@ -54,15 +54,15 @@ const CustomerSidebar = () => {
           }}
         />
         <Typography variant="h6" sx={{ color: "#c86c79", textAlign: "center" }}>
-          Welcome, {fullName}
+          Welcome <br></br>{fullName}
         </Typography>
       </Toolbar>
-      <Divider sx={{ backgroundColor: "#a41840" }} />
+      <Divider sx={{ backgroundColor: "#E27585" }} />
 
       <List>
         {menuItems.map((item) => (
           <NavLink key={item.name} to={item.path} style={{ textDecoration: "none", color: "inherit" }}>
-            <ListItemButton selected={location.pathname === item.path} sx={{ "&.Mui-selected": { backgroundColor: "#a41840" } }}>
+            <ListItemButton selected={location.pathname === item.path} sx={{ "&.Mui-selected": { backgroundColor: "#E27585", color: "white" } }}>
               <ListItemText primary={item.name} />
             </ListItemButton>
           </NavLink>
@@ -77,7 +77,7 @@ const CustomerSidebar = () => {
           left: "50%",
           transform: "translateX(-50%)",
           width: "80%",
-          backgroundColor: "#a41840",
+          backgroundColor: "#E27585",
           color: "white",
           "&:hover": {
             backgroundColor: "#a85663",
