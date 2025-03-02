@@ -171,6 +171,7 @@ exports.deleteConsultant = async (req, res) => {
 };
 
 // Add rating to consultant (Fixing duplicate rating issue)
+// Add rating to consultant (Fixing duplicate rating issue)
 exports.addRating = async (req, res) => {
     try {
         const { rating, comment } = req.body;
@@ -183,21 +184,43 @@ exports.addRating = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error adding rating", error: error.message });
     }
+}; // ❌ Bị lỗi do đóng nhầm
+
+// Sửa lại: Xuất tất cả các hàm đúng cách
+exports.getAvailableConsultants = async (req, res) => {
+    try {
+        const availableConsultants = await Consultant.find({ isAvailable: true });
+        res.status(200).json(availableConsultants);
+    } catch (error) {
+        res.status(500).json({ message: "can't find consultant list", error });
+    }
+};
+
+exports.getConsultantDetails = async (req, res) => {
+    try {
+        const consultant = await Consultant.findById(req.params.id);
+        if (!consultant) {
+            return res.status(404).json({ message: "Consultant not exist" });
+        }
+        res.status(200).json(consultant);
+    } catch (error) {
+        res.status(500).json({ message: "can't find consultant information ", error });
+    }
 };
 
 exports.resetPassword = async (req, res) => {
     try {
         const consultant = await User.findOne({ _id: req.params.id, roleName: "Consultant" }).select('-password');
         if (!consultant) return res.status(404).json({ message: "Consultant not found" });
-    
+
         const defaultPassword = "default123";
         const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-    
+
         consultant.password = hashedPassword;
         await consultant.save();
-    
+
         res.json({ message: "Password reset successfully" });
-      } catch (error) {
+    } catch (error) {
         res.status(500).json({ message: "Server error" });
-      }
+    }
 };
