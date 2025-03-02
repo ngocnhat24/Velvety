@@ -12,23 +12,26 @@ exports.createBookingRequest = async (req, res) => {
 exports.getAllBookingRequests = async (req, res) => {
   try {
     const bookingRequests = await BookingRequest.find()
-      .populate('serviceID')
-      .populate('consultantID'); // Renamed from therapistID
+      .populate("serviceID", "name")
+      .populate("consultantID", "firstName lastName email");
     res.status(200).json(bookingRequests);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 exports.assignConsultant = async (req, res) => {
   try {
-    const { consultantID } = req.body; // Renamed field
+    const { consultantID } = req.body;
     const bookingRequest = await BookingRequest.findByIdAndUpdate(
       req.params.id,
       { consultantID },
       { new: true }
     );
 
-    if (!bookingRequest) return res.status(404).json({ message: 'Booking Request not found' });
+    if (!bookingRequest) {
+      return res.status(404).json({ message: "Booking Request not found" });
+    }
 
     await logUserActivity("Assigned Consultant")(req, res, () => {});
     res.status(200).json(bookingRequest);
@@ -39,13 +42,17 @@ exports.assignConsultant = async (req, res) => {
 
 exports.assignService = async (req, res) => {
   try {
-    const { serviceId } = req.body;
+    const { serviceID } = req.body;
     const bookingRequest = await BookingRequest.findByIdAndUpdate(
       req.params.id,
-      { serviceId },
+      { serviceID },
       { new: true }
     );
-    if (!bookingRequest) return res.status(404).json({ message: 'Booking Request not found' });
+
+    if (!bookingRequest) {
+      return res.status(404).json({ message: "Booking Request not found" });
+    }
+
     await logUserActivity("Assigned Service")(req, res, () => {});
     res.status(200).json(bookingRequest);
   } catch (error) {
@@ -55,33 +62,47 @@ exports.assignService = async (req, res) => {
 
 exports.updateBookingRequestStatus = async (req, res) => {
   try {
-    console.log("Request body:", req.body); // Debug
+    console.log("Request body:", req.body);
+
+    const { status: newStatus } = req.body;
+    if (!newStatus) {
+      return res.status(400).json({ message: "Status is required" });
+    }
 
     const bookingRequest = await BookingRequest.findById(req.params.id);
-    if (!bookingRequest) return res.status(404).json({ message: 'Booking Request not found' });
+    if (!bookingRequest) {
+      return res.status(404).json({ message: "Booking Request not found" });
+    }
 
     const validTransitions = {
-      "Pending": "Confirmed",
-      "Confirmed": "Completed",
-      "Completed": "Cancelled",
+      "Pending": ["Confirmed"],
+      "Confirmed": ["Completed"],
+      "Completed": ["Cancelled"],
+      "Cancelled": ["Pending"],
     };
 
     const currentStatus = bookingRequest.status;
-    const newStatus = req.body.status;
 
-    if (!newStatus) return res.status(400).json({ message: "Status is required" });
+    console.log(`Current Status: ${currentStatus}, New Status: ${newStatus}`);
 
-    if (validTransitions[currentStatus] !== newStatus) {
-      return res.status(400).json({ message: `Invalid status transition from '${currentStatus}' to '${newStatus}'` });
+    if (!validTransitions[currentStatus]?.includes(newStatus)) {
+      return res.status(400).json({ 
+        message: `Invalid status transition from '${currentStatus}' to '${newStatus}'` 
+      });
     }
 
     bookingRequest.status = newStatus;
     await bookingRequest.save();
 
-    await logUserActivity("Booking Request Status Updated")(req, res, () => {});
-    res.status(200).json(bookingRequest);
+    // ⚠️ TẠM THỜI TẮT `logUserActivity` để kiểm tra có gây lỗi không
+    // await logUserActivity("Booking Request Status Updated")(req, res, () => {});
+
+    res.status(200).json({ message: "Status updated successfully", bookingRequest });
+
   } catch (error) {
-    console.error("Error updating status:", error);
+    console.error("Error updating status:", error); // ✅ Debug lỗi chính xác
     res.status(500).json({ error: error.message });
   }
 };
+
+
