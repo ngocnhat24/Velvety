@@ -11,6 +11,7 @@ const UserSchema = new Schema({
   updatedDate: { type: Date, default: Date.now },
   verified: { type: Boolean, default: false }, 
   verificationToken: { type: String },
+  verificationTokenCreatedAt: { type: Date },
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date }
 });

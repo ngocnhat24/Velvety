@@ -32,6 +32,8 @@ exports.register = async (req, res) => {
     
         // Tạo mã xác thực email
         const verificationToken = crypto.randomBytes(32).toString("hex");
+
+        user.verificationTokenCreatedAt = Date.now() + 3600000;
     
         // Tạo user
         const user = await User.create({
