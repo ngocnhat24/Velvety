@@ -1,13 +1,31 @@
 const BookingRequest = require('../models/BookingRequest');
 
 exports.createBookingRequest = async (req, res) => {
+  const { serviceID, customerID, date, time, consultantID } = req.body;
+
+  if (!serviceID || !customerID || !date || !time) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
   try {
-    const bookingRequest = await BookingRequest.create(req.body);
+    const newBooking = new BookingRequest({
+      serviceID,
+      customerID,
+      date,
+      time,
+      consultantID,
+      status: req.body.status || "Pending",
+      isConsultantAssignedByCustomer: req.body.isConsultantAssignedByCustomer || false,
+    });
+
+    const bookingRequest = await newBooking.save();
     res.status(201).json(bookingRequest);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: "Failed to create booking request" });
   }
 };
+
 
 exports.getAllBookingRequests = async (req, res) => {
   try {
@@ -33,7 +51,7 @@ exports.assignConsultant = async (req, res) => {
       return res.status(404).json({ message: "Booking Request not found" });
     }
 
-    await logUserActivity("Assigned Consultant")(req, res, () => {});
+    await logUserActivity("Assigned Consultant")(req, res, () => { });
     res.status(200).json(bookingRequest);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -48,12 +66,8 @@ exports.assignService = async (req, res) => {
       { serviceID },
       { new: true }
     );
-
-    if (!bookingRequest) {
-      return res.status(404).json({ message: "Booking Request not found" });
-    }
-
-    await logUserActivity("Assigned Service")(req, res, () => {});
+    if (!bookingRequest) return res.status(404).json({ message: 'Booking Request not found' });
+    await logUserActivity("Assigned Service")(req, res, () => { });
     res.status(200).json(bookingRequest);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -86,8 +100,8 @@ exports.updateBookingRequestStatus = async (req, res) => {
     console.log(`Current Status: ${currentStatus}, New Status: ${newStatus}`);
 
     if (!validTransitions[currentStatus]?.includes(newStatus)) {
-      return res.status(400).json({ 
-        message: `Invalid status transition from '${currentStatus}' to '${newStatus}'` 
+      return res.status(400).json({
+        message: `Invalid status transition from '${currentStatus}' to '${newStatus}'`
       });
     }
 
@@ -105,4 +119,22 @@ exports.updateBookingRequestStatus = async (req, res) => {
   }
 };
 
+// API: Lấy danh sách booking của consultant theo ngày
+exports.getBookingsByConsultantAndDate = async (req, res) => {
+  try {
+    const { consultantID, date } = req.query;
 
+    if (!consultantID || !date) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    const bookings = await BookingRequest.find({
+      consultantID,
+      date: new Date(date).toISOString().split("T")[0] // Chỉ lấy ngày, bỏ giờ phút giây
+    });
+
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch bookings" });
+  }
+};

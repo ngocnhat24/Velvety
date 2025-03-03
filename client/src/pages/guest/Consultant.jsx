@@ -30,14 +30,6 @@ export default function ConsultantGuest() {
         setVisibleNoteIndex(visibleNoteIndex === index ? null : index);
     };
 
-    const handleBookingNow = () => {
-        const token = localStorage.getItem("authToken");
-        if (!token) {
-            navigate("/login");
-        } else {
-            navigate("/service");
-        }
-    };
 
     return (
         <div>
