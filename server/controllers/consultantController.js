@@ -39,14 +39,42 @@ exports.getAllConsultants = async (req, res) => {
 // Get consultant by ID
 exports.getConsultantById = async (req, res) => {
     try {
-        const consultant = await User.findOne({ _id: req.params.id, roleName: "Consultant" }).select('-password');
-        if (!consultant) return res.status(404).json({ message: "Consultant not found" });
+        const consultant = await User.aggregate([
+            { $match: { _id: new mongoose.Types.ObjectId(req.params.id), roleName: "Consultant" } }, // Tìm user theo id và roleName
+            {
+                $lookup: {
+                    from: "consultants", // Collection name
+                    localField: "_id", // ID của User
+                    foreignField: "user", // Trường liên kết bên Consultant
+                    as: "consultantData"
+                }
+            },
+            { $unwind: { path: "$consultantData", preserveNullAndEmptyArrays: true } }, // Gỡ mảng consultantData
+            {
+                $project: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    email: 1,
+                    phoneNumber: 1,
+                    verified: 1,
+                    note: "$consultantData.note", // Lấy note từ consultantData
+                    image: "$consultantData.image" // Lấy image từ consultantData
+                }
+            }
+        ]);
 
-        res.json(consultant);
+        if (consultant.length === 0) {
+            return res.status(404).json({ message: "Consultant not found" });
+        }
+
+        res.json(consultant[0]); // Vì aggregate trả về mảng, nên phải lấy phần tử đầu tiên
     } catch (error) {
+        console.error("Error fetching consultant:", error);
         res.status(500).json({ message: "Error fetching consultant", error: error.message });
     }
 };
+
 
 // Create Consultant
 exports.createConsultant = async (req, res) => {
@@ -103,7 +131,7 @@ exports.createConsultant = async (req, res) => {
             res.status(500).json({ message: "Error saving consultant", error: error.message });
         }
     }
-};``
+}; ``
 
 // Update Consultant Profile
 exports.updateConsultant = async (req, res) => {
@@ -111,8 +139,8 @@ exports.updateConsultant = async (req, res) => {
         const { firstName, lastName, email, phoneNumber, note, image, verified } = req.body;
 
         const user = await User.findByIdAndUpdate(
-            req.params.id, 
-            { firstName, lastName, email, phoneNumber, verified }, 
+            req.params.id,
+            { firstName, lastName, email, phoneNumber, verified },
             { new: true }
         );
 
@@ -126,9 +154,9 @@ exports.updateConsultant = async (req, res) => {
 
         if (!consultant) return res.status(404).json({ message: "Consultant not found" });
 
-        res.json({ 
-            message: "Consultant updated successfully", 
-            consultant: { ...user.toObject(), note: consultant.note, image: consultant.image } 
+        res.json({
+            message: "Consultant updated successfully",
+            consultant: { ...user.toObject(), note: consultant.note, image: consultant.image }
         });
 
     } catch (error) {
@@ -147,9 +175,9 @@ exports.deleteConsultant = async (req, res) => {
 
         console.log("Request ID:", req.params.id);
         console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(req.params.id));
-        
+
         const consultant = await Consultant.findOne({ user: req.params.id });
-        
+
         console.log("Consultant found:", consultant);
 
         if (!consultant) {

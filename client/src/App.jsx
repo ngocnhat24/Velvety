@@ -22,7 +22,7 @@ import QuestionManagement from "./pages/manager/QuestionManagement.jsx";
 import About from "./pages/guest/About.jsx";
 import BookingPageCustomer from "./pages/customer/Booking.jsx";
 import ConsultantGuest from "./pages/guest/Consultant.jsx";
-import ConsultantCustomer from "./pages/customer/Consultant.jsx";
+import ConsultantCustomer from "./pages/customer/Consultantbooking.jsx";
 import ServiceGuest from "./pages/guest/Services.jsx";
 import Calendar from "./pages/customer/Calendar.jsx";
 import ViewBooking from "./pages/staff/ViewBooking.jsx";
@@ -30,6 +30,8 @@ import ServiceDetails from "./pages/guest/ServiceDetails.jsx";
 import ChangePassword from "./components/ChangePassword";
 import CustomerProfile from "./pages/customer/CustomerProfile.jsx";
 import BookingHistory from "./pages/customer/BookingHistory.jsx";
+import SkincareBooking from "./pages/customer/Calendar.jsx";
+
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -80,12 +82,13 @@ function App() {
           <Route path="/booking" element={<BookingPageCustomer />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/consultant-customer" element={<ConsultantCustomer />} />
-          <Route path="/services/:id/consultant" element={<ConsultantCustomer />} />
+          <Route path="/services/:id/consultant-customer" element={<ConsultantCustomer />} />
+          <Route path="/services/:id/consultant-customer/:idConsultant/calendar" element={<SkincareBooking />} />
           <Route path="/customer-profile" element={<CustomerProfile />} />
           <Route path="/booking-history" element={<BookingHistory />} />
         </Route>
 
-        {/* Manager Pages */}
+        {/* Manager Pages */}ConsultantCustomer
         <Route element={<ProtectedRoute allowedRoles={["Manager"]} />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/service-management" element={<ServiceManagement />} />

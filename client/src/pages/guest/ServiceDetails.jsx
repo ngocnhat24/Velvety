@@ -50,9 +50,9 @@ export default function ServiceDetails() {
       return;
     }
     localStorage.setItem("serviceId", id);
-    localStorage.setItem("serviceUrl", `/services/${id}/consultant`);
-    navigate(`/services/${id}/consultant`);
-    console.log("Navigating to:", `/services/${id}/consultant`);
+    localStorage.setItem("serviceUrl", `/services/${id}/consultant-customer`);
+    navigate(`/services/${id}/consultant-customer`);
+    console.log("Navigating to:", `/services/${id}/consultant-customer`);
   };
 
   const handleLoginRedirect = () => {

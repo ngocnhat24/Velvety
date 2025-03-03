@@ -3,21 +3,47 @@ import PropTypes from "prop-types";
 import Navbar from "../../components/Navbar";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
+import { toast } from "react-toastify";
 
 const SkincareBooking = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedTime, setSelectedTime] = useState(null);
     const [events, setEvents] = useState([]);
+    const [consultants, setConsultants] = useState([]);
     const [availableTimes, setAvailableTimes] = useState([]);
     const [selectedService, setSelectedService] = useState("");
     const [selectedConsultant, setSelectedConsultant] = useState("");
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const id = localStorage.getItem("consultantId");
+    const serviceId = localStorage.getItem("serviceId");
+
+
+
 
     const times = [
         "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
         "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
     ];
+
+
+
+    useEffect(() => {
+        const fetchConsultantById = async () => {
+            try {
+                if (id && id !== "null") { // Kiểm tra cả null dạng string
+                    const res = await axios.get(`/api/consultants/${id}`);
+                    setConsultants(res.data);
+                }
+            } catch (err) {
+                toast.error("Failed to fetch consultant");
+            }
+        };
+
+        fetchConsultantById();
+    }, [id]); // Chỉ chạy khi id thay đổi
+
+
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -67,35 +93,38 @@ const SkincareBooking = () => {
         updateAvailableTimes();
     }, [selectedDate]);
 
+
     const handleTimeSelect = (time) => {
         setSelectedTime(time);
     };
 
-    const handleConfirm = () => {
-        setShowConfirmModal(true);
-    };
 
-    const handleConfirmBooking = () => {
+    const handleConfirmBooking = async () => {
         setShowConfirmModal(false);
-        const successMessage = document.createElement('div');
+
+        // Gọi hàm tạo booking request
+        await createBookingRequest();
+
+        const successMessage = document.createElement("div");
         successMessage.innerText = `Successfully booked for ${selectedDate.toDateString()} at ${selectedTime}`;
-        successMessage.style.position = 'fixed';
-        successMessage.style.top = '10%';
-        successMessage.style.left = '50%';
-        successMessage.style.transform = 'translate(-50%, -10%)';
-        successMessage.style.backgroundColor = '#4CAF50';
-        successMessage.style.color = 'white';
-        successMessage.style.padding = '10px';
-        successMessage.style.borderRadius = '5px';
-        successMessage.style.zIndex = '1000';
-        successMessage.style.fontSize = '14px';
+        successMessage.style.position = "fixed";
+        successMessage.style.top = "10%";
+        successMessage.style.left = "50%";
+        successMessage.style.transform = "translate(-50%, -10%)";
+        successMessage.style.backgroundColor = "#4CAF50";
+        successMessage.style.color = "white";
+        successMessage.style.padding = "10px";
+        successMessage.style.borderRadius = "5px";
+        successMessage.style.zIndex = "1000";
+        successMessage.style.fontSize = "14px";
         document.body.appendChild(successMessage);
 
         setTimeout(() => {
             document.body.removeChild(successMessage);
-            window.location.href = "/payment"; // Replace with your payment page URL
+            window.location.href = "/about"; // Chuyển trang sau khi booking
         }, 2000);
     };
+
 
     const handleCancel = () => {
         setSelectedTime(null);
@@ -112,18 +141,55 @@ const SkincareBooking = () => {
     };
 
     const tileDisabled = ({ date, view }) => {
-        // Disable past dates
         if (view === 'month') {
             return date < new Date().setHours(0, 0, 0, 0);
         }
         return false;
     };
 
+    // Gui api request tao booking 
+
+    const createBookingRequest = async () => {
+        if (!serviceId || !selectedTime || !selectedDate) {
+            toast.error("Please select a service, date, and time.");
+            return;
+        }
+
+        try {
+            const payload = {
+                serviceID: serviceId,
+                customerID: localStorage.getItem("userId"), // Lấy ID người dùng từ localStorage
+                date: selectedDate.toISOString(),
+                time: selectedTime,
+                consultantID: id && id !== "null" ? id : null, // Chỉ gửi consultantID nếu có
+                status: "Pending",
+                isConsultantAssignedByCustomer: !!id, // true nếu có consultant, false nếu không
+            };
+
+            const response = await axios.post("/api/booking-requests/", payload);
+
+            if (response.status === 201) {
+                toast.success("Booking request created successfully!");
+                window.location.href = "/about"; // Chuyển hướng sau khi tạo booking
+            }
+        } catch (error) {
+            console.error("Error creating booking request:", error);
+            toast.error("Failed to create booking request.");
+        }
+    };
+
+
+
     return (
         <div className="bg-[#F8F4F2] min-h-screen">
             <Navbar />
             <div className="max-w-4xl mx-auto p-4">
-                <h2 className="text-center text-xl font-semibold my-4">Skincare Consultation with </h2>
+                {consultants && id !== "null" && id && (
+                    <h2 className="text-center text-xl font-semibold my-4">
+                        Skincare Consultation with {consultants.firstName} {consultants.lastName}
+                    </h2>
+                )}
+
                 <div className="bg-white p-4 rounded-lg shadow-md flex gap-6">
                     <div>
                         <Calendar
@@ -151,7 +217,7 @@ const SkincareBooking = () => {
                         <div className="flex justify-center gap-4 mt-4">
                             <button
                                 className="bg-pink-500 text-white px-4 py-2 rounded-lg"
-                                onClick={handleConfirm}
+                                onClick={handleConfirmBooking}
                                 aria-label="Confirm booking"
                             >
                                 Confirm
@@ -175,31 +241,6 @@ const SkincareBooking = () => {
                     </ul>
                 </div>
             </div>
-
-            {showConfirmModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                        <h2 className="text-xl font-semibold mb-4">Confirm Booking</h2>
-                        <p className="mb-4">Are you sure you want to book for {selectedDate.toDateString()} at {selectedTime}?</p>
-                        <div className="flex justify-center gap-4">
-                            <button
-                                className="bg-pink-500 text-white px-4 py-2 rounded-lg"
-                                onClick={handleConfirmBooking}
-                                aria-label="Confirm booking"
-                            >
-                                Yes
-                            </button>
-                            <button
-                                className="text-gray-500 px-4 py-2 rounded-lg"
-                                onClick={() => setShowConfirmModal(false)}
-                                aria-label="Cancel booking"
-                            >
-                                No
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
