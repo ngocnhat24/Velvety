@@ -94,8 +94,8 @@ exports.resetPassword = async (req, res) => {
         const defaultPassword = "default123";
         const hashedPassword = await bcrypt.hash(defaultPassword, 10);
     
-        consultant.password = hashedPassword;
-        await consultant.save();
+        staff.password = hashedPassword;
+        await staff.save();
     
         res.json({ message: "Password reset successfully" });
       } catch (error) {
