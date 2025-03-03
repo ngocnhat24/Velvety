@@ -44,7 +44,7 @@ export default function ServiceDetails() {
   }, [id]);
 
   const handleBookingNow = async () => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
     if (!token) {
       setShowLoginModal(true);
       return;

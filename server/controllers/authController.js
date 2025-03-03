@@ -239,6 +239,9 @@ exports.resetPassword = async (req, res) => {
       
           // Clear the auth token cookie
           res.clearCookie("authToken", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "None" });
+          res.clearCookie("roleName", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "None" });
+          res.clearCookie("fullName", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "None" });
+          res.clearCookie("userId", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "None" });
       
           console.log("🔹 authToken cookie cleared");
       

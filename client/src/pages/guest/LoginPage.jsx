@@ -106,6 +106,8 @@ export default function LoginPage() {
               type="email"
               placeholder="Email"
               value={email}
+              autoComplete="email"
+              required
               onChange={(e) => setEmail(e.target.value)}
               className="w-full h-[50px] px-4 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
             />
@@ -115,7 +117,7 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
+                required
                 className="w-full h-[50px] px-4 pr-10 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c86c79]"
               />
               <button

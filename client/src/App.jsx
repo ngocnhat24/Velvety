@@ -54,7 +54,7 @@ function App() {
   return (
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
-
+      
       <Routes>
         {/* Root path redirects based on role */}
         <Route path="/" element={<Navigate to={defaultPage} replace />} />

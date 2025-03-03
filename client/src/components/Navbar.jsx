@@ -27,8 +27,12 @@ const Navbar = () => {
       .then(() => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("roleName");
+        localStorage.removeItem("fullName");
+        localStorage.removeItem("userId");
         sessionStorage.removeItem("authToken");
         sessionStorage.removeItem("roleName");
+        sessionStorage.removeItem("fullName");
+        sessionStorage.removeItem("userId");
         navigate("/login");
       })
       .catch(error => {
