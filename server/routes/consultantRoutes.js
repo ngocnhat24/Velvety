@@ -10,6 +10,9 @@ router.get('/', consultantController.getAllConsultants);
 // Get consultant by ID
 router.get('/:id', authenticate, consultantController.getConsultantById);
 
+// Get available consultants
+router.get('/consultants/available', authenticate, consultantController.getAvailableConsultants);
+
 // Create a new consultant (Admin only)
 router.post('/', authenticate, authorize(['Admin']), consultantController.createConsultant);
 
@@ -31,9 +34,7 @@ router.post(
     consultantController.addRating
 );
 
-router.post("/:id/reset-password", authenticate, authorize(['Admin']),consultantController.resetPassword);
+// Reset password for consultant (Admin only)
+router.post('/:id/reset-password', authenticate, authorize(['Admin']), consultantController.resetPassword);
 
 module.exports = router;
-
-
-

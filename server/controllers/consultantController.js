@@ -39,8 +39,15 @@ exports.getAllConsultants = async (req, res) => {
 // Get consultant by ID
 exports.getConsultantById = async (req, res) => {
     try {
+        const { id } = req.params;
+
+        // Kiểm tra xem id có hợp lệ không
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid consultant ID format" });
+        }
+
         const consultant = await User.aggregate([
-            { $match: { _id: new mongoose.Types.ObjectId(req.params.id), roleName: "Consultant" } }, // Tìm user theo id và roleName
+            { $match: { _id: new mongoose.Types.ObjectId(id), roleName: "Consultant" } }, // Tìm user theo id và roleName
             {
                 $lookup: {
                     from: "consultants", // Collection name
@@ -58,8 +65,8 @@ exports.getConsultantById = async (req, res) => {
                     email: 1,
                     phoneNumber: 1,
                     verified: 1,
-                    note: "$consultantData.note", // Lấy note từ consultantData
-                    image: "$consultantData.image" // Lấy image từ consultantData
+                    note: "$consultantData.note",
+                    image: "$consultantData.image"
                 }
             }
         ]);
@@ -68,7 +75,7 @@ exports.getConsultantById = async (req, res) => {
             return res.status(404).json({ message: "Consultant not found" });
         }
 
-        res.json(consultant[0]); // Vì aggregate trả về mảng, nên phải lấy phần tử đầu tiên
+        res.json(consultant[0]);
     } catch (error) {
         console.error("Error fetching consultant:", error);
         res.status(500).json({ message: "Error fetching consultant", error: error.message });
@@ -217,13 +224,32 @@ exports.addRating = async (req, res) => {
 
 exports.getAvailableConsultants = async (req, res) => {
     try {
-        const availableConsultants = await Consultant.find({ isAvailable: true });
-        res.status(200).json(availableConsultants);
+        const bookingId = req.params.bookingId;
+        const booking = await Booking.findById(bookingId);
+
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        const bookedConsultants = await Booking.find({
+            date: booking.date,
+            time: booking.time,
+            consultantID: { $ne: null } // Chỉ lấy những booking đã có consultant
+        }).distinct("consultantID"); // Lấy danh sách consultant đã bị bận
+
+        const availableConsultants = await User.find({
+            roleName: "Consultant",
+            _id: { $nin: bookedConsultants } // Loại bỏ những consultant đã có lịch trùng
+        });
+
+        res.json(availableConsultants);
     } catch (error) {
-        res.status(500).json({ message: "can't find consultant list", error });
+        console.error("Error fetching available consultants:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
+  
 exports.getConsultantDetails = async (req, res) => {
     try {
         const consultant = await Consultant.findById(req.params.id);
