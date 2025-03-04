@@ -31,6 +31,7 @@ import ChangePassword from "./components/ChangePassword";
 import CustomerProfile from "./pages/customer/CustomerProfile.jsx";
 import BookingHistory from "./pages/customer/BookingHistory.jsx";
 import SkincareBooking from "./pages/customer/Calendar.jsx";
+import ViewBooked from "./pages/consultant/ViewBooked";
 
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
@@ -54,7 +55,7 @@ function App() {
   return (
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <Routes>
         {/* Root path redirects based on role */}
         <Route path="/" element={<Navigate to={defaultPage} replace />} />
@@ -111,6 +112,12 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["Staff"]} />}>
           <Route path="/view-booking" element={<ViewBooking />} />
         </Route>
+
+
+        <Route element={<ProtectedRoute allowedRoles={["Consultant"]} />}>
+          <Route path="/view-booked" element={<ViewBooked />} />
+        </Route>
+
 
         {/* 404 Fallback */}
         <Route path="*" element={<Navigate to={defaultPage} replace />} />
