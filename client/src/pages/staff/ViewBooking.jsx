@@ -28,24 +28,25 @@ const ViewBooking = () => {
 
   const handleConsultantClick = async (consultantID, bookingID) => {
     if (consultantID) {
-      // Nếu đã có consultant, hiển thị chi tiết
-      try {
-        const response = await axios.get(`/api/users/${consultantID}`);
-        setSelectedConsultant(response.data);
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch consultant details");
-      }
+        // Nếu đã có consultant, hiển thị chi tiết
+        try {
+            const response = await axios.get(`/api/users/${consultantID}`);
+            setSelectedConsultant(response.data);
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to fetch consultant details");
+        }
     } else {
-      // Nếu chưa có consultant, mở danh sách lựa chọn
-      try {
-        const response = await axios.get("/api/consultants/available");
-        setAvailableConsultants(response.data);
-        setCurrentBooking(bookingID);
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch available consultants");
-      }
+        // Nếu chưa có consultant, lấy danh sách nhân viên không bận
+        try {
+            const response = await axios.get(`/api/consultants/available/${bookingID}`);
+            setAvailableConsultants(response.data);
+            setCurrentBooking(bookingID);
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to fetch available consultants");
+        }
     }
-  };
+};
+
 
   const assignConsultant = async (bookingId, consultantID) => {
     try {
@@ -154,27 +155,43 @@ const ViewBooking = () => {
 
         {/* Hiển thị danh sách chọn consultant nếu chưa được gán */}
         {availableConsultants.length > 0 && (
-          <div className="mt-4 p-4 border border-gray-300">
-            <h3 className="text-xl font-semibold">Select a Consultant</h3>
-            <ul>
-              {availableConsultants.map((consultant) => (
-                <li
-                  key={consultant._id}
-                  className="cursor-pointer text-blue-500 hover:underline"
-                  onClick={() => assignConsultant(currentBooking, consultant._id)}
-                >
-                  {consultant.firstName} {consultant.lastName} - {consultant.roleName}
-                </li>
-              ))}
-            </ul>
-            <button 
-              className="mt-2 px-4 py-2 bg-gray-500 text-white rounded" 
-              onClick={() => setAvailableConsultants([])}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+    <div className="mt-4 p-4 border border-gray-300 bg-white rounded shadow-md">
+        <h3 className="text-xl font-semibold mb-2">Select an Available Consultant</h3>
+        <table className="min-w-full border border-gray-200">
+            <thead>
+                <tr className="bg-gray-200">
+                    <th className="border p-2 text-center">Name</th>
+                    <th className="border p-2 text-center">Email</th>
+                    <th className="border p-2 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {availableConsultants.map((consultant) => (
+                    <tr key={consultant._id} className="border">
+                        <td className="border p-2 text-center">
+                            {consultant.firstName} {consultant.lastName}
+                        </td>
+                        <td className="border p-2 text-center">{consultant.email}</td>
+                        <td className="border p-2 text-center">
+                            <button 
+                                className="px-3 py-1 bg-blue-500 text-white rounded"
+                                onClick={() => assignConsultant(currentBooking, consultant._id)}
+                            >
+                                Assign
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+        <button 
+            className="mt-2 px-4 py-2 bg-gray-500 text-white rounded" 
+            onClick={() => setAvailableConsultants([])}
+>
+            Cancel
+        </button>
+    </div>
+)}
       </div>
     </div>
   );
