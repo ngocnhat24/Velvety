@@ -198,8 +198,8 @@ exports.deleteConsultant = async (req, res) => {
     }
 };
 
-// Add rating to consultant (Fixing duplicate rating issue)
-// Add rating to consultant (Fixing duplicate rating issue)
+
+
 exports.addRating = async (req, res) => {
     try {
         const { rating, comment } = req.body;
@@ -212,9 +212,9 @@ exports.addRating = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error adding rating", error: error.message });
     }
-}; // ❌ Bị lỗi do đóng nhầm
+}; 
 
-// Sửa lại: Xuất tất cả các hàm đúng cách
+
 exports.getAvailableConsultants = async (req, res) => {
     try {
         const availableConsultants = await Consultant.find({ isAvailable: true });

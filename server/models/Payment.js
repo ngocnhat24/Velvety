@@ -22,7 +22,7 @@ const paymentSchema = new Schema({
     default: Date.now,
     validate: {
       validator: function(value) {
-        return value <= Date.now(); // Ensures the date isn't in the future
+        return value <= Date.now(); 
       },
       message: "Transaction date cannot be in the future"
     }
