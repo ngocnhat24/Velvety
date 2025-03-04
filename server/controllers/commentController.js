@@ -26,7 +26,7 @@ exports.addComment = async (req, res) => {
 
     const newComment = new Comment({ service: serviceId, user: userId, rating, text });
     await newComment.save();
-    
+
     res.status(201).json(newComment);
   } catch (error) {
     res.status(500).json({ error: "Server error" });
