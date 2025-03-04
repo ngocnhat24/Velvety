@@ -71,18 +71,18 @@ const SkincareBooking = () => {
             const selectedDay = new Date(selectedDate);
             const currentTime = now.getHours() * 60 + now.getMinutes();
 
-            let filteredTimes;
-            if (selectedDay.toDateString() === now.toDateString()) {
-                filteredTimes = times.filter(time => {
-                    const [hour, minute] = time.split(/[: ]/);
-                    const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
-                    return timeInMinutes > currentTime;
-                });
-            } else {
-                filteredTimes = times;
-            }
+            let filteredTimes = times.filter(time => {
+                const [hour, minute] = time.split(/[: ]/);
+                const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
+
+                const isPastTime = selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime;
+                const isBooked = events.includes(time); // So sánh với các giờ đã đặt
+
+                return !isPastTime && !isBooked; // Chặn giờ quá khứ và đã đặt
+            });
 
             setAvailableTimes(filteredTimes);
+
             if (filteredTimes.length > 0) {
                 setSelectedTime(filteredTimes[0]);
             } else {
@@ -91,7 +91,8 @@ const SkincareBooking = () => {
         };
 
         updateAvailableTimes();
-    }, [selectedDate]);
+    }, [selectedDate, events]);
+
 
 
     const handleTimeSelect = (time) => {
@@ -125,6 +126,31 @@ const SkincareBooking = () => {
         }, 2000);
     };
 
+    // Chan lich booking
+    useEffect(() => {
+        const fetchBookedTimes = async () => {
+            if (!selectedConsultant || !selectedDate) return;
+
+            try {
+                const response = await axios.get("/api/booking-requests/booked-times", {
+                    params: {
+                        consultantID: id,
+                        date: selectedDate.toISOString().split("T")[0] // Chỉ lấy ngày (YYYY-MM-DD)
+                    }
+                });
+
+                const bookedTimes = response.data.map(booking => booking.time); // Lấy giờ từ DB
+                setEvents(bookedTimes); // Lưu vào state
+            } catch (error) {
+                console.error("Error fetching booked times:", error);
+            }
+        };
+
+        fetchBookedTimes();
+    }, [selectedDate, id]);
+
+
+
 
     const handleCancel = () => {
         setSelectedTime(null);
@@ -137,8 +163,12 @@ const SkincareBooking = () => {
         const [hour, minute] = time.split(/[: ]/);
         const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
 
-        return selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime;
+        // Kiểm tra nếu thời gian đã đặt
+        const isBooked = events.includes(time);
+
+        return (selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime) || isBooked;
     };
+
 
     const tileDisabled = ({ date, view }) => {
         if (view === 'month') {
@@ -154,12 +184,13 @@ const SkincareBooking = () => {
             toast.error("Please select a service, date, and time.");
             return;
         }
+        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
 
         try {
             const payload = {
                 serviceID: serviceId,
                 customerID: localStorage.getItem("userId"), // Lấy ID người dùng từ localStorage
-                date: selectedDate.toISOString(),
+                date: localDate.toISOString().split("T")[0], // Chỉ lấy ngày (YYYY-MM-DD)
                 time: selectedTime,
                 consultantID: id && id !== "null" ? id : null, // Chỉ gửi consultantID nếu có
                 status: "Pending",
@@ -202,7 +233,7 @@ const SkincareBooking = () => {
                     <div className="flex-1">
                         <h3 className="text-lg font-semibold mb-2">Available Times for {selectedDate.toDateString()}</h3>
                         <div className="grid grid-cols-3 gap-2">
-                            {times.map((time, index) => (
+                            {availableTimes.map((time, index) => (
                                 <button
                                     key={index}
                                     className={`border p-2 rounded-lg text-xs font-medium ${selectedTime === time ? 'bg-pink-400 text-white' : 'bg-gray-100 hover:bg-gray-200'} ${isTimeDisabled(time) ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -213,6 +244,7 @@ const SkincareBooking = () => {
                                     {time}
                                 </button>
                             ))}
+
                         </div>
                         <div className="flex justify-center gap-4 mt-4">
                             <button
