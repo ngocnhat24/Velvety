@@ -10,7 +10,7 @@ const PublicRoute = ({ user }) => {
     Admin: "/staff-management",
     Manager: "/dashboard",
     Staff: "/view-booking",
-    Consultant: "/consultant-customer",
+    Consultant: "/view-booked",
     Customer: "/booking", // Optional: Redirect customers to their main page
   };
 

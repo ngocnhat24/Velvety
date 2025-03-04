@@ -24,7 +24,7 @@ export default function LoginPage() {
       let redirectUrl = "/";
       if (roleName === "Manager") redirectUrl = "/dashboard";
       else if (roleName === "Staff") redirectUrl = "/view-booking";
-      else if (roleName === "Consultant") redirectUrl = "/home";
+      else if (roleName === "Consultant") redirectUrl = "/view-booked";
       else if (roleName === "Admin") redirectUrl = "/staff-management";
       else if (roleName === "Customer") redirectUrl = "/about";
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
       let redirectUrl = "/";
       if (roleName === "Manager") redirectUrl = "/dashboard";
       else if (roleName === "Staff") redirectUrl = "/view-booking";
-      else if (roleName === "Consultant") redirectUrl = "/home";
+      else if (roleName === "Consultant") redirectUrl = "/view-booked";
       else if (roleName === "Admin") redirectUrl = "/staff-management";
       else if (roleName === "Customer") redirectUrl = "/about";
 
