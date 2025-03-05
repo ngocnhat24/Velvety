@@ -107,14 +107,10 @@ exports.updateBookingRequestStatus = async (req, res) => {
 
     bookingRequest.status = newStatus;
     await bookingRequest.save();
-
-    // ⚠️ TẠM THỜI TẮT `logUserActivity` để kiểm tra có gây lỗi không
-    // await logUserActivity("Booking Request Status Updated")(req, res, () => {});
-
     res.status(200).json({ message: "Status updated successfully", bookingRequest });
 
   } catch (error) {
-    console.error("Error updating status:", error); // ✅ Debug lỗi chính xác
+    console.error("Error updating status:", error); 
     res.status(500).json({ error: error.message });
   }
 };
@@ -138,3 +134,24 @@ exports.getBookingsByConsultantAndDate = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch bookings" });
   }
 };
+
+
+exports.getConsultantBookings = async (req, res) => {
+  // console.log("🔍 Checking req.user:", req.user);
+  
+  // if (!req.user || !req.user.id) {
+  //     return res.status(401).json({ message: "Unauthorized: User not found" });
+  // }
+
+  try {
+    const id = "67c08a4ee73d834e0ca8eb7e"
+      const bookings = await BookingRequest.find({ consultantID: id }) // Ensure correct field name
+        .populate("customerID", "firstName lastName")
+        .populate("serviceID", "name");
+      res.json({ bookings });
+  } catch (error) {
+      console.error("❌ Error fetching consultant bookings:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+};
+
