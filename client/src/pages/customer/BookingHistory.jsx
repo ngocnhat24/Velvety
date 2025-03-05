@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from "react";
-import StaffSidebar from "../../components/StaffSidebar";
 import CustomerSidebar from "../../components/CustomerSidebar";
+import axios from "axios";
 
-const ViewBooking = ({ role }) => {
+const ViewBookingHistory = ({ role }) => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [consultantDetails, setConsultantDetails] = useState(null);
 
+  // Giả sử bạn lưu thông tin khách hàng trong localStorage sau khi đăng nhập
+  const customerID = localStorage.getItem('customerID'); // Lấy ID của khách hàng hiện tại
+
   useEffect(() => {
-    const fetchBookings = async () => {
+    const fetchBookingsByCustomer = async () => {
       try {
-        const response = await fetch("/api/booking-requests");
-        if (!response.ok) throw new Error(`Failed to fetch bookings: ${response.status}`);
-        const data = await response.json();
-        setBookings(data);
+        const token = localStorage.getItem('token'); // Lấy token từ localStorage
+        const response = await axios.get("/api/booking-requests", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+    
+        console.log("Customer Bookings Response:", response);
+        setBookings(response.data);
       } catch (err) {
-        setError(err.message);
+        console.error("Error fetching bookings:", err.response ? err.response.data : err.message);
+        setError(err.response ? err.response.data.message : err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchBookings();
+    fetchBookingsByCustomer();    
   }, []);
 
   const handleConsultantClick = async (consultantID) => {
@@ -31,7 +37,6 @@ const ViewBooking = ({ role }) => {
       if (!response.ok) throw new Error("Failed to fetch consultant details");
       const data = await response.json();
       setConsultantDetails(data);
-      setSelectedConsultant(true);
     } catch (err) {
       setError(err.message);
     }
@@ -70,45 +75,28 @@ const ViewBooking = ({ role }) => {
               {role === "staff" && <th className="border p-2 text-center">Actions</th>}
             </tr>
           </thead>
-          <tbody>
-            {bookings.map((booking) => (
+          {bookings.map((booking) => (
               <tr key={booking._id} className="border">
-                <td className="border p-2 text-center">{booking.serviceName}</td>
+                <td className="border p-2 text-center">{booking.serviceID?.name || "Not Available"}</td>
                 <td className="border p-2 text-center">{new Date(booking.date).toLocaleDateString()}</td>
                 <td className="border p-2 text-center">{booking.time}</td>
                 <td
                   className="border p-2 text-center cursor-pointer text-blue-500"
-                  onClick={() => handleConsultantClick(booking.consultantID)}
+                  onClick={() => handleConsultantClick(booking.consultantID?._id, booking._id)}
                 >
-                  {booking.consultantID || "Not Assigned"}
+                  {booking.consultantID?.firstName || "Not Assigned"}
                 </td>
                 <td className="border p-2 text-center">
-                  <span className={`p-1 rounded ${
-                    booking.status === "Pending" ? "bg-yellow-200" :
+                  <span className={`p-1 rounded ${booking.status === "Pending" ? "bg-yellow-200" :
                     booking.status === "Confirmed" ? "bg-blue-200" :
-                    booking.status === "Completed" ? "bg-green-200" : "bg-red-200"
-                  }`}>{booking.status}</span>
+                      booking.status === "Completed" ? "bg-green-200" : "bg-red-200"
+                    }`}>{booking.status}</span>
                 </td>
-                {role === "staff" && (
-                  <td className="border p-2 text-center">
-                    <select
-                      value={booking.status}
-                      onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
-                      className="border p-1"
-                    >
-                      <option value="Pending">Pending</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                  </td>
-                )}
               </tr>
             ))}
-          </tbody>
         </table>
 
-        {selectedConsultant && consultantDetails && (
+        {consultantDetails && (
           <div className="mt-4 p-4 border border-gray-300">
             <h3 className="text-xl font-semibold">Consultant Details</h3>
             <p><strong>First Name:</strong> {consultantDetails.firstName}</p>
@@ -124,4 +112,4 @@ const ViewBooking = ({ role }) => {
   );
 };
 
-export default ViewBooking;
+export default ViewBookingHistory;

@@ -81,7 +81,8 @@ const ViewBooking = () => {
       setError(err.message);
     }
   };
-
+    
+  
   return (
     <div className="flex">
       <StaffSidebar />
@@ -135,6 +136,7 @@ const ViewBooking = () => {
           </tbody>
         </table>
 
+
         {/* Hiển thị chi tiết Consultant nếu đã có */}
         {selectedConsultant && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
@@ -181,47 +183,6 @@ const ViewBooking = () => {
               <div className="mt-6 flex justify-end">
               </div>
             </div>
-          </div>
-        )}
-
-
-        {/* Hiển thị danh sách chọn consultant nếu chưa được gán */}
-        {availableConsultants.length > 0 && (
-          <div className="mt-4 p-4 border border-gray-300 bg-white rounded shadow-md">
-            <h3 className="text-xl font-semibold mb-2">Select an Available Consultant</h3>
-            <table className="min-w-full border border-gray-200">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border p-2 text-center">Name</th>
-                  <th className="border p-2 text-center">Email</th>
-                  <th className="border p-2 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {availableConsultants.map((consultant) => (
-                  <tr key={consultant._id} className="border">
-                    <td className="border p-2 text-center">
-                      {consultant.firstName} {consultant.lastName}
-                    </td>
-                    <td className="border p-2 text-center">{consultant.email}</td>
-                    <td className="border p-2 text-center">
-                      <button
-                        className="px-3 py-1 bg-blue-500 text-white rounded"
-                        onClick={() => assignConsultant(currentBooking, consultant._id)}
-                      >
-                        Assign
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button
-              className="mt-2 px-4 py-2 bg-gray-500 text-white rounded"
-              onClick={() => setAvailableConsultants([])}
-            >
-              Cancel
-            </button>
           </div>
         )}
       </div>
