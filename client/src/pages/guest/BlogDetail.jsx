@@ -1,71 +1,78 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom'; // For navigating back
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import axios from "../../utils/axiosInstance";
 
-export default function BlogDetail() {
-  const { id } = useParams(); // Get the blog post ID from the URL
-  const [blogPost, setBlogPost] = useState(null);
-  const navigate = useNavigate(); // Hook to handle navigation
+const BlogDetail = () => {
+  const { id } = useParams();
+  const [blog, setBlog] = useState(null);
+  const [relatedBlogs, setRelatedBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the full blog post using the id
-    axios
-      .get(`/api/blogs/${id}`) // Make sure the endpoint is correct
-      .then((response) => {
-        setBlogPost(response.data); // Set the fetched blog post data
-      })
-      .catch((error) => {
-        console.error('Error fetching blog post:', error);
-      });
-  }, [id]); // Re-run the effect when the id changes
+    const fetchBlogDetail = async () => {
+      try {
+        const res = await axios.get(`/api/blogs/${id}`);
+        setBlog(res.data);
+      } catch (err) {
+        console.error("Error fetching blog:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Function to handle going back to the blog list
-  const handleBack = () => {
-    navigate('/blog');
-  };
+    fetchBlogDetail();
+  }, [id]);
 
-  return blogPost ? (
-    <div className="main-container w-full h-full bg-[#f9faef] relative overflow-hidden mx-auto my-0 p-0">
-      <Navbar />
-      <div className="bg-white shadow-lg rounded-lg max-w-4xl mx-auto p-6 mt-12 mb-10">
-        {/* Back button */}
-        <button
-          onClick={handleBack}
-          className="text-blue-500 font-semibold flex items-center space-x-2 mb-6"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          <span>Back to Blog</span>
-        </button>
+  useEffect(() => {
+    const fetchRelatedBlogs = async () => {
+      try {
+        const res = await axios.get("/api/blogs");
+        setRelatedBlogs(res.data.slice(0, 2)); // Get 2 related blogs
+      } catch (err) {
+        console.error("Error fetching related blogs:", err);
+      }
+    };
 
-        {/* Blog post content */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center">
-          <div className="flex-1 lg:mr-8">
-            <h1 className="text-4xl font-semibold text-[#333] mb-4">{blogPost.title}</h1>
-            <p className="text-lg text-[#777] mb-8">{new Date(blogPost.createdDate).toLocaleDateString()}</p>
-          </div>
-        </div>
-        <div className="text-base text-[#555] leading-relaxed" dangerouslySetInnerHTML={{ __html: blogPost.content }} />
+    fetchRelatedBlogs();
+  }, []);
+
+  if (loading) return <p className="text-center mt-10 text-gray-500">Loading...</p>;
+
+  if (!blog) return <p className="text-center text-red-500 mt-10">Blog not found.</p>;
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* ✅ Back Button */}
+      <button
+        className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded mb-4"
+        onClick={() => navigate('/blog')}
+      >
+        ← Back
+      </button>
+      <h1 className="text-4xl font-bold text-gray-900">{blog.title}</h1>
+      <p className="text-gray-500 text-sm mt-2">{new Date(blog.createdDate).toLocaleDateString()}</p>
+      
+      <img src={blog.image} alt={blog.title} className="w-full mt-6 rounded-lg shadow-lg" />
+      
+      {/* Fix: Ensure HTML content renders properly */}
+      <div
+        className="mt-6 text-gray-700 text-lg leading-relaxed tracking-wide sigmar-regular" 
+        dangerouslySetInnerHTML={{ __html: blog.content }}
+      />
+
+      {/* Related Blogs */}
+      <h2 className="text-2xl font-semibold text-gray-800 mt-12">Related Blogs</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        {relatedBlogs.map((item) => (
+          <Link key={item._id} to={`/blog/${item._id}`} className="block bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300">
+            <img src={item.image} alt={item.title} className="w-full h-40 object-cover rounded-lg" />
+            <h3 className="text-lg font-semibold text-gray-800 mt-3">{item.title}</h3>
+          </Link>
+        ))}
       </div>
-      <Footer />
-    </div>
-  ) : (
-    <div className="flex justify-center items-center h-screen">
-      <p className="text-xl text-gray-500">Loading...</p>
     </div>
   );
-}
+};
+
+export default BlogDetail;
