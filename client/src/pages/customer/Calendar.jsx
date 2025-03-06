@@ -204,27 +204,29 @@ const SkincareBooking = () => {
             <Navbar />
             <div className="max-w-4xl mx-auto p-4">
                 {consultants && id !== "null" && id && (
-                    <h2 className="text-center text-xl font-semibold my-4">
-                        Skincare Consultation with {consultants.firstName} {consultants.lastName}
-                    </h2>
+                    <h1 className="text-center text-2xl font-semibold my-4">
+                        Skincare Consultation with <span className="text-[#C54759]">{consultants.firstName} {consultants.lastName}</span>
+                    </h1>
                 )}
 
-                <div className="bg-white p-4 rounded-lg shadow-md flex gap-6">
+                <div className="bg-white p-6 rounded-xl shadow-lg flex gap-6">
                     <div>
                         <Calendar
                             onChange={setSelectedDate}
                             value={selectedDate}
-                            className="border rounded-lg p-2"
+                            className="border rounded-lg p-4 text-lg shadow-md"
                             tileDisabled={tileDisabled}
                         />
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">Available Times for {selectedDate.toDateString()}</h3>
-                        <div className="grid grid-cols-3 gap-2">
+                        <h3 className="text-lg font-semibold mb-2">
+                            Available Times for <span className="text-[#C54759]">{selectedDate.toDateString()}</span>
+                        </h3>
+                        <div className="grid grid-cols-3 gap-3" >
                             {times.map((time, index) => (
                                 <button
                                     key={index}
-                                    className={`border p-2 rounded-lg text-xs font-medium ${selectedTime === time ? 'bg-pink-400 text-white' : 'bg-gray-100 hover:bg-gray-200'} ${isTimeDisabled(time) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    className={`border p-3 rounded-lg text-sm font-medium ${selectedTime === time ? 'bg-pink-400 text-white' : 'bg-gray-100 hover:bg-gray-200'} ${isTimeDisabled(time) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     onClick={() => handleTimeSelect(time)}
                                     aria-label={`Select time ${time}`}
                                     disabled={isTimeDisabled(time)}
@@ -233,38 +235,37 @@ const SkincareBooking = () => {
                                 </button>
                             ))}
                         </div>
-                        <div className="flex justify-center gap-4 mt-4">
+                        <div className="flex justify-center gap-4 mt-10">
                             <button
-                                className="bg-pink-500 text-white px-4 py-2 rounded-lg"
+                                className="bg-pink-500 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-pink-600 transition duration-300"
                                 onClick={handleConfirmBooking}
                                 aria-label="Confirm booking"
                             >
                                 Choose
                             </button>
                             <button
-                                className="text-gray-500"
+                                className="bg-gray-300 px-6 py-3 rounded-xl hover:bg-gray-400 transition duration-300"
                                 onClick={handleCancel}
                                 aria-label="Cancel booking"
                             >
                                 Cancel
                             </button>
                         </div>
-
                     </div>
                 </div>
                 {showConfirmModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-md">
+                    <div className="fixed inset-0 bg-black bg-opacity-10 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-md">
                         <div className="bg-white p-8 rounded-xl shadow-2xl w-96">
-                            <h2 className="text-xl font-bold text-center mb-6 text-pink-500">Booking Confirmation</h2>
-                            <p className="text-gray-700 mb-2"><strong>Service:</strong> {serviceName}</p>
-                            <p className="text-gray-700 mb-2"><strong>Date:</strong> {selectedDate.toDateString()}</p>
-                            <p className="text-gray-700 mb-2"><strong>Time:</strong> {selectedTime}</p>
+                            <h2 className="text-xl font-bold text-center text-[#C54759] mb-6 ">Booking Confirmation</h2>
+                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Service:</strong> {serviceName}</p>
+                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Date:</strong> {selectedDate.toDateString()}</p>
+                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Time:</strong> {selectedTime}</p>
                             {consultants && id !== "null" && (
-                                <p className="text-gray-700 mb-4"><strong>Consultant:</strong> {consultants.firstName} {consultants.lastName}</p>
+                                <p className="text-gray-700 mb-4"><strong className="text-[#C54759]">Consultant:</strong> {consultants.firstName} {consultants.lastName}</p>
                             )}
                             <div className="flex justify-end gap-4 mt-6">
-                                <button className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300" onClick={() => setShowConfirmModal(false)}>Cancel</button>
-                                <button className="bg-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300" onClick={handleConfirm}>Confirm</button>
+                                <button className="bg-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300 rounded-xl" onClick={handleConfirm}>Confirm</button>
+                                <button className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 rounded-xl" onClick={() => setShowConfirmModal(false)}>Cancel</button>
                             </div>
                         </div>
                     </div>
