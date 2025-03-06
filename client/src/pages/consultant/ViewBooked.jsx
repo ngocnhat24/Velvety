@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../../utils/axiosInstance";
+import axios from "../../utils/axiosInstance"; // Sử dụng axiosInstance đã có interceptor
 import Sidebar from "../../components/ConsultantSidebar";
 
 const ViewBooked = () => {
@@ -9,19 +9,8 @@ const ViewBooked = () => {
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const token = sessionStorage.getItem("authToken"); // Lấy token từ sessionStorage
-
-      if (!token) {
-        setError("Unauthorized. Please log in again.");
-        setLoading(false);
-        return;
-      }
-
       try {
-        const response = await axios.get("/api/booking-requests/my-bookings", {
-          headers: { Authorization: `Bearer ${token}` }, // Gửi token
-        });
-
+        const response = await axios.get("/api/booking-requests/my-bookings");
         setBookings(response.data.bookings || []);
       } catch (error) {
         setError("Failed to load bookings. Please try again later.");
@@ -30,8 +19,8 @@ const ViewBooked = () => {
       }
     };
 
-    fetchBookings(); // Gọi API khi component mount
-  }, []); // useEffect chỉ chạy 1 lần khi component mount
+    fetchBookings();
+  }, []); // Chạy 1 lần khi component mount
 
   if (loading) return <p className="text-center mt-5">Loading...</p>;
 
