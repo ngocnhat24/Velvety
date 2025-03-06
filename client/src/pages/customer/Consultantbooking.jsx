@@ -9,7 +9,7 @@ export default function ConsultantGuest() {
   const { id } = useParams();
   const [visibleNoteIndex, setVisibleNoteIndex] = useState(null);
   const [consultants, setConsultants] = useState([]);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  
 
   useEffect(() => {
     fetchConsultants();
@@ -29,11 +29,6 @@ export default function ConsultantGuest() {
   };
 
   const handleBookingNow = async (consultantId) => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      setShowLoginModal(true);
-      return;
-    }
     localStorage.setItem("consultantId", consultantId);
     localStorage.setItem("serviceUrl", `/services/${id}/consultant-customer/${consultantId}/calendar`);
     navigate(`/services/${id}/consultant-customer/${consultantId}/calendar`);

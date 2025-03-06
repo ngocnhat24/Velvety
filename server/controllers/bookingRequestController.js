@@ -110,7 +110,7 @@ exports.updateBookingRequestStatus = async (req, res) => {
     res.status(200).json({ message: "Status updated successfully", bookingRequest });
 
   } catch (error) {
-    console.error("Error updating status:", error); 
+    console.error("Error upx`dating status:", error); 
     res.status(500).json({ error: error.message });
   }
 };
@@ -137,7 +137,7 @@ exports.getBookingsByConsultantAndDate = async (req, res) => {
 
 
 exports.getConsultantBookings = async (req, res) => {
-  console.log("🔍 Checking req.user:", req.user);
+  console.log(" Checking req.user:", req.user);
 
   if (!req.user || !req.user.id) {
     return res.status(401).json({ message: "Unauthorized: User not found" });
@@ -150,7 +150,27 @@ exports.getConsultantBookings = async (req, res) => {
       
     res.json({ bookings });
   } catch (error) {
-    console.error("❌ Error fetching consultant bookings:", error);
+    console.error(" Error fetching consultant bookings:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+exports.getCustomerBookings = async (req, res) => {
+  console.log("🔍 Checking req.user:", req.user);
+
+  if (!req.user || !req.user.id) {
+    return res.status(401).json({ message: "Unauthorized: User not found" });
+  }
+
+  try {
+    const bookings = await BookingRequest.find({ customerID: req.user.id }) // Lấy lịch sử đặt lịch của khách hàng
+      .populate("consultantID", "firstName lastName")
+      .populate("serviceID", "name");
+
+    res.json({ bookings });
+  } catch (error) {
+    console.error(" Error fetching customer bookings:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

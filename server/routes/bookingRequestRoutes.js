@@ -5,7 +5,8 @@ const {
   assignConsultant,
   updateBookingRequestStatus,
   getBookingsByConsultantAndDate,
-  getConsultantBookings
+  getConsultantBookings,
+  getCustomerBookings
 } = require('../controllers/bookingRequestController');
 const { authenticate, authorize } = require("../middlewares/authMiddleware");
 
@@ -16,7 +17,9 @@ router.get('/', getAllBookingRequests);
 router.put('/:id/assign-consultant', assignConsultant); 
 router.put('/:id/status', updateBookingRequestStatus);
 router.get('/booked-times', getBookingsByConsultantAndDate);
-router.get("/my-bookings",authenticate, getConsultantBookings);
+router.get("/my-bookings",authenticate, authorize(["Consultant"]),getConsultantBookings);
+router.get("/history-bookings",authenticate, authorize(["Customer"]),getCustomerBookings);
+
 
 
 module.exports = router;
