@@ -54,14 +54,14 @@ const Navbar = () => {
       </button>
 
       <nav
-        className={`absolute top-[80px] left-0 w-full bg-[#F9FAEF] flex flex-col items-center pacifico-regular gap-4 p-6 shadow-lg rounded-md transition-transform duration-300 md:static md:w-auto md:p-0 md:flex-row md:shadow-none md:gap-10 ${isMobileMenuOpen ? "flex" : "hidden md:flex"}`}
+        className={`absolute top-[80px] left-0 w-full bg-[#F9FAEF] flex flex-col items-center pacifico-regular gap-4 p-6 shadow-lg rounded-md transition-transform duration-300 md:static md:w-auto md:p-0 md:flex-row md:shadow-none md:gap-20 ${isMobileMenuOpen ? "flex" : "hidden md:flex"}`}
       >
         {["About", "Services", "Blog", "Consultant", "Quiz"].map((item) => (
           <NavLink
             key={item}
             to={`/${item.toLowerCase()}`}
             className={({ isActive }) =>
-              `text-center text-[18px] font-semibold transition-colors ${isActive ? "text-[#fadade]" : "text-[#E27585] hover:text-[#fadade]"}`
+              `text-center text-[20px] font-semibold transition-colors ${isActive ? "text-[#fadade]" : "text-[#E27585] hover:text-[#fadade]"}`
             }
           >
             {item}
