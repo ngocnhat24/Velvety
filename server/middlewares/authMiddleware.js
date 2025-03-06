@@ -30,6 +30,7 @@ const authenticate = (req, res, next) => {
 }; 
 
 // Middleware to authorize roles
+// Sai ở đây
 const authorize = (allowedRoles) => (req, res, next) => {
     // Log user role and allowed roles for the request
     console.log('Authorizing user with role:', req.user.roleName);
@@ -43,5 +44,6 @@ const authorize = (allowedRoles) => (req, res, next) => {
     console.log('User authorized, proceeding to the next middleware.');
     next();
 };
+
 
 module.exports = { authenticate, authorize };
