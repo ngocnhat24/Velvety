@@ -143,7 +143,8 @@ const SkincareBooking = () => {
 
 
     const handleCancel = () => {
-        setSelectedTime(null);
+        localStorage.setItem("serviceId", serviceId); // Lưu dịch vụ đã chọn
+        window.location.href = "/consultant-customer"; // Chuyển về trang consultant khi bấm Cancel
     };
 
     const isTimeDisabled = (time) => {
