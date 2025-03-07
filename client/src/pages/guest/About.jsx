@@ -83,7 +83,7 @@ export default function About() {
           includes other families who have worked here for so long that
           generations spanning mothers and daughters, aunts, nieces, nephews,
           and cousins now work side by side. but what we’re most amazed by and
-          proud of is the acknowledgement we hear from our customers that Reviva
+          proud of is the acknowledgement we hear from our customers that Velvety
           now extends within their families too. mothers have been sharing their
           “secret for beautiful skin” with their daughters, and now with their
           granddaughters as well. {" "}
@@ -135,7 +135,7 @@ export default function About() {
         </div>
       </div>
       <span className="block h-[27px] font-['Lato'] text-[22.541440963745117px] font-normal leading-[27px] text-[#000] relative text-left whitespace-nowrap z-[24] mt-[13.26px] mr-0 mb-0 ml-[217.455px]">
-        Stephen Strassler applying Reviva skin care to a model {" "}
+        Stephen Strassler applying Velvety skin care to a model {" "}
       </span>
       <div className="flex w-[600px] h-[80.884px] justify-between items-center relative z-[21] mt-[0.84px] mr- mb-auto ml-[900px]">
         <span className="flex w-[600px] h-[64px] justify-start items-center shrink-0 font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left  z-[21]">
@@ -145,7 +145,7 @@ export default function About() {
       </div>
       <div className="flex w-full max-w-[1085px] h-[37.33px] justify-between items-center relative z-[14] mt-[58.341px] mx-auto">
         <span className="h-[36px] shrink-0 font-['Lato'] text-[22.5px] font-medium leading-[36px] text-[#000] tracking-[0.9px] relative text-left  whitespace-nowrap z-[13]">
-          Reviva’s skin care spans generations {" "}
+          Velvety’s skin care spans generations {" "}
         </span>
         <span className="h-[36px] shrink-0 font-['Lato'] text-[22.5px] font-medium leading-[36px] text-[#000] tracking-[0.9px] relative text-left  whitespace-nowrap z-[14]">
           Get to know us {" "}
@@ -161,7 +161,7 @@ export default function About() {
             Stephen Strassler {" "}
           </span>
           <span className="font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#000] tracking-[0.8px] relative text-left ">
-            passed away in late 2016 leaving the company in the capable hands of his wife Judy – who has trusted its stewardship to a talented team – Reviva’s newest generation of leadership. sadly, Velvety lost {" "}
+            passed away in late 2016 leaving the company in the capable hands of his wife Judy – who has trusted its stewardship to a talented team – Velvety’s newest generation of leadership. sadly, Velvety lost {" "}
           </span>
           <span className="font-['Lato'] text-[18px] font-light leading-[31.823px] text-[#c86c79] tracking-[0.8px] relative text-left ">
             Judith Strassler {" "}

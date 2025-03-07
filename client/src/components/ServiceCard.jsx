@@ -20,7 +20,7 @@ const ServiceCard = ({ image, name, description, price, onChoose }) => {
       </span>
       {/* Price */}
       <span className="text-[16px] font-normal leading-[19px] text-[#000] mt-2">
-        {price} $
+        {price} VNĐ
       </span>
       {/* Choose Button */}
       <button

@@ -30,7 +30,9 @@ export default function ConsultantGuest() {
 
   const handleBookingNow = async (consultantId) => {
     localStorage.setItem("consultantId", consultantId);
+    sessionStorage.setItem("consultantId", consultantId);
     localStorage.setItem("serviceUrl", `/services/${id}/consultant-customer/${consultantId}/calendar`);
+    sessionStorage.setItem("serviceUrl", `/services/${id}/consultant-customer/${consultantId}/calendar`);
     navigate(`/services/${id}/consultant-customer/${consultantId}/calendar`);
     console.log("Navigating to:", `/services/${id}/consultant-customer/${consultantId}/calendar`);
   };

@@ -50,7 +50,9 @@ export default function ServiceDetails() {
       return;
     }
     localStorage.setItem("serviceId", id);
+    sessionStorage.setItem("serviceId", id);
     localStorage.setItem("serviceUrl", `/services/${id}/consultant-customer`);
+    sessionStorage.setItem("serviceUrl", `/services/${id}/consultant-customer`);
     navigate(`/services/${id}/consultant-customer`);
     console.log("Navigating to:", `/services/${id}/consultant-customer`);
   };

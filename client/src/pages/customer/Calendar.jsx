@@ -176,7 +176,7 @@ const SkincareBooking = () => {
         try {
             const payload = {
                 serviceID: serviceId,
-                customerID: localStorage.getItem("userId"),
+                customerID: localStorage.getItem("userId") || sessionStorage.getItem("userId"),
                 date: localDate.toISOString().split("T")[0],
                 time: selectedTime,
                 consultantID: id && id !== "null" ? id : null,
