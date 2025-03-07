@@ -1,4 +1,5 @@
 const BookingRequest = require('../models/BookingRequest');
+const mongoose = require('mongoose');
 
 exports.createBookingRequest = async (req, res) => {
   const { serviceID, customerID, date, time, consultantID } = req.body;
@@ -172,5 +173,50 @@ exports.getCustomerBookings = async (req, res) => {
   } catch (error) {
     console.error(" Error fetching customer bookings:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.cancelBookingRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("Request ID:", id);
+
+    // Validate if id is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid booking ID format" });
+    }
+
+    // Ensure user is authenticated
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
+
+    // Find the booking request
+    const booking = await BookingRequest.findById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking Request not found" });
+    }
+
+    // Ensure the user is the owner of the booking request
+    if (booking.customerID.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Forbidden: You can only cancel your own booking request" });
+    }
+
+    // Define allowed status transitions
+    const cancellableStatuses = ["Pending", "Confirmed"];
+    if (!cancellableStatuses.includes(booking.status)) {
+      return res.status(400).json({ message: `Cannot cancel booking with status '${booking.status}'` });
+    }
+
+    // Update the status to "Cancelled"
+    booking.status = "Cancelled";
+    await booking.save();
+
+    res.status(200).json({ message: "Booking request canceled successfully", booking });
+
+  } catch (error) {
+    console.error("Error canceling booking request:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

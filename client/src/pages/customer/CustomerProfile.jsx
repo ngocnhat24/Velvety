@@ -499,6 +499,7 @@ const CustomerProfile = () => {
               "&:hover": { backgroundColor: "#a92a4e" },
             }}
           >
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#a92a4e] opacity-75"></span>
             <HomeIcon />
           </Fab>;
         </div>
