@@ -26,22 +26,6 @@ const ViewBooking = () => {
     fetchBookings();
   }, []);
 
-  const handlePayment = async (bookingID, serviceID) => {
-    try {
-      // Gửi yêu cầu thanh toán với cả bookingID và serviceID
-      const response = await axios.post("/api/payment/momo-payment", {
-        bookingID,
-        serviceID,
-      });
-      console.log("Payment response:", response.data);
-    } catch (error) {
-      // In ra chi tiết lỗi để bạn kiểm tra
-      console.error("Error during payment:", error.response ? error.response.data : error.message);
-    }
-  };
-  
-  
-
   const handleConsultantClick = async (consultantID, bookingID) => {
     if (consultantID) {
       try {
@@ -97,8 +81,8 @@ const ViewBooking = () => {
       setError(err.message);
     }
   };
-
-
+    
+  
   return (
     <div className="flex">
       <StaffSidebar />
@@ -115,7 +99,6 @@ const ViewBooking = () => {
               <th className="border p-2 text-center">Consultant</th>
               <th className="border p-2 text-center">Status</th>
               <th className="border p-2 text-center">Actions</th>
-              <th className="border p-2 text-center">Payment</th>
             </tr>
           </thead>
           <tbody>
@@ -148,15 +131,6 @@ const ViewBooking = () => {
                     <option value="Cancelled">Cancelled</option>
                   </select>
                 </td>
-                <td className="border p-2 text-center">
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                    onClick={() => handlePayment(booking._id, booking.serviceID._id)}  // Pass serviceID here
-                  >
-                    Pay
-                  </button>
-                </td>
-
               </tr>
             ))}
           </tbody>

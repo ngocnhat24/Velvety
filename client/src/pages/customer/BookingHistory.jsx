@@ -6,7 +6,7 @@ const ViewBookingHistory = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [consultantDetails, setConsultantDetails] = useState(null);
+  const [selectedConsultant, setSelectedConsultant] = useState(null); // Đổi tên state
 
   useEffect(() => {
     const fetchBookingsByCustomer = async () => {
@@ -29,11 +29,15 @@ const ViewBookingHistory = () => {
 
     try {
       const response = await axios.get(`/api/consultants/${consultantID}`);
-      setConsultantDetails(response.data);
+      setSelectedConsultant(response.data); // Sửa thành setSelectedConsultant
     } catch (error) {
       console.error("Error fetching consultant details:", error);
       setError("Failed to fetch consultant details.");
     }
+  };
+
+  const closeConsultantModal = () => {
+    setSelectedConsultant(null);
   };
 
   return (
@@ -93,21 +97,58 @@ const ViewBookingHistory = () => {
           </table>
         )}
 
-        {consultantDetails && (
-          <div className="mt-4 p-4 border border-gray-300">
-            <h3 className="text-xl font-semibold">Consultant Details</h3>
-            <p>
-              <strong>Name:</strong> {consultantDetails.firstName} {consultantDetails.lastName}
-            </p>
-            <p>
-              <strong>Email:</strong> {consultantDetails.email}
-            </p>
-            <p>
-              <strong>Phone:</strong> {consultantDetails.phoneNumber || "Not Available"}
-            </p>
-            <p>
-              <strong>Verified:</strong> {consultantDetails.verified ? "Yes" : "No"}
-            </p>
+        {selectedConsultant && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
+              <div className="flex justify-between items-center border-b pb-3">
+                <h3 className="text-xl font-semibold text-gray-800">Consultant Details</h3>
+                <button className="text-gray-500 hover:text-gray-700" onClick={closeConsultantModal}>
+                  ✕
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">First Name:</span>
+                  <span className="text-gray-800">{selectedConsultant.firstName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Last Name:</span>
+                  <span className="text-gray-800">{selectedConsultant.lastName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Email:</span>
+                  <span className="text-gray-800">{selectedConsultant.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Phone:</span>
+                  <span className="text-gray-800">{selectedConsultant.phoneNumber || "Not Available"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Role:</span>
+                  <span className="text-gray-800">{selectedConsultant.roleName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Verified:</span>
+                  <span
+                    className={`font-semibold ${
+                      selectedConsultant.verified ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {selectedConsultant.verified ? "Yes" : "No"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                  onClick={closeConsultantModal}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
