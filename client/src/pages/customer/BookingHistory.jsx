@@ -140,9 +140,9 @@ const ViewBookingHistory = () => {
       <div className="w-full">
         <Typography
           variant="h4"
-          className="mb-4 text-[#c86c79] font-bold text-center"
+          className="mb-4 text-[#c86c79] text-center"
         >
-          My Booking History
+          Booking History
         </Typography>
         <div className="flex justify-between mb-4">
           <TextField

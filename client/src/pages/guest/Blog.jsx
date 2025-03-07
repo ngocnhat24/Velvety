@@ -4,6 +4,7 @@ import Footer from "../../components/Footer";
 import BlogCard from '../../components/BlogCard';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // for navigation
+import { motion } from "framer-motion";
 
 export default function Blog() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -69,27 +70,32 @@ export default function Blog() {
           />
         ))}
         {/* Booking Now Button */}
-        <button
-          onClick={() => navigate('/services')}
-          className="fixed bottom-4 right-4 px-6 py-3 bg-green-500 text-white rounded-full shadow-lg transition transform focus:outline-none focus:ring-4 focus:ring-green-300 pacifico-regular"
-          style={{
-            background: 'linear-gradient(135deg, #6B8E23, #32CD32)',
-            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-            transition: 'all 0.3s ease-in-out',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #32CD32, #6B8E23)';
-            e.currentTarget.style.transform = 'scale(1.1) rotate(3deg)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #6B8E23, #32CD32)';
-            e.currentTarget.style.transform = 'scale(1.05)';
-            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-          }}
-        >
-          Book Now
-        </button>
+        <div className="fixed bottom-4 right-4">
+      {/* Ping effect */}
+      <span className="absolute -inset-1 inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
+
+      {/* Animated Button */}
+      <motion.button
+        onClick={() => navigate("/services")}
+        className="relative px-6 py-3 text-white rounded-full shadow-lg pacifico-regular focus:outline-none focus:ring-4 focus:ring-green-300"
+        style={{
+          background: "linear-gradient(135deg, #6B8E23, #32CD32)",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+        }}
+        animate={{
+          y: [0, -5, 5, -5, 0], // Floating animation
+          transition: {
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+          },
+        }}
+        whileHover={{ scale: 1.1, rotate: 5, boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)" }}
+        whileTap={{ scale: 0.95 }}
+      >
+        Book Now
+      </motion.button>
+      </div>
       </div>
       <Footer />
     </div>

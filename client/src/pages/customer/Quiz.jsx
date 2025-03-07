@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"; // Import navigate for redirecti
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 const Quiz = () => {
   const [questions, setQuestions] = useState([]);
@@ -209,6 +210,33 @@ const Quiz = () => {
           </div>
         </div>
       )}
+       {/* Booking Now Button */}
+            <div className="fixed bottom-4 right-4">
+            {/* Ping effect */}
+            <span className="absolute -inset-1 inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
+      
+            {/* Animated Button */}
+            <motion.button
+              onClick={() => navigate("/services")}
+              className="relative px-6 py-3 text-white rounded-full shadow-lg pacifico-regular focus:outline-none focus:ring-4 focus:ring-green-300"
+              style={{
+                background: "linear-gradient(135deg, #6B8E23, #32CD32)",
+                boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+              }}
+              animate={{
+                y: [0, -5, 5, -5, 0], // Floating animation
+                transition: {
+                  duration: 7,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+              }}
+              whileHover={{ scale: 1.1, rotate: 5, boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)" }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Book Now
+            </motion.button>
+            </div>
 
       <Footer />
     </div>
