@@ -10,19 +10,32 @@ const Navbar = () => {
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
   const [token, setToken] = useState(localStorage.getItem("authToken") || sessionStorage.getItem("authToken"));
   const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const handleStorageChange = () => {
-      setToken(localStorage.getItem("authToken"));
+      setToken(localStorage.getItem("authToken")) || sessionStorage.getItem("authToken");
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showModal]);
+  
+
   const isLoginPage = location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/customer-profile" || location.pathname === "/forgot-password";
 
   const handleLogout = () => {
-    if (!window.confirm("Are you sure you want to log out?")) return;
+    if (!showModal) return;
     axios.post("/api/auth/logout")
       .then(() => {
         localStorage.removeItem("authToken");
@@ -89,11 +102,34 @@ const Navbar = () => {
               <NavLink to="/customer-profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
                 Profile
               </NavLink>
-              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+              <button onClick={() => setShowModal(true)} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
                 Log out
               </button>
             </div>
           )}
+        </div>
+      )}
+       {/* Custom Logout Modal */}
+       {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Log out Confirmation</h3>
+            <p className="text-gray-600">Are you sure you want to log out?</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                className="py-2 px-6 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="py-2 px-6 bg-[#f1baba] text-white rounded-lg hover:bg-[#e78999] transition"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

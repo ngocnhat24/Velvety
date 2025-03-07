@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider, Button, Box } from "@mui/material";
 import axios from "axios";
@@ -7,6 +7,7 @@ const CustomerSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
+  const [showModal, setShowModal] = useState(false);
 
   const menuItems = [
     { name: "Account Details", path: "/customer-profile" },
@@ -14,7 +15,6 @@ const CustomerSidebar = () => {
   ];
 
   const handleLogout = () => {
-    if (!window.confirm("Are you sure you want to log out?")) return;
     axios.post("/api/auth/logout")
       .then(() => {
         localStorage.removeItem("authToken");
@@ -25,7 +25,8 @@ const CustomerSidebar = () => {
       })
       .catch(error => {
         console.error("Logout failed:", error.response?.data?.message || error.message);
-      });
+      })
+      .finally(() => setShowModal(false));
   };
 
   return (
@@ -54,7 +55,7 @@ const CustomerSidebar = () => {
           }}
         />
         <Typography variant="h6" sx={{ color: "#c86c79", textAlign: "center" }}>
-          Welcome <br></br>{fullName}
+          Welcome <br /> {fullName}
         </Typography>
       </Toolbar>
       <Divider sx={{ backgroundColor: "#E27585" }} />
@@ -68,9 +69,9 @@ const CustomerSidebar = () => {
           </NavLink>
         ))}
       </List>
-      
+
       <Button
-        onClick={handleLogout}
+        onClick={() => setShowModal(true)}
         sx={{
           position: "absolute",
           bottom: "20px",
@@ -87,6 +88,30 @@ const CustomerSidebar = () => {
       >
         Logout
       </Button>
+
+      {/* Custom Logout Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Log out Confirmation</h3>
+            <p className="text-gray-600">Are you sure you want to log out?</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                className="py-2 px-6 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="py-2 px-6 bg-[#f1baba] text-white rounded-lg hover:bg-[#e78999] transition"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Drawer>
   );
 };
