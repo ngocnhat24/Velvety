@@ -4,8 +4,8 @@ const {
   addQuestion,
   updateQuestion,
   deleteQuestion,
-} = require("../controllers/questionController");
-const { authenticate, authorize } = require("../middlewares/authMiddleware");
+} = require("../controllers/QuestionController");
+const { authenticate, authorize } = require("../middlewares/AuthMiddleware");
 
 const router = express.Router();
 

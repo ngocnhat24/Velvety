@@ -8,8 +8,8 @@ const {
   getConsultantBookings,
   getCustomerBookings,
   cancelBookingRequest
-} = require('../controllers/bookingRequestController');
-const { authenticate, authorize } = require("../middlewares/authMiddleware");
+} = require('../controllers/BookingRequestController');
+const { authenticate, authorize } = require("../middlewares/AuthMiddleware");
 
 const router = express.Router();
 

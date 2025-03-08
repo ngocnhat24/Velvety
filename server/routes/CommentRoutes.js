@@ -1,6 +1,6 @@
 const express = require("express");
-const { getCommentsByService, addComment, deleteComment } = require("../controllers/commentController");
-const { authenticate } = require("../middlewares/authMiddleware"); // Middleware for authentication
+const { getCommentsByService, addComment, deleteComment } = require("../controllers/CommentController");
+const { authenticate } = require("../middlewares/AuthMiddleware"); // Middleware for authentication
 
 const router = express.Router();
 

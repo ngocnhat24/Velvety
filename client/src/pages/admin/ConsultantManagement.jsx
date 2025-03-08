@@ -224,6 +224,13 @@ export default function ConsultantManagement() {
                   <td className="p-3 text-sm">{consultant.phoneNumber}</td>
                   <td className="p-3 text-sm">{consultant.note}</td>
                   <td className="p-3 text-sm">
+                    {consultant.verified ? (
+                      <i className="fas fa-check-circle text-green-500"></i>
+                    ) : (
+                      <i className="fas fa-times-circle text-red-500"></i>
+                    )}
+                  </td>
+                  <td className="p-3 text-sm">
                     {consultant.image ? (
                       <img
                         src={consultant.image}
@@ -232,13 +239,6 @@ export default function ConsultantManagement() {
                       />
                     ) : (
                       "No Image"
-                    )}
-                  </td>
-                  <td className="p-3 text-sm">
-                    {consultant.verified ? (
-                      <i className="fas fa-check-circle text-green-500"></i>
-                    ) : (
-                      <i className="fas fa-times-circle text-red-500"></i>
                     )}
                   </td>
                   <td className="p-3 text-sm">

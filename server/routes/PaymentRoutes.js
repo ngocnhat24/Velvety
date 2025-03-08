@@ -1,6 +1,6 @@
 const express = require('express');
-const { createPayment, getPaymentByBookingRequest } = require('../controllers/paymentController');
-const { authenticate } = require("../middlewares/authMiddleware"); // Authentication middleware
+const { createPayment, getPaymentByBookingRequest } = require('../controllers/PaymentController');
+const { authenticate } = require("../middlewares/AuthMiddleware"); // Authentication middleware
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 const express = require('express');
-const { createFeedback, getFeedbackByBooking } = require('../controllers/feedbackController');
-const { authenticate } = require('../middlewares/authMiddleware'); // Require authentication
+const { createFeedback, getFeedbackByBooking } = require('../controllers/FeedbackController');
+const { authenticate } = require('../middlewares/AuthMiddleware'); // Require authentication
 
 const router = express.Router();
 

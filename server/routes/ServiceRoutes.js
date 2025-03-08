@@ -5,8 +5,8 @@ const {
   updateService,
   deleteService,
   getServiceById,
-} = require("../controllers/serviceController");
-const { authenticate, authorize } = require("../middlewares/authMiddleware");
+} = require("../controllers/ServiceController");
+const { authenticate, authorize } = require("../middlewares/AuthMiddleware");
 
 const router = express.Router();
 

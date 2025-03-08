@@ -5,8 +5,8 @@ const {
   getBlogPostById,
   updateBlogPost,
   deleteBlogPost,
-} = require("../controllers/blogController");
-const { authenticate, authorize } = require("../middlewares/authMiddleware");
+} = require("../controllers/BlogController");
+const { authenticate, authorize } = require("../middlewares/AuthMiddleware");
 
 const router = express.Router();
 
