@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider, Button } from "@mui/material";
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  Toolbar,
+  Typography,
+  Divider,
+  Button,
+} from "@mui/material";
 import axios from "axios";
-
-axios.defaults.withCredentials = true; // ✅ Ensure cookies/session data are sent with requests
 
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
+  const fullName =
+    localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
+  const [showModal, setShowModal] = useState(false);
 
   const menuItems = [
     { name: "Consultant", path: "/consultant-management" },
@@ -16,8 +25,8 @@ const AdminSidebar = () => {
   ];
 
   const handleLogout = () => {
-    if (!window.confirm("Are you sure you want to log out?")) return;
-    axios.post("/api/auth/logout")
+    axios
+      .post("/api/auth/logout")
       .then(() => {
         // ✅ Clear auth data from storage
         localStorage.removeItem("authToken");
@@ -28,9 +37,13 @@ const AdminSidebar = () => {
         // ✅ Redirect user to login page
         navigate("/login");
       })
-      .catch(error => {
-        console.error("Logout failed:", error.response?.data?.message || error.message);
-      });
+      .catch((error) => {
+        console.error(
+          "Logout failed:",
+          error.response?.data?.message || error.message
+        );
+      })
+      .finally(() => setShowModal(false));
   };
 
   return (
@@ -49,11 +62,17 @@ const AdminSidebar = () => {
     >
       {/* Sidebar Title */}
       <Toolbar>
-      <div className="w-[150px] h-[150px] bg-cover bg-center bg-no-repeat rounded-t-lg" style={{ backgroundImage: `url(https://cdn2.iconfinder.com/data/icons/shopping-colorline/64/admin-512.png)` }} />
+        <div
+          className="w-[150px] h-[150px] bg-cover bg-center bg-no-repeat rounded-t-lg"
+          style={{
+            backgroundImage: `url(https://cdn2.iconfinder.com/data/icons/shopping-colorline/64/admin-512.png)`,
+          }}
+        />
       </Toolbar>
       <Typography variant="h6">
         <div className="text-center">
-         Welcome Admin <br />{fullName}
+          Welcome Admin <br />
+          {fullName}
         </div>
       </Typography>
       <Divider sx={{ backgroundColor: "gray" }} />
@@ -61,14 +80,17 @@ const AdminSidebar = () => {
       {/* Menu List */}
       <List>
         {menuItems.map((item) => (
-          <NavLink key={item.name} to={item.path} style={{ textDecoration: "none", color: "inherit" }}>
+          <NavLink
+            key={item.name}
+            to={item.path}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
             <ListItemButton selected={location.pathname === item.path}>
               <ListItemText primary={item.name} />
             </ListItemButton>
           </NavLink>
         ))}
       </List>
-
 
       {/* Change Password Button */}
       <Button
@@ -91,7 +113,7 @@ const AdminSidebar = () => {
 
       {/* Logout Button */}
       <Button
-        onClick={handleLogout}
+        onClick={() => setShowModal(true)}
         sx={{
           position: "absolute",
           bottom: "10px",
@@ -107,6 +129,31 @@ const AdminSidebar = () => {
       >
         Logout
       </Button>
+      {/* Custom Logout Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Log out Confirmation
+            </h3>
+            <p className="text-gray-600">Are you sure you want to log out?</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                className="py-2 px-6 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="py-2 px-6 bg-[#e05151] text-white rounded-lg hover:bg-[#e78999] transition"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Drawer>
   );
 };

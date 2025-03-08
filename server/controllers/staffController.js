@@ -56,7 +56,7 @@ exports.deleteStaff = async (req, res) => {
 // Create new staff member (Admin only)
 exports.createStaff = async (req, res) => {
     try {
-        const { firstName, lastName, email, phoneNumber, password} = req.body;
+        const { firstName, lastName, email, phoneNumber, password, verified} = req.body;
 
         // Check if email already exists
         const existingStaff = await User.findOne({ email });
@@ -74,7 +74,7 @@ exports.createStaff = async (req, res) => {
             phoneNumber,
             password : hashedPassword, // Ensure you hash the password before saving it
             roleName : "Staff",
-            verified : false,
+            verified,
         });
 
         // Save the new staff member

@@ -88,7 +88,7 @@ exports.createConsultant = async (req, res) => {
     try {
         console.log("Request Body:", req.body);
 
-        const { firstName, lastName, email, password, phoneNumber, note, image } = req.body;
+        const { firstName, lastName, email, password, phoneNumber, note, image, verified } = req.body;
 
         let existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -104,6 +104,7 @@ exports.createConsultant = async (req, res) => {
             password: hashedPassword,
             roleName: "Consultant",
             phoneNumber,
+            verified,
         });
 
         // Save the User and check for errors

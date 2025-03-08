@@ -6,8 +6,7 @@ import axios from "../../utils/axiosInstance";
 import Sidebar from "../../components/AdminSidebar";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaCheck, FaLock, FaTimes } from "react-icons/fa";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaLock } from "react-icons/fa";
 
 const schema = yup.object().shape({
   firstName: yup.string().min(2, "First name must be at least 2 letters").required("First name is required"),
@@ -21,6 +20,11 @@ const schema = yup.object().shape({
 export default function StaffManagement() {
   const [staff, setStaff] = useState([]);
   const [modalData, setModalData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("firstName");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 3;
 
   useEffect(() => {
     fetchStaff();
@@ -76,7 +80,8 @@ export default function StaffManagement() {
         const res = await axios.post("/api/staff", { 
           ...updatedData, 
           password: "default123", 
-          roleName: "Staff" 
+          roleName: "Staff",
+          verified: Boolean(data.verified)
         });
         setStaff((prev) => [...prev, res.data.staff]);
         toast.success("Staff added successfully");
@@ -87,10 +92,33 @@ export default function StaffManagement() {
     setModalData(null);
   };
 
+  const handleSort = (field) => {
+    setSortBy(field);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  const filteredStaff = staff.filter(
+    (member) =>
+      member.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedStaff = [...filteredStaff].sort((a, b) => {
+    if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
+    if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const paginatedStaff = sortedStaff.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-100">
       <Sidebar />
-      <div className="flex-1 p-6 bg-gray-100">
+      <div className="flex-1 p-8 bg-gray-100 shadow-lg rounded-lg">
         <h2 className="text-3xl font-bold mb-6 text-gray-800">Staff Management</h2>
         <button
           className="bg-blue-500 text-white px-6 py-2 rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300"
@@ -98,8 +126,15 @@ export default function StaffManagement() {
         >
           Add Staff
         </button>
+          <input
+            type="text"
+            placeholder="Search..."
+            className="p-2 border mt-5 rounded w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         <div className="overflow-x-auto mt-6 bg-white shadow-md rounded-lg">
-          <table className="min-w-full table-auto border-collapse">
+          <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-200">
                 <th className="border-b p-3 text-left">First Name</th>
@@ -111,7 +146,7 @@ export default function StaffManagement() {
               </tr>
             </thead>
             <tbody>
-              {staff.map((member) => (
+              {filteredStaff.map((member) => (
                 <tr key={member._id} className="hover:bg-gray-100">
                   <td className="border-b p-3">{member.firstName}</td>
                   <td className="border-b p-3">{member.lastName}</td>
