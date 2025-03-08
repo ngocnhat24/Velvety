@@ -1,4 +1,5 @@
 const BookingRequest = require('../models/BookingRequest');
+const Consultant = require("../models/Consultant");
 const mongoose = require('mongoose');
 
 exports.createBookingRequest = async (req, res) => {
@@ -218,5 +219,69 @@ exports.cancelBookingRequest = async (req, res) => {
   } catch (error) {
     console.error("Error canceling booking request:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.assignConsultantToBooking = async (req, res) => {
+  try {
+    console.log("Request params:", req.params);
+    console.log("Request body:", req.body);
+
+    const { id } = req.params;
+
+    // Tìm booking request theo ID
+    const bookingRequest = await BookingRequest.findById(id);
+    if (!bookingRequest) {
+      return res.status(404).json({ message: "Booking request not found" });
+    }
+
+    // Kiểm tra nếu đã có tư vấn viên được gán
+    if (bookingRequest.consultantID) {
+      return res.status(400).json({ message: "Consultant is already assigned" });
+    }
+
+    // Tìm danh sách tư vấn viên không bị trùng lịch hẹn
+    const unavailableConsultants = await BookingRequest.distinct("consultantID", {
+      date: bookingRequest.date,
+      timeSlot: bookingRequest.timeSlot,
+      consultantID: { $ne: null }, // Loại bỏ booking chưa có consultant
+    });
+
+    const availableConsultants = await Consultant.find({
+      _id: { $nin: unavailableConsultants }
+    });
+
+    console.log("Available Consultants:", availableConsultants);
+
+    // Nếu không có tư vấn viên nào khả dụng
+    if (!availableConsultants.length) {
+      return res.status(400).json({ message: "No available consultants" });
+    }
+
+    // Chọn tư vấn viên đầu tiên từ danh sách
+    const assignedConsultant = availableConsultants[0];
+
+    // Kiểm tra xem _id có hợp lệ không
+    if (!assignedConsultant || !assignedConsultant._id) {
+      return res.status(400).json({ message: "Invalid consultant data" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(assignedConsultant._id)) {
+      return res.status(400).json({ message: "Invalid consultant ID format" });
+    }
+
+    // Gán tư vấn viên vào booking request
+    bookingRequest.consultantID = assignedConsultant._id;
+    await bookingRequest.save();
+
+    res.status(200).json({
+      message: "Consultant assigned successfully",
+      bookingRequest,
+      assignedConsultant,
+    });
+
+  } catch (error) {
+    console.error("Error assigning consultant:", error);
+    res.status(500).json({ error: error.message });
   }
 };

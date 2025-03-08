@@ -11,7 +11,7 @@ router.get('/', ConsultantController.getAllConsultants);
 router.get('/:id', authenticate, ConsultantController.getConsultantById);
 
 // Get available consultants
-router.get('/consultants/available', authenticate, ConsultantController.getAvailableConsultants);
+router.get('/consultants/available', authenticate, ConsultantController.updateBookingRequestConsultant);
 
 // Create a new consultant (Admin only)
 router.post('/', authenticate, authorize(['Admin']), ConsultantController.createConsultant);

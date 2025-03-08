@@ -1,5 +1,6 @@
 const Consultant = require('../models/Consultant');
 const User = require('../models/User');
+const BookingRequest = require('../models/BookingRequest'); // Add this line
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 
@@ -222,35 +223,6 @@ exports.addRating = async (req, res) => {
     }
 }; 
 
-
-exports.getAvailableConsultants = async (req, res) => {
-    try {
-        const bookingId = req.params.bookingId;
-        const booking = await Booking.findById(bookingId);
-
-        if (!booking) {
-            return res.status(404).json({ message: "Booking not found" });
-        }
-
-        const bookedConsultants = await Booking.find({
-            date: booking.date,
-            time: booking.time,
-            consultantID: { $ne: null } // Chỉ lấy những booking đã có consultant
-        }).distinct("consultantID"); // Lấy danh sách consultant đã bị bận
-
-        const availableConsultants = await User.find({
-            roleName: "Consultant",
-            _id: { $nin: bookedConsultants } // Loại bỏ những consultant đã có lịch trùng
-        });
-
-        res.json(availableConsultants);
-    } catch (error) {
-        console.error("Error fetching available consultants:", error);
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
-
-  
 exports.getConsultantDetails = async (req, res) => {
     try {
         const consultant = await Consultant.findById(req.params.id);
@@ -279,3 +251,58 @@ exports.resetPassword = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+exports.updateBookingRequestConsultant = async (req, res) => {
+    try {
+      console.log("Request body:", req.body);
+  
+      const bookingRequest = await BookingRequest.findById(req.params.id);
+      if (!bookingRequest) {
+        return res.status(404).json({ message: "Booking Request not found" });
+      }
+  
+      if (bookingRequest.consultantID) {
+        return res.status(400).json({ message: "Consultant is already assigned" });
+      }
+  
+      const unavailableConsultants = await BookingRequest.distinct("consultantID", {
+        date: bookingRequest.date,
+        timeSlot: bookingRequest.timeSlot,
+        consultantID: { $ne: null }
+      });
+  
+      const availableConsultants = await Consultant.find({
+        _id: { $nin: unavailableConsultants }
+      });
+  
+      console.log("Available Consultants:", availableConsultants);
+  
+      if (!availableConsultants.length) {
+        return res.status(400).json({ message: "No available consultants" });
+      }
+  
+      const assignedConsultant = availableConsultants[0];
+  
+      if (!assignedConsultant || !assignedConsultant._id) {
+        return res.status(400).json({ message: "Invalid consultant data" });
+      }
+  
+      if (!mongoose.Types.ObjectId.isValid(assignedConsultant._id)) {
+        return res.status(400).json({ message: "Invalid consultant ID format" });
+      }
+  
+      bookingRequest.consultantID = assignedConsultant._id;
+      await bookingRequest.save();
+  
+      res.status(200).json({
+        message: "Consultant assigned successfully",
+        bookingRequest,
+        assignedConsultant,
+      });
+  
+    } catch (error) {
+      console.error("Error updating consultant:", error);
+      res.status(500).json({ error: error.message });
+    }
+  };
+  

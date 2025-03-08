@@ -36,7 +36,7 @@ const ViewBooking = () => {
       }
     } else {
       try {
-        const response = await axios.get(`/api/consultants/available/${bookingID}`);
+        const response = await axios.get(`/api/consultants/available/`);
         setAvailableConsultants(response.data);
         setCurrentBooking(bookingID);
       } catch (err) {
