@@ -38,7 +38,7 @@ axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 function App() {
-  const userRole = localStorage.getItem("roleName"); // Get user role
+  const userRole = localStorage.getItem("roleName") || sessionStorage.getItem("roleName"); // Get user role
 
   // Define default pages for each role
   const roleRoutes = {
@@ -89,7 +89,7 @@ function App() {
           <Route path="/booking-history" element={<ViewBookingHistory />} />
         </Route>
 
-        {/* Manager Pages */}ConsultantCustomer
+        {/* Manager Pages */}
         <Route element={<ProtectedRoute allowedRoles={["Manager"]} />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/service-management" element={<ServiceManagement />} />
