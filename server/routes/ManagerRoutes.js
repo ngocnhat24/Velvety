@@ -3,7 +3,7 @@ const router = express.Router();
 const ManagerController = require('../controllers/ManagerController');
 const { authenticate, authorize } = require('../middlewares/AuthMiddleware');
 
-// Get all managers (Admin only)
+// Get all managers 
 router.get('/', authenticate, authorize(['Admin']), ManagerController.getAllManagers);
 
 // Get manager by ID
@@ -12,7 +12,7 @@ router.get('/:id', authenticate, authorize(['Admin', 'Manager']), ManagerControl
 // Update manager profile
 router.put('/:id', authenticate, authorize(['Manager']), ManagerController.updateManager);
 
-// Delete manager (Admin only)
+// Delete manager 
 router.delete('/:id', authenticate, authorize(['Admin']), ManagerController.deleteManager);
 
 module.exports = router;
