@@ -148,7 +148,7 @@ const QuestionManagement = () => {
   };
 
   const filteredQuestions = questions.filter((question) =>
-    question.questionText.toLowerCase().includes(searchTerm.toLowerCase())
+    question?.questionText?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const sortedQuestions = [...filteredQuestions].sort((a, b) => {
