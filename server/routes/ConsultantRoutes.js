@@ -4,14 +4,13 @@ const router = express.Router();
 const ConsultantController = require('../controllers/ConsultantController');
 const { authenticate, authorize } = require('../middlewares/AuthMiddleware');
 
+
 // Get all consultants
 router.get('/', ConsultantController.getAllConsultants);
 
 // Get consultant by ID
 router.get('/:id', authenticate, ConsultantController.getConsultantById);
 
-// Get available consultants
-router.get('/consultants/available', authenticate, ConsultantController.getAvailableConsultants);
 
 // Create a new consultant (Admin only)
 router.post('/', authenticate, authorize(['Admin']), ConsultantController.createConsultant);

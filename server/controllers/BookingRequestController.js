@@ -1,4 +1,5 @@
 const BookingRequest = require('../models/BookingRequest');
+const Consultant = require("../models/Consultant");
 const mongoose = require('mongoose');
 
 exports.createBookingRequest = async (req, res) => {
@@ -217,6 +218,37 @@ exports.cancelBookingRequest = async (req, res) => {
 
   } catch (error) {
     console.error("Error canceling booking request:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.updateBookingRequest = async (req, res) => {
+  try {
+    const { id } = req.params; // Lấy ID booking từ URL
+    const updateData = req.body; // Dữ liệu cập nhật từ request body
+
+    console.log("Updating BookingRequest ID:", id, "with data:", updateData);
+
+    // Kiểm tra ID có hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid booking ID format" });
+    }
+
+    // Cập nhật booking
+    const updatedBooking = await BookingRequest.findByIdAndUpdate(id, updateData, { new: true });
+
+    // Kiểm tra nếu booking không tồn tại
+    if (!updatedBooking) {
+      return res.status(404).json({ message: "Booking Request not found" });
+    }
+
+    res.status(200).json({
+      message: "Booking Request updated successfully",
+      booking: updatedBooking,
+    });
+
+  } catch (error) {
+    console.error("Error updating booking request:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

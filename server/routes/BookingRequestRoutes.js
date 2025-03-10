@@ -7,7 +7,8 @@ const {
   getBookingsByConsultantAndDate,
   getConsultantBookings,
   getCustomerBookings,
-  cancelBookingRequest
+  cancelBookingRequest,
+  updateBookingRequest
 } = require('../controllers/BookingRequestController');
 const { authenticate, authorize } = require("../middlewares/AuthMiddleware");
 
@@ -21,7 +22,7 @@ router.get('/booked-times', getBookingsByConsultantAndDate);
 router.get("/my-bookings",authenticate, authorize(["Consultant"]),getConsultantBookings);
 router.get("/history-bookings",authenticate, authorize(["Customer"]),getCustomerBookings);
 router.put("/:id/cancel", authenticate, authorize(["Customer"]), cancelBookingRequest);
-
+router.put("/:id", authenticate, authorize(["Staff"]), updateBookingRequest);
 
 
 
