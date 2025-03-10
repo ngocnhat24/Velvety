@@ -27,6 +27,12 @@ const ViewBooking = () => {
   }, []);
 
   const handleConsultantClick = async (consultantID, bookingID) => {
+    if (!bookingID) {
+      console.error("Invalid booking ID:", bookingID);
+      setError("Invalid booking ID");
+      return;
+    }
+  
     if (consultantID) {
       try {
         const response = await axios.get(`/api/users/${consultantID}`);
@@ -36,14 +42,17 @@ const ViewBooking = () => {
       }
     } else {
       try {
-        const response = await axios.get(`/api/consultants/available/`);
+        console.log("Fetching available consultants for bookingID:", bookingID);
+        const response = await axios.get(`/api/consultants/available?bookingID=${bookingID}`);
         setAvailableConsultants(response.data);
         setCurrentBooking(bookingID);
       } catch (err) {
+        console.error("Error fetching available consultants:", err);
         setError(err.response?.data?.message || "Failed to fetch available consultants");
       }
     }
   };
+  
 
   const closeConsultantModal = () => {
     setSelectedConsultant(null);
@@ -51,21 +60,30 @@ const ViewBooking = () => {
 
 
   const assignConsultant = async (bookingId, consultantID) => {
+    if (!consultantID) {
+      console.error("Consultant ID is invalid:", consultantID);
+      setError("Consultant ID is invalid");
+      return;
+    }
+  
     try {
       await axios.put(`/api/bookings/assign-consultant`, { bookingID: bookingId, consultantID });
-      // Cập nhật lại danh sách bookings với consultant mới được gán
+  
+      // Cập nhật UI sau khi gán thành công
       setBookings((prev) =>
         prev.map((booking) =>
           booking._id === bookingId
-            ? { ...booking, consultantID: { _id: consultantID, firstName: "Updated" } } // Cần trả về dữ liệu đầy đủ của consultant nếu có
+            ? { ...booking, consultantID: { _id: consultantID, firstName: "Updated" } }
             : booking
         )
       );
       setAvailableConsultants([]);
     } catch (err) {
+      console.error("Error assigning consultant:", err.response?.data || err);
       setError(err.response?.data?.message || "Failed to assign consultant");
     }
   };
+  
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
@@ -182,6 +200,31 @@ const ViewBooking = () => {
 
               <div className="mt-6 flex justify-end">
               </div>
+            </div>
+          </div>
+        )}
+
+        {availableConsultants.length > 0 && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Select a Consultant</h3>
+              
+              {availableConsultants.map((consultant) => (
+                <button
+                  key={consultant._id}
+                  className="w-full text-left p-2 border-b hover:bg-gray-100"
+                  onClick={() => assignConsultant(currentBooking, consultant._id)}
+                >
+                  {consultant.firstName} {consultant.lastName}
+                </button>
+              ))}
+        
+              <button
+                className="mt-4 w-full bg-gray-300 p-2 rounded text-center"
+                onClick={() => setAvailableConsultants([])}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         )}

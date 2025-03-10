@@ -222,66 +222,33 @@ exports.cancelBookingRequest = async (req, res) => {
   }
 };
 
-exports.assignConsultantToBooking = async (req, res) => {
+exports.updateBookingRequest = async (req, res) => {
   try {
-    console.log("Request params:", req.params);
-    console.log("Request body:", req.body);
+    const { id } = req.params; // Lấy ID booking từ URL
+    const updateData = req.body; // Dữ liệu cập nhật từ request body
 
-    const { id } = req.params;
+    console.log("Updating BookingRequest ID:", id, "with data:", updateData);
 
-    // Tìm booking request theo ID
-    const bookingRequest = await BookingRequest.findById(id);
-    if (!bookingRequest) {
-      return res.status(404).json({ message: "Booking request not found" });
+    // Kiểm tra ID có hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid booking ID format" });
     }
 
-    // Kiểm tra nếu đã có tư vấn viên được gán
-    if (bookingRequest.consultantID) {
-      return res.status(400).json({ message: "Consultant is already assigned" });
+    // Cập nhật booking
+    const updatedBooking = await BookingRequest.findByIdAndUpdate(id, updateData, { new: true });
+
+    // Kiểm tra nếu booking không tồn tại
+    if (!updatedBooking) {
+      return res.status(404).json({ message: "Booking Request not found" });
     }
-
-    // Tìm danh sách tư vấn viên không bị trùng lịch hẹn
-    const unavailableConsultants = await BookingRequest.distinct("consultantID", {
-      date: bookingRequest.date,
-      timeSlot: bookingRequest.timeSlot,
-      consultantID: { $ne: null }, // Loại bỏ booking chưa có consultant
-    });
-
-    const availableConsultants = await Consultant.find({
-      _id: { $nin: unavailableConsultants }
-    });
-
-    console.log("Available Consultants:", availableConsultants);
-
-    // Nếu không có tư vấn viên nào khả dụng
-    if (!availableConsultants.length) {
-      return res.status(400).json({ message: "No available consultants" });
-    }
-
-    // Chọn tư vấn viên đầu tiên từ danh sách
-    const assignedConsultant = availableConsultants[0];
-
-    // Kiểm tra xem _id có hợp lệ không
-    if (!assignedConsultant || !assignedConsultant._id) {
-      return res.status(400).json({ message: "Invalid consultant data" });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(assignedConsultant._id)) {
-      return res.status(400).json({ message: "Invalid consultant ID format" });
-    }
-
-    // Gán tư vấn viên vào booking request
-    bookingRequest.consultantID = assignedConsultant._id;
-    await bookingRequest.save();
 
     res.status(200).json({
-      message: "Consultant assigned successfully",
-      bookingRequest,
-      assignedConsultant,
+      message: "Booking Request updated successfully",
+      booking: updatedBooking,
     });
 
   } catch (error) {
-    console.error("Error assigning consultant:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error updating booking request:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

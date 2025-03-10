@@ -252,57 +252,9 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-exports.updateBookingRequestConsultant = async (req, res) => {
-    try {
-      console.log("Request body:", req.body);
+
+
   
-      const bookingRequest = await BookingRequest.findById(req.params.id);
-      if (!bookingRequest) {
-        return res.status(404).json({ message: "Booking Request not found" });
-      }
+
   
-      if (bookingRequest.consultantID) {
-        return res.status(400).json({ message: "Consultant is already assigned" });
-      }
-  
-      const unavailableConsultants = await BookingRequest.distinct("consultantID", {
-        date: bookingRequest.date,
-        timeSlot: bookingRequest.timeSlot,
-        consultantID: { $ne: null }
-      });
-  
-      const availableConsultants = await Consultant.find({
-        _id: { $nin: unavailableConsultants }
-      });
-  
-      console.log("Available Consultants:", availableConsultants);
-  
-      if (!availableConsultants.length) {
-        return res.status(400).json({ message: "No available consultants" });
-      }
-  
-      const assignedConsultant = availableConsultants[0];
-  
-      if (!assignedConsultant || !assignedConsultant._id) {
-        return res.status(400).json({ message: "Invalid consultant data" });
-      }
-  
-      if (!mongoose.Types.ObjectId.isValid(assignedConsultant._id)) {
-        return res.status(400).json({ message: "Invalid consultant ID format" });
-      }
-  
-      bookingRequest.consultantID = assignedConsultant._id;
-      await bookingRequest.save();
-  
-      res.status(200).json({
-        message: "Consultant assigned successfully",
-        bookingRequest,
-        assignedConsultant,
-      });
-  
-    } catch (error) {
-      console.error("Error updating consultant:", error);
-      res.status(500).json({ error: error.message });
-    }
-  };
   
