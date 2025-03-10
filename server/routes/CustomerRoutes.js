@@ -3,7 +3,7 @@ const router = express.Router();
 const CustomerController = require('../controllers/CustomerController');
 const { authenticate, authorize } = require('../middlewares/AuthMiddleware');
 
-// Get all customers (Admin only)
+// Get all customers 
 router.get('/', authenticate, authorize(['Admin']), CustomerController.getAllCustomers);
 
 // Get customer by ID
@@ -12,7 +12,7 @@ router.get('/:id', authenticate, authorize(['Admin', 'Customer']), CustomerContr
 // Update customer profile
 router.put('/:id', authenticate, authorize(['Customer']), CustomerController.updateCustomer);
 
-// Delete customer (Admin only)
+// Delete customer 
 router.delete('/:id', authenticate, authorize(['Admin']), CustomerController.deleteCustomer);
 
 // Change password

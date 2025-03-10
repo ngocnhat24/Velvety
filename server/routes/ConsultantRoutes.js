@@ -12,13 +12,13 @@ router.get('/', ConsultantController.getAllConsultants);
 router.get('/:id', authenticate, ConsultantController.getConsultantById);
 
 
-// Create a new consultant (Admin only)
+// Create a new consultant 
 router.post('/', authenticate, authorize(['Admin']), ConsultantController.createConsultant);
 
-// Update consultant (Admin only)
+// Update consultant 
 router.put('/:id', authenticate, authorize(['Admin']), ConsultantController.updateConsultant);
 
-// Delete consultant (Admin only)
+// Delete consultant 
 router.delete('/:id', authenticate, authorize(['Admin']), ConsultantController.deleteConsultant);
 
 // Add rating to consultant (Validation added)
@@ -33,7 +33,7 @@ router.post(
     ConsultantController.addRating
 );
 
-// Reset password for consultant (Admin only)
+// Reset password for consultant 
 router.post('/:id/reset-password', authenticate, authorize(['Admin']), ConsultantController.resetPassword);
 
 module.exports = router;
