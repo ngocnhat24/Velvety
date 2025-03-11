@@ -35,7 +35,7 @@ export default function ServiceDetails() {
       });
 
     axios
-      .get(`/api/comments/services/${id}/comments`)
+      .get(`/api/comments/services/${id}/feedbacks`)
       .then((response) => setComments(response.data))
       .catch((error) => {
         console.error("Error fetching comments:", error);
