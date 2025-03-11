@@ -282,6 +282,7 @@ const ViewBookingHistory = () => {
                   <TableCell align="center">Consultant</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Action</TableCell>
+                  <TableCell align="center">Feedback</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -456,9 +457,11 @@ const ViewBookingHistory = () => {
                 Yes
               </button>
             </div>
+            
           </div>
         </div>
       )}
+      
     </div>
   );
 };

@@ -10,7 +10,7 @@ router.post("/", authenticate, orderController.createOrder);
 router.get("/member", authenticate, orderController.getOrdersByMemberId);
 
 // Lấy tất cả đơn hàng (Chỉ Admin mới có quyền truy cập)
-router.get("/", authenticate, authorize(["Admin"]), orderController.getAllOrders);
+router.get("/", authenticate, authorize(["Admin","Manager"]), orderController.getAllOrders);
 
 // Lấy đơn hàng theo ID (Tất cả người dùng có thể xem)
 router.get("/:orderCode", authenticate, orderController.getOrderByOrderCode);
