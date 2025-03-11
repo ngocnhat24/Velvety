@@ -29,7 +29,7 @@ feedbackSchema.pre("save", async function (next) {
   const BookingRequest = mongoose.model("BookingRequest");
   
   const booking = await BookingRequest.findById(this.bookingRequestId);
-  if (!booking || booking.status !== "complete") {
+  if (!booking || booking.status !== "Completed") {
     return next(new Error("Feedback chỉ được tạo khi booking đã hoàn thành"));
   }
   

@@ -13,6 +13,12 @@ const serviceSchema = new Schema(
     effectimage: { type: String, default: "", match: /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i },
     resultimage: { type: String, default: "", match: /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i },
     sensationimage: { type: String, default: "", match: /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i },
+    
+    // Rating field
+    rating: {
+      average: { type: Number, default: 0, min: 0, max: 5 }, // Trung bình rating (1-5)
+      totalReviews: { type: Number, default: 0, min: 0 } // Tổng số lượt đánh giá
+    }
   },
   { timestamps: true } // Automatically add createdAt & updatedAt
 );

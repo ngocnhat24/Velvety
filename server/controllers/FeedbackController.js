@@ -1,52 +1,52 @@
 const Feedback = require('../models/Feedback');
+const BookingRequest = require('../models/BookingRequest')
 
 exports.createFeedback = async (req, res) => {
   try {
-    const { consultantRate, consultantComment, serviceRate, serviceComment, bookingRequestId } = req.body;
+    const { consultantRating, consultantComment, serviceRating, serviceComment, bookingRequestId } = req.body;
 
-    // Kiểm tra xem booking request có tồn tại và hoàn thành chưa
-    const bookingRequest = await BookingRequest.findById(bookingRequestId);
+    console.log("Request Body:", req.body);
+
+    // Kiểm tra booking request có tồn tại và hoàn thành chưa
+    const bookingRequest = await BookingRequest.findById(bookingRequestId)
+      .populate({ path: "serviceID", select: "_id" })  // Chỉnh đúng serviceID
+      .populate({ path: "consultantID", select: "_id" });
+
     if (!bookingRequest) {
       return res.status(404).json({ message: "Booking request not found" });
     }
 
-    if (bookingRequest.status !== "complete") {
+    if (bookingRequest.status !== "Completed") {
       return res.status(400).json({ message: "Only completed bookings can receive feedback" });
     }
 
-    const { serviceId, consultantId } = bookingRequest;
+    const serviceId = bookingRequest.serviceID?._id; // Đúng với tên trường trong model BookingRequest
+    const consultantId = bookingRequest.consultantID?._id;
 
-    let feedbacks = [];
-
-    // Tạo feedback cho Consultant nếu có rating
-    if (consultantRate && consultantRate >= 1 && consultantRate <= 5) {
-      const consultantFeedback = await Feedback.create({
-        rate: consultantRate,
-        comment: consultantComment || "",
-        bookingRequestId,
-        consultantId,
-        type: "consultant"
-      });
-      feedbacks.push(consultantFeedback);
+    // Kiểm tra nếu không có rating thì không tạo feedback
+    if (!consultantRating && !serviceRating) {
+      return res.status(400).json({ message: "At least one rating is required" });
     }
 
-    // Tạo feedback cho Service nếu có rating
-    if (serviceRate && serviceRate >= 1 && serviceRate <= 5) {
-      const serviceFeedback = await Feedback.create({
-        rate: serviceRate,
-        comment: serviceComment || "",
-        bookingRequestId,
-        serviceId,
-        type: "service"
-      });
-      feedbacks.push(serviceFeedback);
-    }
+    const feedback = new Feedback({
+      bookingRequestId,
+      serviceId,
+      consultantId,
+      serviceRating: serviceRating || null,
+      serviceComment: serviceComment || "",
+      consultantRating: consultantRating || null,
+      consultantComment: consultantComment || "",
+    });
 
-    res.status(201).json({ message: "Feedback submitted successfully", feedbacks });
+    await feedback.save();
+
+    res.status(201).json({ message: "Feedback submitted successfully", feedback });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error creating feedback", error });
   }
 };
+
 
 exports.getFeedbackByBooking = async (req, res) => {
   try {
@@ -70,12 +70,12 @@ exports.getAverageServiceRating = async (req, res) => {
   try {
     const result = await Feedback.aggregate([
       {
-        $match: { serviceId: { $exists: true, $ne: null } } // Chỉ lấy feedback có serviceId
+        $match: { serviceId: { $exists: true, $ne: null }, serviceRating: { $exists: true } }
       },
       {
         $group: {
           _id: "$serviceId",
-          averageRating: { $avg: "$rate" },
+          averageRating: { $avg: "$serviceRating" },
           totalReviews: { $sum: 1 }
         }
       }
@@ -91,12 +91,12 @@ exports.getAverageConsultantRating = async (req, res) => {
   try {
     const result = await Feedback.aggregate([
       {
-        $match: { consultantId: { $exists: true, $ne: null } } // Chỉ lấy feedback có consultantId
+        $match: { consultantId: { $exists: true, $ne: null }, consultantRating: { $exists: true } }
       },
       {
         $group: {
           _id: "$consultantId",
-          averageRating: { $avg: "$rate" },
+          averageRating: { $avg: "$consultantRating" },
           totalReviews: { $sum: 1 }
         }
       }
@@ -107,3 +107,4 @@ exports.getAverageConsultantRating = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
