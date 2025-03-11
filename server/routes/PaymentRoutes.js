@@ -1,10 +1,9 @@
-const express = require('express');
-const { createPayment, getPaymentByBookingRequest } = require('../controllers/PaymentController');
-const { authenticate } = require("../middlewares/AuthMiddleware"); // Authentication middleware
-
+const express = require("express");
 const router = express.Router();
+const { authenticate, authorize } = require("../middlewares/AuthMiddleware"); 
+const paymentController = require("../controllers/PaymentController");
 
-router.post('/', authenticate, createPayment); // Secure the endpoint
-router.get('/:bookingRequestId', authenticate, getPaymentByBookingRequest); 
 
+router.post("/receive-hook", paymentController.receivePayment); 
+router.post("/create-payment/:bookingId", authenticate, paymentController.createEmbeddedPaymentLink); 
 module.exports = router;
