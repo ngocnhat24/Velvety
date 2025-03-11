@@ -12,18 +12,25 @@ exports.getCommentsByService = async (req, res) => {
 exports.addComment = async (req, res) => {
   try {
     const { rating, text } = req.body;
-    const userId = req.user.id; // Get user from authentication middleware
+    const userId = req.user.id; // Lấy user từ middleware xác thực
     const serviceId = req.params.id;
 
     if (!rating || !text) {
       return res.status(400).json({ error: "Rating and text are required" });
     }
 
+    // Kiểm tra dịch vụ có tồn tại không
     const service = await Service.findById(serviceId);
     if (!service) {
       return res.status(404).json({ error: "Service not found" });
     }
 
+    // Kiểm tra trạng thái dịch vụ
+    if (service.status !== "complete") {
+      return res.status(400).json({ error: "You can only comment on completed services" });
+    }
+
+    // Tạo comment mới
     const newComment = new Comment({ service: serviceId, user: userId, rating, text });
     await newComment.save();
 
@@ -32,6 +39,7 @@ exports.addComment = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 exports.deleteComment = async (req, res) => {
   try {
