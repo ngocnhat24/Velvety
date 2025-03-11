@@ -1,11 +1,39 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
+
 const feedbackSchema = new Schema({
-  rate: { type: Number, min: 1, max: 5, required: true },
-  comment: { type: String, maxlength: 500 }, // Added limit to prevent long comments
-  createdDate: { type: Date, default: Date.now },
-  bookingRequestId: { type: mongoose.Schema.Types.ObjectId, ref: "BookingRequest", required: true } // Fixed naming
+  bookingRequestId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "BookingRequest", 
+    required: true 
+  }, 
+  serviceId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Service",
+    required: true 
+  }, 
+  consultantId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Consultant",
+    required: true 
+  }, 
+  serviceRating: { type: Number, min: 1, max: 5, required: true },
+  serviceComment: { type: String, maxlength: 500 },
+  consultantRating: { type: Number, min: 1, max: 5, required: true },
+  consultantComment: { type: String, maxlength: 500 },
+  createdDate: { type: Date, default: Date.now }
 });
+
+// Đảm bảo chỉ tạo feedback nếu bookingRequest đã hoàn thành
+feedbackSchema.pre("save", async function (next) {
+  const BookingRequest = mongoose.model("BookingRequest");
   
-  module.exports = mongoose.model("Feedback", feedbackSchema);
+  const booking = await BookingRequest.findById(this.bookingRequestId);
+  if (!booking || booking.status !== "complete") {
+    return next(new Error("Feedback chỉ được tạo khi booking đã hoàn thành"));
+  }
   
+  next();
+});
+
+module.exports = mongoose.model("Feedback", feedbackSchema);

@@ -42,7 +42,44 @@ const ViewBookingHistory = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const navigate = useNavigate();
-
+  
+  const handleReviewClick = (bookingId) => {
+    setReviewData({ bookingId, comment: "", rating: 0 });
+    setShowReviewModal(true);
+  };
+  
+  const handleSubmitReview = async () => {
+    if (!reviewData.comment || !reviewData.rating) {
+      alert("Please enter your comment and rating.");
+      return;
+    }
+  
+    const reviewPayload = {
+      bookingId: booking._id,  // ID của lịch đặt cần đánh giá
+      comment: reviewData.comment,
+      rating: reviewData.rating,
+      createdAt: new Date().toISOString(),
+    };
+  
+    try {
+      // Gửi request lưu review vào lịch sử đặt lịch
+      const response = await fetch("/api/historyBooking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reviewPayload),
+      });
+  
+      if (!response.ok) throw new Error("Failed to submit review");
+  
+      alert("Review submitted successfully!");
+      setShowReviewModal(false); // Đóng modal sau khi gửi
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("Failed to submit review");
+    }
+  };
+  
+  
   const fetchBookingsByCustomer = async () => {
     try {
       const response = await axios.get(
