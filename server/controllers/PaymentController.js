@@ -9,7 +9,7 @@ dotenv.config();
 // Function to create an embedded payment link
 const createEmbeddedPaymentLink = async (req, res) => {
     try {
-        const { bookingId } = req.params; // Get service ID from the request parameters
+        const { bookingId } = req.params; // Get booking ID from the request parameters
 
         const bookingRequest = await BookingRequest.findById(bookingId);
 
@@ -17,15 +17,18 @@ const createEmbeddedPaymentLink = async (req, res) => {
             return res.status(404).json({ error: 1, message: 'Booking request not found' });
         }
 
-        const userId = bookingRequest.customerID;
+        // Check if booking status is "Completed"
+        if (bookingRequest.status !== "Completed") {
+            return res.status(400).json({ error: 1, message: 'Booking request is not completed yet' });
+        }
 
+        const userId = bookingRequest.customerID;
         const serviceId = bookingRequest.serviceID;
 
         // Fetch user and service data
         const user = await User.findById(userId);
         const service = await Service.findById(serviceId);
 
-        // Check if user and service exist
         if (!user) {
             return res.status(404).json({ error: 1, message: 'User not found' });
         }
@@ -38,16 +41,16 @@ const createEmbeddedPaymentLink = async (req, res) => {
 
         // Generate a unique order code
         let orderCode;
-        while (1 > 0) {
+        while (true) {
             orderCode = Number(Date.now().toString().slice(-8) + Math.floor(Math.random() * 100).toString().padStart(2, '0'));
             const existingOrder = await Order.findOne({ orderCode });
-            if (!existingOrder) break; // Ensure unique order code
+            if (!existingOrder) break;
         }
 
         // Create a new order in the database
         const newOrder = new Order({
             memberId: userId,
-            serviceId : serviceId,
+            serviceId: serviceId,
             status: "Pending",
             amount: service.price,
             orderCode,
@@ -55,7 +58,7 @@ const createEmbeddedPaymentLink = async (req, res) => {
             buyerName: user.firstName + " " + user.lastName,
             buyerEmail: user.email,
             buyerPhone: user.phoneNumber,
-            transactionDateTime : transactionDateTime
+            transactionDateTime: transactionDateTime
         });
         await newOrder.save();
 
@@ -63,10 +66,9 @@ const createEmbeddedPaymentLink = async (req, res) => {
         const amount = service.price;
         const description = "Service Payment";
         const items = [{ name: service.name, quantity: 1, price: service.price }];
-        const returnUrl = process.env.RETURN_URL || "http://localhost:5173/pay-success"; // URL cho trang thành công
-        const cancelUrl = process.env.CANCEL_URL || "http://localhost:5173/pay-failed"; // URL cho trang thất bại
+        const returnUrl = process.env.RETURN_URL || "http://localhost:5173/pay-success";
+        const cancelUrl = process.env.CANCEL_URL || "http://localhost:5173/pay-failed";
 
-        // Create the payment link using PayOS
         try {
             const paymentLinkRes = await PayOS.createPaymentLink({
                 orderCode,
@@ -110,6 +112,7 @@ const createEmbeddedPaymentLink = async (req, res) => {
         });
     }
 };
+
 
 
 // Function to handle payment status (webhook)

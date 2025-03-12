@@ -283,6 +283,7 @@ const ViewBookingHistory = () => {
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Action</TableCell>
                   <TableCell align="center">Feedback</TableCell>
+                  <TableCell align="center">Payment</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
