@@ -34,14 +34,14 @@ export default function ServiceDetails() {
         setService(null);
       });
 
-      axios
+    axios
       .get(`/api/feedbacks/service/${id}`)
       .then((response) => setComments(response.data))
       .catch((error) => {
         console.error("Error fetching comments:", error);
         setComments([]);
       });
-    
+
   }, [id]);
 
   const handleBookingNow = async () => {
@@ -111,17 +111,16 @@ export default function ServiceDetails() {
         </div>
 
         {comments.map((comment, index) => (
-  <div key={index} className="border-b border-gray-200 pb-6">
-    <p className="font-semibold text-gray-800 text-lg">
-      {comment.bookingRequestId?.customerID?.firstName}{" "}
-      {comment.bookingRequestId?.customerID?.lastName || "Anonymous"}
-    </p>
-    <p className="text-gray-700 mt-2 leading-relaxed">
-      {comment.serviceComment || comment.consultantComment}
-    </p>
-  </div>
-))}
-
+          <div key={index} className="border-b border-gray-200 pb-6">
+            <p className="font-semibold text-gray-800 text-lg">
+              {comment.bookingRequestId?.customerID?.firstName}{" "}
+              {comment.bookingRequestId?.customerID?.lastName || "Anonymous"}
+            </p>
+            <p className="text-gray-700 mt-2 leading-relaxed">
+              {comment.serviceComment || comment.consultantComment}
+            </p>
+          </div>
+        ))}
 
         {/* Booking Button */}
         <div className="flex justify-center mt-4">
