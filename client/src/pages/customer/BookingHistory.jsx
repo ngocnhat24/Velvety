@@ -48,7 +48,6 @@ const ViewBookingHistory = () => {
   const navigate = useNavigate();
 
 
-
   const handleReviewClick = (bookingId) => {
     setReviewData({ bookingId, comment: "", rating: 0 });
     setShowReviewModal(true);

@@ -43,7 +43,7 @@ export default function ConsultantGuest() {
       <Navbar />
       <div className="w-full h-[97.333px] bg-[#ffc0cb] flex items-center justify-center">
         <span className="text-[32px] font-bold text-[#C54759] pacifico-regular text-center">
-          Choose your consultant
+          View our consultant
         </span>
       </div>
 
@@ -51,7 +51,7 @@ export default function ConsultantGuest() {
         {consultants.map((consultant, index) => (
           <div
             key={index}
-            className="flex flex-col items-center bg-white p-4 rounded-lg shadow-lg"
+            className="flex flex-col items-center bg-white p-4 rounded-xl shadow-lg transition-all duration-300 hover:border-2 hover:border-[#ffc0cb]"
           >
             {consultant.image ? (
               <motion.img
@@ -95,9 +95,9 @@ export default function ConsultantGuest() {
       </div>
 
       {selectedConsultant && (
-        <div className="fixed top-20 right-0 h-[800px] w-[300px] bg-white shadow-lg z-50 p-6 transition-transform transform translate-x-0">
+        <div className="fixed top-20 right-0 h-[800px] w-[300px] bg-white shadow-lg z-50 p-6 transition-transform transform translate-x-0 rounded-xl border-2 border-[#C54759]">
           <button
-            className="absolute top-2 right-2 text-xl"
+            className="absolute top-2 right-2 text-xl text-[#C54759] hover:text-[#ff8a8a] transition-colors duration-300"
             onClick={closePanel}
           >
             ✖
