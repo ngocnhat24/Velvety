@@ -9,11 +9,15 @@ router.post("/", authenticate, orderController.createOrder);
 // Lấy danh sách đơn hàng của thành viên (Chỉ người dùng đã đăng nhập mới xem được đơn của mình)
 router.get("/member", authenticate, orderController.getOrdersByMemberId);
 
-// Lấy tất cả đơn hàng (Chỉ Admin mới có quyền truy cập)
+// Lấy tất cả đơn hàng (Chỉ Admin và Manager mới có quyền truy cập)
 router.get("/", authenticate, authorize(["Admin","Manager"]), orderController.getAllOrders);
 
 // Lấy đơn hàng theo ID (Tất cả người dùng có thể xem)
 router.get("/:orderCode", authenticate, orderController.getOrderByOrderCode);
+
+
+router.get("/revenue", orderController.getTotalRevenue);
+
 
 router.delete("/:id", orderController.deleteOrder);
 module.exports = router;

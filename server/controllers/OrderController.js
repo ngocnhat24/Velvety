@@ -93,10 +93,25 @@ const getOrderByOrderCode = async (req, res) => {
     }
 };
 
+const getTotalRevenue = async (req, res) => {
+    try {
+        const totalRevenue = await Order.aggregate([
+            { $match: { status: "Paid" } }, // Lọc chỉ lấy đơn hàng đã thanh toán
+            { $group: { _id: null, totalAmount: { $sum: "$amount" } } } // Tính tổng amount
+        ]);
+
+        res.status(200).json({ totalRevenue: totalRevenue[0]?.totalAmount || 0 });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 module.exports = {
     createOrder,
     getOrdersByMemberId,
     getAllOrders,
     getOrderByOrderCode,
     deleteOrder,
+    getTotalRevenue,
 };
