@@ -22,12 +22,14 @@ const ViewBooked = () => {
 
     const fetchRating = async () => {
       try {
-        const response = await axios.get("/api/consultant/my-rating");
+        const response = await axios.get("/api/feedbacks/consultant-rating");
+        console.log("API Response:", response.data); // Kiểm tra phản hồi từ API
         setRating(response.data.averageRating || 0);
       } catch (error) {
         console.error("Failed to fetch rating", error);
       }
     };
+    
 
     fetchBookings();
     fetchRating();

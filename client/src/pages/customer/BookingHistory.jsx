@@ -93,8 +93,6 @@ const ViewBookingHistory = () => {
     bookingId: null,
   });
   
-  
-
   const fetchBookingsByCustomer = async () => {
     try {
       const response = await axios.get(
@@ -175,18 +173,18 @@ const ViewBookingHistory = () => {
     setSelectedConsultant(null);
   };
 
-  const handleFeedbackClick = (bookingId) => {
+  const handleFeedbackClick = (bookingRequestId) => {
     setFeedbackData((prev) => ({
       ...prev,
-      bookingId: bookingId,
+      bookingRequestId: bookingRequestId,
     }));
     setShowFeedbackModal(true);
   };
 
   const handleSubmitFeedback = async () => {
     try {
-      const response = await axios.post("/api/feedback", feedbackData);
-      if (response.status === 200) {
+      const response = await axios.post("/api/feedbacks", feedbackData);
+      if (response.status === 201) {
         toast.success("Feedback submitted successfully!");
         setShowFeedbackModal(false);
         setRefresh((prev) => !prev);
