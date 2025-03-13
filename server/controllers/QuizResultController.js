@@ -6,7 +6,7 @@ const determineSkinType = (answers) => {
     const totalWeight = answers.reduce((sum, answer) => sum + (answer.weight || 0), 0);
     const minWeight = answers.length * 1; // 17 (if all answers are the lowest weight)
     const maxWeight = answers.length * 4; // 68 (if all answers are the highest weight)
-    
+
     const range = maxWeight - minWeight;
     const normalizedScore = ((totalWeight - minWeight) / range) * 100;
 
@@ -16,49 +16,44 @@ const determineSkinType = (answers) => {
     return "Oily";
 };
 
-
-
 // Save quiz result
 const saveQuizResult = async (req, res) => {
     try {
         const { answers } = req.body;
-        const userID = req.user ? req.user._id : null; // Extract from token if authenticated
+        const userID = req.user ? req.user._id : null; // Lấy userID từ token nếu có
 
         if (!answers || answers.length === 0) {
             return res.status(400).json({ message: "Answers are required." });
         }
 
-        const skinType = determineSkinType(answers);
+        const skinType = determineSkinType(answers); // Tính loại da
 
-        // If user is a guest, return result without saving
-        if (!userID) {
-            return res.status(200).json({
-                message: "Quiz completed as guest.",
-                quizResult: { skinType },
-            });
-        }
-
-        // Save for authenticated users
+        // Tạo document mới và lưu vào database
         const newQuizResult = new QuizResult({
             userID,
+            answers,  // Lưu cả danh sách câu trả lời
             skinType,
         });
 
         await newQuizResult.save();
+
         res.status(201).json({
             message: "Quiz result saved successfully!",
             quizResult: newQuizResult,
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error saving quiz result:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+
 
 // Get all results (for admin)
 const getAllResults = async (req, res) => {
     try {
         let { page = 1, limit = 10, sortBy = "createdDate", order = "desc", skinType } = req.query;
-        
+
         page = parseInt(page);
         limit = parseInt(limit);
         order = order === "asc" ? 1 : -1; // Convert order to MongoDB format
@@ -96,24 +91,22 @@ const getAllResults = async (req, res) => {
 // Get quiz results for a specific user
 const getUserResults = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user._id; // Lấy userId từ token
 
-        // Ensure the user can only access their own results unless they are an admin
-        if (req.user.role !== "Admin" && req.user._id.toString() !== userId) {
-            return res.status(403).json({ message: "Unauthorized to access these results." });
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const results = await QuizResult.find({ userID: userId });
-
-        if (!results.length) {
-            return res.status(404).json({ message: "No quiz results found for this user." });
-        }
+        const results = await QuizResult.find({ userID: userId })
+            .sort({ createdDate: -1 });
 
         res.json(results);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
+  
 
 module.exports = {
     saveQuizResult,
