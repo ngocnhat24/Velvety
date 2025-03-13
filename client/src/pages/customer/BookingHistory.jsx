@@ -23,10 +23,11 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Rating, // Add this import
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { motion } from "framer-motion";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash , FaComment } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -42,6 +43,8 @@ const ViewBookingHistory = () => {
   const [consultantsCache, setConsultantsCache] = useState(new Map());
   const [showModal, setShowModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
   const navigate = useNavigate();
 
 
@@ -82,6 +85,16 @@ const ViewBookingHistory = () => {
     }
   };
 
+
+  const [feedbackData, setFeedbackData] = useState({
+    consultantRating: 0,
+    consultantComment: "",
+    serviceRating: 0,
+    serviceComment: "",
+    bookingId: null,
+  });
+  
+  
 
   const fetchBookingsByCustomer = async () => {
     try {
@@ -161,6 +174,27 @@ const ViewBookingHistory = () => {
 
   const closeConsultantModal = () => {
     setSelectedConsultant(null);
+  };
+
+  const handleFeedbackClick = (bookingId) => {
+    setFeedbackData((prev) => ({
+      ...prev,
+      bookingId: bookingId,
+    }));
+    setShowFeedbackModal(true);
+  };
+
+  const handleSubmitFeedback = async () => {
+    try {
+      const response = await axios.post("/api/feedback", feedbackData);
+      if (response.status === 200) {
+        toast.success("Feedback submitted successfully!");
+        setShowFeedbackModal(false);
+        setRefresh((prev) => !prev);
+      }
+    } catch (error) {
+      toast.error("Failed to submit feedback");
+    }
   };
 
   const filteredBookings = bookings.filter(
@@ -343,6 +377,16 @@ const ViewBookingHistory = () => {
                         <FaTrash />
                       </Button>
                     </TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleFeedbackClick(booking._id)}
+                      >
+                        <FaComment />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -457,12 +501,87 @@ const ViewBookingHistory = () => {
                 Yes
               </button>
             </div>
-
           </div>
         </div>
-      )}
+      )} 
+      {/* Feedback Modal */}
+      {showFeedbackModal && (
+        <Modal
+          open={showFeedbackModal}
+          onClose={() => setShowFeedbackModal(false)}
+        >
+          <div className="fixed inset-0 flex items-center justify-center">
+            <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full">
+              <h3 className="text-xl font-bold mb-4">Leave Feedback</h3>
 
+              <div className="mb-4">
+                <Typography component="legend">Consultant Rating</Typography>
+                <Rating
+                  value={feedbackData.consultantRating}
+                  onChange={(_, value) =>
+                    setFeedbackData((prev) => ({
+                      ...prev,
+                      consultantRating: value,
+                    }))
+                  }
+                />
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  label="Consultant Comment"
+                  value={feedbackData.consultantComment}
+                  onChange={(e) =>
+                    setFeedbackData((prev) => ({
+                      ...prev,
+                      consultantComment: e.target.value,
+                    }))
+                  }
+                  className="mt-2"
+                />
+              </div>
+
+              <div className="mb-4">
+                <Typography component="legend">Service Rating</Typography>
+                <Rating
+                  value={feedbackData.serviceRating}
+                  onChange={(_, value) =>
+                    setFeedbackData((prev) => ({
+                      ...prev,
+                      serviceRating: value,
+                    }))
+                  }
+                />
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  label="Service Comment"
+                  value={feedbackData.serviceComment}
+                  onChange={(e) =>
+                    setFeedbackData((prev) => ({
+                      ...prev,
+                      serviceComment: e.target.value,
+                    }))
+                  }
+                  className="mt-2"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button onClick={() => setShowFeedbackModal(false)}>
+                  Cancel
+                </Button>
+                <Button variant="contained" onClick={handleSubmitFeedback}>
+                  Submit Feedback
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
+
 export default ViewBookingHistory;
