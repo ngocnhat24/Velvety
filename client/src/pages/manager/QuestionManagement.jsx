@@ -134,8 +134,11 @@ const QuestionManagement = () => {
       // Add new question
       axios
         .post("/api/questions", questionData)
+        .then(() => {
+          return axios.get("/api/questions"); // Gọi lại API để lấy danh sách mới
+        })
         .then((response) => {
-          setQuestions((prevQuestions) => [...prevQuestions, response.data]);
+          setQuestions(response.data); // Cập nhật lại danh sách
           setEditDialog({ open: false, question: null });
           setNewQuestion("");
           setNewAnswerOptions([{ answerText: "", weight: 0 }]);
