@@ -34,13 +34,14 @@ export default function ServiceDetails() {
         setService(null);
       });
 
-    axios
-      .get(`/api/comments/services/${id}/feedbacks`)
+      axios
+      .get(`/api/feedbacks/service/${id}`)
       .then((response) => setComments(response.data))
       .catch((error) => {
         console.error("Error fetching comments:", error);
         setComments([]);
       });
+    
   }, [id]);
 
   const handleBookingNow = async () => {
@@ -109,23 +110,18 @@ export default function ServiceDetails() {
           ))}
         </div>
 
-        {/* Ratings & Comments */}
-        <div className="mt-4 bg-gray-50 p-8 rounded-lg shadow-lg">
-          <h2 className="text-3xl font-extrabold text-[#C54759] ">Customer Reviews</h2>
-          {comments.length === 0 ? (
-            <p className="text-gray-500 mt-6 text-lg">No reviews yet.</p>
-          ) : (
-            <div className="mt-6 space-y-8">
-              {comments.map((comment, index) => (
-                <div key={index} className="border-b border-gray-200 pb-6">
-                  <p className="font-semibold text-gray-800 text-lg">{comment.user}</p>
-                  <p className="text-gray-700 mt-2 leading-relaxed">{comment.text}</p>
-                  <span className="text-yellow-500 text-xl mt-2 inline-block">⭐ {comment.rating}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {comments.map((comment, index) => (
+  <div key={index} className="border-b border-gray-200 pb-6">
+    <p className="font-semibold text-gray-800 text-lg">
+      {comment.bookingRequestId?.customerID?.firstName}{" "}
+      {comment.bookingRequestId?.customerID?.lastName || "Anonymous"}
+    </p>
+    <p className="text-gray-700 mt-2 leading-relaxed">
+      {comment.serviceComment || comment.consultantComment}
+    </p>
+  </div>
+))}
+
 
         {/* Booking Button */}
         <div className="flex justify-center mt-4">
