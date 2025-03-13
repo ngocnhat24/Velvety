@@ -31,6 +31,7 @@ import { FaTrash , FaComment } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 const ViewBookingHistory = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,48 @@ const ViewBookingHistory = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
+  const navigate = useNavigate();
+
+
+
+  const handleReviewClick = (bookingId) => {
+    setReviewData({ bookingId, comment: "", rating: 0 });
+    setShowReviewModal(true);
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewData.comment || !reviewData.rating) {
+      alert("Please enter your comment and rating.");
+      return;
+    }
+
+    const reviewPayload = {
+      bookingId: booking._id,  // ID của lịch đặt cần đánh giá
+      comment: reviewData.comment,
+      rating: reviewData.rating,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      // Gửi request lưu review vào lịch sử đặt lịch
+      const response = await fetch("/api/historyBooking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reviewPayload),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit review");
+
+      alert("Review submitted successfully!");
+      setShowReviewModal(false); // Đóng modal sau khi gửi
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("Failed to submit review");
+    }
+  };
+
+
   const [feedbackData, setFeedbackData] = useState({
     consultantRating: 0,
     consultantComment: "",
@@ -51,8 +94,8 @@ const ViewBookingHistory = () => {
     bookingId: null,
   });
   
-  const navigate = useNavigate();
   
+
   const fetchBookingsByCustomer = async () => {
     try {
       const response = await axios.get(
@@ -301,24 +344,22 @@ const ViewBookingHistory = () => {
                           }
                         >
                           {booking.consultantID?.firstName
-                            ? `${booking.consultantID.firstName} ${
-                                booking.consultantID.lastName || ""
-                              }`
+                            ? `${booking.consultantID.firstName} ${booking.consultantID.lastName || ""
+                            }`
                             : "Not Assigned"}
                         </span>
                       </Tooltip>
                     </TableCell>
                     <TableCell align="center">
                       <span
-                        className={`p-1 rounded ${
-                          booking.status === "Pending"
-                            ? "bg-yellow-200"
-                            : booking.status === "Confirmed"
+                        className={`p-1 rounded ${booking.status === "Pending"
+                          ? "bg-yellow-200"
+                          : booking.status === "Confirmed"
                             ? "bg-blue-200"
                             : booking.status === "Completed"
-                            ? "bg-green-200"
-                            : "bg-red-200"
-                        }`}
+                              ? "bg-green-200"
+                              : "bg-red-200"
+                          }`}
                       >
                         {booking.status}
                       </span>
@@ -391,11 +432,10 @@ const ViewBookingHistory = () => {
                 <Typography className="flex items-center">
                   <strong>Verified:</strong>
                   <span
-                    className={`ml-2 flex items-center ${
-                      selectedConsultant.verified
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
+                    className={`ml-2 flex items-center ${selectedConsultant.verified
+                      ? "text-green-600"
+                      : "text-red-600"
+                      }`}
                   >
                     {selectedConsultant.verified ? (
                       <MdVerified size={18} className="ml-1" />
