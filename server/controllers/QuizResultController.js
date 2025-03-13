@@ -20,7 +20,15 @@ const determineSkinType = (answers) => {
 const saveQuizResult = async (req, res) => {
     try {
         const { answers } = req.body;
-        const userID = req.user ? req.user._id : null; // Lấy userID từ token nếu có
+        console.log("🔹 Received Quiz Data:", answers);
+        console.log("🔹 User in Request:", req.user); // Kiểm tra req.user
+
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized - User not found" });
+        }
+
+        const userID = req.user.id; // Lấy userID từ token
+        console.log("🔹 User ID:", userID);
 
         if (!answers || answers.length === 0) {
             return res.status(400).json({ message: "Answers are required." });
@@ -28,25 +36,20 @@ const saveQuizResult = async (req, res) => {
 
         const skinType = determineSkinType(answers); // Tính loại da
 
-        // Tạo document mới và lưu vào database
+        // Lưu kết quả quiz
         const newQuizResult = new QuizResult({
             userID,
-            answers,  // Lưu cả danh sách câu trả lời
+            answers,
             skinType,
         });
 
         await newQuizResult.save();
-
-        res.status(201).json({
-            message: "Quiz result saved successfully!",
-            quizResult: newQuizResult,
-        });
+        res.status(201).json({ message: "Quiz result saved successfully!", quizResult: newQuizResult });
     } catch (error) {
         console.error("Error saving quiz result:", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-
 
 
 // Get all results (for admin)
@@ -91,22 +94,24 @@ const getAllResults = async (req, res) => {
 // Get quiz results for a specific user
 const getUserResults = async (req, res) => {
     try {
-        const userId = req.user._id; // Lấy userId từ token
+        const userId = req.user.id; // Lấy userId từ token
 
         if (!userId) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
+        // Chỉ lấy field `skinType`, sắp xếp theo `createdDate` giảm dần (lấy kết quả mới nhất)
         const results = await QuizResult.find({ userID: userId })
-            .sort({ createdDate: -1 });
+            .sort({ createdDate: -1 })
+            .select("skinType createdDate");
 
         res.json(results);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error fetching user quiz results:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
-  
 
 module.exports = {
     saveQuizResult,
