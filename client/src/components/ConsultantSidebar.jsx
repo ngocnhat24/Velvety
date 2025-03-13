@@ -12,7 +12,6 @@ const ConsultantSidebar = () => {
 
   const menuItems = [
     { name: "To Do", path: "/view-booked" },
-    { name: "Staff", path: "/staff-management" },
   ];
 
   const handleLogout = () => {
@@ -53,7 +52,7 @@ const ConsultantSidebar = () => {
       </Toolbar>
       <Typography variant="h6">
         <div className="text-center">
-         Welcome Admin <br />{fullName}
+         Welcome consultant <br />{fullName}
         </div>
       </Typography>
       <Divider sx={{ backgroundColor: "gray" }} />
