@@ -4,7 +4,6 @@ import Sidebar from "../../components/ConsultantSidebar";
 
 const ViewBooked = () => {
   const [bookings, setBookings] = useState([]);
-  const [rating, setRating] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -20,28 +19,8 @@ const ViewBooked = () => {
       }
     };
 
-    const fetchRating = async () => {
-      try {
-        const response = await axios.get("/api/feedbacks/consultant-rating");
-        console.log("API Response:", response.data); // Kiểm tra phản hồi từ API
-        setRating(response.data.averageRating || 0);
-      } catch (error) {
-        console.error("Failed to fetch rating", error);
-      }
-    };
-    
-
     fetchBookings();
-    fetchRating();
   }, []);
-
-  const getEmoji = (rating) => {
-    if (rating >= 4.5) return "😃";
-    if (rating >= 3.5) return "😊";
-    if (rating >= 2.5) return "😐";
-    if (rating >= 1.5) return "☹️";
-    return "😢";
-  };
 
   if (loading) return <p className="text-center mt-5">Loading...</p>;
 
@@ -65,6 +44,7 @@ const ViewBooked = () => {
                   <th className="border px-4 py-2">Date</th>
                   <th className="border px-4 py-2">Time</th>
                   <th className="border px-4 py-2">Status</th>
+                  <th className="border px-4 py-2">Feedback</th> {/* ✅ Thêm cột Feedback */}
                 </tr>
               </thead>
               <tbody>
@@ -79,31 +59,13 @@ const ViewBooked = () => {
                     </td>
                     <td className="border px-4 py-2">{booking.time || "N/A"}</td>
                     <td className="border px-4 py-2">{booking.status || "N/A"}</td>
+                    <td className="border px-4 py-2">{booking.feedback || "No feedback yet"}</td> {/* ✅ Hiển thị feedback */}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
-
-        {/* My Rating Table */}
-        <h2 className="text-2xl font-bold mt-8 mb-4">My Rating</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 shadow-md">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border px-4 py-2">Average Rating</th>
-                <th className="border px-4 py-2">Emoji</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="text-center">
-                <td className="border px-4 py-2 text-xl font-bold">{rating?.toFixed(1) || "N/A"}</td>
-                <td className="border px-4 py-2 text-2xl">{getEmoji(rating)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );
