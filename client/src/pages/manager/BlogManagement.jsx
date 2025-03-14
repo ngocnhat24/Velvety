@@ -4,10 +4,12 @@ import { useForm } from "react-hook-form";
 import Sidebar from "../../components/ManagerSidebar";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
-import { toast, ToastContainer} from "react-toastify";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Pagination } from "@mui/material"; // Import Pagination component
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEdit, FaTrash } from "react-icons/fa";
+
+const ITEMS_PER_PAGE = 3; // Number of blogs per page
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
@@ -17,6 +19,7 @@ const BlogManagement = () => {
   const [blogToDelete, setBlogToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1); // Add state for current page
 
   useEffect(() => {
     fetchBlogs();
@@ -91,6 +94,9 @@ const BlogManagement = () => {
         : b.title.localeCompare(a.title);
     });
 
+  const totalPages = Math.ceil(filteredAndSortedBlogs.length / ITEMS_PER_PAGE); // Calculate total pages
+  const currentBlogs = filteredAndSortedBlogs.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Get blogs for current page
+
   return (
     <div className="flex">
       <Sidebar />
@@ -151,7 +157,7 @@ const BlogManagement = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredAndSortedBlogs.map((blog) => (
+            {currentBlogs.map((blog) => (
               <div key={blog._id} className="border p-4 rounded-lg shadow-md">
                 {blog.image && (
                   <img
@@ -163,21 +169,33 @@ const BlogManagement = () => {
                 <h4 className="text-lg font-bold">{blog.title}</h4>
                 <p>{blog.description}</p>
                 <div className="flex space-x-2 mt-4">
-                  <button
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="primary"
                     onClick={() => handleEdit(blog)}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
                   >
                     <FaEdit />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
                     onClick={() => openDeleteConfirmation(blog)}
-                    className="bg-red-500 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
                   >
                     <FaTrash />
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
+          </div>
+          <div className="flex justify-center mt-4">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, value) => setCurrentPage(value)}
+              color="primary"
+            />
           </div>
         </div>
       </div>

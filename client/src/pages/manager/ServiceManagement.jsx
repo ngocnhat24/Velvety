@@ -4,10 +4,12 @@ import { useForm } from "react-hook-form";
 import Sidebar from "../../components/ManagerSidebar";
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Pagination } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEdit, FaTrash } from "react-icons/fa";
+
+const ITEMS_PER_PAGE = 6; // Number of services per page
 
 const ServiceManagement = () => {
   const [services, setServices] = useState([]);
@@ -21,7 +23,7 @@ const ServiceManagement = () => {
   const [serviceToDelete, setServiceToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-
+  const [currentPage, setCurrentPage] = useState(1); // Add state for current page
 
   useEffect(() => {
     fetchServices();
@@ -107,7 +109,8 @@ const ServiceManagement = () => {
     .filter(service => service.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
 
-
+  const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE); // Calculate total pages
+  const currentServices = filteredServices.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Get services for current page
 
   return (
     <div className="flex">
@@ -146,15 +149,39 @@ const ServiceManagement = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredServices.map((service) => (
+            {currentServices.map((service) => (
               <div key={service._id} className="border p-4">
                 {service.image && <img src={service.image} alt="Service" className="w-10 h-10 object-cover mb-2" />}
                 <h4 className="text-lg font-bold">{service.name}</h4>
                 <p>{service.description}</p>
-                <button onClick={() => handleEdit(service)} className="bg-yellow-500 text-white px-3 py-1 mr-2 rounded mt-4"><FaEdit /></button>
-                <button onClick={() => openDeleteConfirmation(service)} className="bg-red-500 text-white px-3 py-1 rounded mt-4"><FaTrash /></button>
+                <div className="flex space-x-2 mt-4">
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleEdit(service)}
+                  >
+                    <FaEdit />
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => openDeleteConfirmation(service)}
+                  >
+                    <FaTrash />
+                  </Button>
+                </div>
               </div>
             ))}
+          </div>
+          <div className="flex justify-center mt-4">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, value) => setCurrentPage(value)}
+              color="primary"
+            />
           </div>
         </div>
       </div>

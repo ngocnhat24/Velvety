@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from "../../utils/axiosInstance";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-const ITEMS_PER_PAGE = 6; // Số câu hỏi mỗi trang
+const ITEMS_PER_PAGE = 6; // Number of questions per page
 
 const QuestionCard = ({ question, onDelete, onEdit }) => {
   return (
@@ -63,7 +63,7 @@ const QuestionManagement = () => {
   const [newAnswerOptions, setNewAnswerOptions] = useState([{ answerText: "", weight: 0 }]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1); // Thêm trạng thái cho trang hiện tại
+  const [currentPage, setCurrentPage] = useState(1); // Add state for current page
 
   useEffect(() => {
     axios
@@ -164,8 +164,8 @@ const QuestionManagement = () => {
       : b.questionText.localeCompare(a.questionText);
   });
 
-  const totalPages = Math.ceil(sortedQuestions.length / ITEMS_PER_PAGE); // Tính tổng số trang
-  const currentQuestions = sortedQuestions.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Lấy câu hỏi cho trang hiện tại
+  const totalPages = Math.ceil(sortedQuestions.length / ITEMS_PER_PAGE); // Calculate total pages
+  const currentQuestions = sortedQuestions.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Get questions for current page
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f4f6f8" }}>
