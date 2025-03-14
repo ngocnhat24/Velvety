@@ -23,14 +23,14 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Rating, 
+  Rating,
+  TablePagination,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { motion } from "framer-motion";
-import { FaTrash , FaComment } from "react-icons/fa";
+import { FaTrash, FaComment } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const ViewBookingHistory = () => {
   const [bookings, setBookings] = useState([]);
@@ -45,8 +45,10 @@ const ViewBookingHistory = () => {
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
-  const navigate = useNavigate();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const navigate = useNavigate();
 
   const handleReviewClick = (bookingId) => {
     setReviewData({ bookingId, comment: "", rating: 0 });
@@ -84,7 +86,6 @@ const ViewBookingHistory = () => {
     }
   };
 
-
   const [feedbackData, setFeedbackData] = useState({
     consultantRating: 0,
     consultantComment: "",
@@ -92,7 +93,7 @@ const ViewBookingHistory = () => {
     serviceComment: "",
     bookingId: null,
   });
-  
+
   const fetchBookingsByCustomer = async () => {
     try {
       const response = await axios.get(
@@ -194,6 +195,15 @@ const ViewBookingHistory = () => {
     }
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const filteredBookings = bookings.filter(
     (booking) =>
       (booking.serviceID?.name
@@ -203,6 +213,11 @@ const ViewBookingHistory = () => {
           ?.toLowerCase()
           .includes(searchQuery.toLowerCase())) &&
       (statusFilter ? booking.status === statusFilter : true)
+  );
+
+  const paginatedBookings = filteredBookings.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
   );
 
   return (
@@ -306,89 +321,100 @@ const ViewBookingHistory = () => {
             No booking history found.
           </Typography>
         ) : (
-          <TableContainer component={Paper} elevation={3} className="shadow-md">
-            <Table>
-              <TableHead className="bg-[#E27585] text-white">
-                <TableRow>
-                  <TableCell align="center">Service</TableCell>
-                  <TableCell align="center">Date</TableCell>
-                  <TableCell align="center">Time</TableCell>
-                  <TableCell align="center">Consultant</TableCell>
-                  <TableCell align="center">Status</TableCell>
-                  <TableCell align="center">Action</TableCell>
-                  <TableCell align="center">Feedback</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredBookings.map((booking) => (
-                  <TableRow
-                    key={booking._id}
-                    className="transition duration-300 hover:bg-gray-100"
-                  >
-                    <TableCell align="center">
-                      {booking.serviceID?.name || "N/A"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {new Date(booking.date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell align="center">{booking.time}</TableCell>
-                    <TableCell align="center">
-                      <Tooltip title="View Consultant Details">
-                        <span
-                          className="cursor-pointer text-[#E27585] hover:underline"
-                          onClick={() =>
-                            handleConsultantClick(booking.consultantID?._id)
-                          }
-                        >
-                          {booking.consultantID?.firstName
-                            ? `${booking.consultantID.firstName} ${booking.consultantID.lastName || ""
-                            }`
-                            : "Not Assigned"}
-                        </span>
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell align="center">
-                      <span
-                        className={`p-1 rounded ${booking.status === "Pending"
-                          ? "bg-yellow-200"
-                          : booking.status === "Confirmed"
-                            ? "bg-blue-200"
-                            : booking.status === "Completed"
-                              ? "bg-green-200"
-                              : "bg-red-200"
-                          }`}
-                      >
-                        {booking.status}
-                      </span>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="error"
-                        size="small"
-                        onClick={() => {
-                          setSelectedBookingId(booking._id);
-                          setShowModal(true);
-                        }}
-                      >
-                        <FaTrash />
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        onClick={() => handleFeedbackClick(booking._id)}
-                      >
-                        <FaComment />
-                      </Button>
-                    </TableCell>
+          <>
+            <TableContainer component={Paper} elevation={3} className="shadow-md">
+              <Table>
+                <TableHead className="bg-[#E27585] text-white">
+                  <TableRow>
+                    <TableCell align="center">Service</TableCell>
+                    <TableCell align="center">Date</TableCell>
+                    <TableCell align="center">Time</TableCell>
+                    <TableCell align="center">Consultant</TableCell>
+                    <TableCell align="center">Status</TableCell>
+                    <TableCell align="center">Action</TableCell>
+                    <TableCell align="center">Feedback</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {paginatedBookings.map((booking) => (
+                    <TableRow
+                      key={booking._id}
+                      className="transition duration-300 hover:bg-gray-100"
+                    >
+                      <TableCell align="center">
+                        {booking.serviceID?.name || "N/A"}
+                      </TableCell>
+                      <TableCell align="center">
+                        {new Date(booking.date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell align="center">{booking.time}</TableCell>
+                      <TableCell align="center">
+                        <Tooltip title="View Consultant Details">
+                          <span
+                            className="cursor-pointer text-[#E27585] hover:underline"
+                            onClick={() =>
+                              handleConsultantClick(booking.consultantID?._id)
+                            }
+                          >
+                            {booking.consultantID?.firstName
+                              ? `${booking.consultantID.firstName} ${booking.consultantID.lastName || ""
+                              }`
+                              : "Not Assigned"}
+                          </span>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell align="center">
+                        <span
+                          className={`p-1 rounded ${booking.status === "Pending"
+                            ? "bg-yellow-200"
+                            : booking.status === "Confirmed"
+                              ? "bg-blue-200"
+                              : booking.status === "Completed"
+                                ? "bg-green-200"
+                                : "bg-red-200"
+                            }`}
+                        >
+                          {booking.status}
+                        </span>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          onClick={() => {
+                            setSelectedBookingId(booking._id);
+                            setShowModal(true);
+                          }}
+                        >
+                          <FaTrash />
+                        </Button>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          onClick={() => handleFeedbackClick(booking._id)}
+                        >
+                          <FaComment />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredBookings.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </>
         )}
         <Modal open={!!selectedConsultant} onClose={closeConsultantModal}>
           <motion.div
@@ -500,7 +526,7 @@ const ViewBookingHistory = () => {
             </div>
           </div>
         </div>
-      )} 
+      )}
       {/* Feedback Modal */}
       {showFeedbackModal && (
         <Modal
