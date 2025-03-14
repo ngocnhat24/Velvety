@@ -19,9 +19,10 @@ const ViewBooked = () => {
             if (booking.serviceID?._id) {
               try {
                 const feedbackRes = await axios.get(`/api/feedbacks/service/${id}`);
+        
                 return { ...booking, feedback: feedbackRes.data.feedback || "No feedback yet", rating: feedbackRes.data.rating || "N/A" };
               } catch {
-                return { ...booking, feedback: "No feedback yet", rating: "N/A" };
+                return { ...booking, feedback: "No feedback yet ", rating: "N/A" }; 
               }
             }
             return { ...booking, feedback: "No feedback yet", rating: "N/A" };

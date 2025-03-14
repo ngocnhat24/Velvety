@@ -6,6 +6,7 @@ import Footer from "../../components/Footer";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
+
 export default function ServiceDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ export default function ServiceDetails() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showImagePopup, setShowImagePopup] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(3); // Hiển thị 3 comment đầu tiên
+  const loadMore = () => {setVisibleCount(prev => prev + 3); };  
 
   useEffect(() => {
     axios
@@ -42,7 +45,21 @@ export default function ServiceDetails() {
         setComments([]);
       });
 
+      axios
+        .get(`/api/feedbacks/service-rating`)
+        .then((response) => {
+          const serviceRatingData = response.data.find(item => item._id === id);
+          if (serviceRatingData) {
+            setAverageRating(serviceRatingData.averageRating);
+          } else {
+            setAverageRating(null);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching service rating:", error);
+        });
   }, [id]);
+  
 
   const handleBookingNow = async () => {
     const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -89,16 +106,20 @@ export default function ServiceDetails() {
           )}
           <div>
             <h1 className="text-5xl font-extrabold text-[#9d3847] leading-tight">{service.name}</h1>
+
             <p className="mt-6 text-lg text-gray-700 leading-relaxed">{service.description}</p>
             <div
               className="text-gray-600 mt-6 leading-relaxed border-t-2 border-gray-200 pt-6"
               dangerouslySetInnerHTML={{ __html: service.detaildescription }}
             />
+          {/* Hiển thị avg sao rating của ServiceId tương ứng bằng filterr */}
+          
           </div>
         </div>
 
         {/* Additional Images */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+          
           {[service.effectimage, service.resultimage, service.sensationimage].filter(img => img).map((img, index) => (
             <img
               key={index}
@@ -109,30 +130,42 @@ export default function ServiceDetails() {
             />
           ))}
         </div>
-        {comments.map((comment, index) => {
-  console.log("Rating:", comment.rating); // Kiểm tra rating trong console
+
+
+        {comments.slice(0, visibleCount).map((comment, index) => {
+  console.log("Comment:", comment);
+
+  // Kiểm tra nếu có bookingRequestId và customerID
+  const customer = comment.bookingRequestId?.customerID;
+  const avatarUrl = customer?.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+  const fullName = customer ? `${customer.firstName} ${customer.lastName}` : "Anonymous";
 
   return (
-    <div key={index} className="border-b border-gray-200 pb-6">
-      <div className="mt-3 flex items-center gap-2">
-        <p className="font-semibold text-gray-800 text-lg">
-          {comment.bookingRequestId?.customerID?.firstName}{" "}
-          {comment.bookingRequestId?.customerID?.lastName || "Anonymous"}
-        </p>
-        <div className="flex text-yellow-500 text-sm">
-          {Array.from({ length: Math.max(0, Math.min(comment.rating || 0, 5)) }).map((_, i) => (
-            <span key={i}>⭐</span>
-          ))}
+    <div key={index} className="border-b border-gray-200 pb-6 mb-6">
+      <div className="mt-3 flex items-center gap-3 mb-3">
+        {/* Avatar */}
+        <img src={avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
+
+        {/* Tên và Rating */}
+        <div className="flex items-center gap-2">
+          <p className="font-semibold text-gray-800 text-lg">{fullName}</p>
+
+          {/* Rating sao */}
+          <div className="flex text-yellow-500 text-sm">
+            {Array.from({ length: Math.max(0, Math.min(comment.serviceRating, 5)) }).map((_, i) => (
+              <span key={i}>⭐</span>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Nội dung bình luận */}
       <p className="text-gray-700 mt-2 leading-relaxed">
         {comment.serviceComment || comment.consultantComment}
       </p>
     </div>
   );
 })}
-
-
 
 
         {/* Booking Button */}
