@@ -41,10 +41,20 @@ export default function ConsultantGuest() {
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0 font-['Lato']">
       <Navbar />
-      <div className="w-full h-[97.333px] bg-[#ffc0cb] flex items-center justify-center">
-        <span className="text-[32px] font-bold text-[#C54759] pacifico-regular text-center">
+      <div className="w-full h-[70vh] bg-[url(/images/anhdatrang.png)] bg-cover bg-center bg-no-repeat relative"
+        style={{ backgroundAttachment: "fixed" }}>
+        <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-outline-2 -smooth pacifico-regular text-[90px] font-bold leading-[134.4px] text-[#fff] tracking-[-2.24px] text-center z-[1]">
           View our consultant
         </span>
+      </div>
+
+      <div className="w-full max-w-[1800px] h-[48px] relative z-10 mt-[37.33px] mx-auto flex items-center justify-between">
+        <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
+        <span className="flex-shrink-0 font-['Lato'] text-[40px] text-[#C54759] pacifico-regular leading-[48px] tracking-[-0.8px] text-center px-[80px]">
+          <span className="text-[50px]">A</span>
+          bout Our Consultants
+        </span>
+        <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
 
       <div className="w-full max-w-[800px] mx-auto grid grid-cols-2 md:grid-cols-3 gap-6 px-4 mt-10">
@@ -94,8 +104,15 @@ export default function ConsultantGuest() {
         ))}
       </div>
 
+
       {selectedConsultant && (
-        <div className="fixed top-20 right-0 h-[800px] w-[300px] bg-white shadow-lg z-50 p-6 transition-transform transform translate-x-0 rounded-xl border-2 border-[#C54759]">
+        <motion.div
+          initial={{ x: 300, opacity: 0 }} // Bắt đầu từ bên phải và ẩn đi
+          animate={{ x: 0, opacity: 1 }} // Hiện ra dần dần
+          exit={{ x: 300, opacity: 0 }} // Khi ẩn đi thì trượt về bên phải
+          transition={{ duration: 0.4, ease: "easeOut" }} // Tạo hiệu ứng mượt mà
+          className="fixed top-20 right-0 h-[800px] w-[300px] bg-white shadow-lg z-50 p-6 rounded-xl border-2 border-[#C54759]"
+        >
           <button
             className="absolute top-2 right-2 text-xl text-[#C54759] hover:text-[#ff8a8a] transition-colors duration-300"
             onClick={closePanel}
@@ -113,14 +130,14 @@ export default function ConsultantGuest() {
             <h2 className="text-lg font-semibold">
               {selectedConsultant.firstName} {selectedConsultant.lastName}
             </h2>
-            <p className="text-sm text-gray-600 mt-2">
-              {selectedConsultant.note}
-            </p>
+            <p className="text-sm text-gray-600 mt-2">{selectedConsultant.note}</p>
           </div>
-        </div>
+        </motion.div>
       )}
 
-      <div className="flex items-center justify-center mt-10">
+
+
+      <div className="flex items-center justify-center mt-10 mb-10">
         <div className="relative">
           <span className="absolute -inset-1 inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
           <motion.button
@@ -152,6 +169,7 @@ export default function ConsultantGuest() {
           </motion.button>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

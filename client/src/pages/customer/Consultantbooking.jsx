@@ -9,7 +9,7 @@ export default function ConsultantGuest() {
   const { id } = useParams();
   const [visibleNoteIndex, setVisibleNoteIndex] = useState(null);
   const [consultants, setConsultants] = useState([]);
-  
+
 
   useEffect(() => {
     fetchConsultants();
@@ -76,18 +76,10 @@ export default function ConsultantGuest() {
               <div className="flex gap-2 mt-4">
                 <button
                   className="w-[120px] h-[36px] bg-[#ffc0cb] rounded-full border-solid border-[1px] flex items-center justify-center hover:bg-[#ff8a8a] transition duration-300"
-                  onClick={() => handleViewMore(index)}
-                >
-                  <span className="text-[16px] font-bold leading-[20px] text-[#C54759]">
-                    {visibleNoteIndex === index ? "Hide" : "View More"}
-                  </span>
-                </button>
-                <button
-                  className="w-[120px] h-[36px] bg-[#ffc0cb] rounded-full border-solid border-[1px] flex items-center justify-center hover:bg-[#ff8a8a] transition duration-300"
                   onClick={() => handleBookingNow(consultant._id)}
                 >
                   <span className="text-[16px] font-bold leading-[20px] text-[#C54759]">
-                    Booking Now
+                    Choose
                   </span>
                 </button>
               </div>
