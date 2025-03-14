@@ -18,6 +18,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  TablePagination,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { toast } from "react-toastify";
@@ -29,6 +30,8 @@ const QuizResultHistory = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [skinTypeFilter, setSkinTypeFilter] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const navigate = useNavigate();
 
@@ -53,6 +56,15 @@ const QuizResultHistory = () => {
       result.skinType.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (skinTypeFilter ? result.skinType === skinTypeFilter : true)
   );
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <div className="flex main-container w-full h-full bg-gray-100 relative mx-auto my-0 p-6">
@@ -144,35 +156,48 @@ const QuizResultHistory = () => {
             No quiz results found.
           </Typography>
         ) : (
-          <TableContainer component={Paper} elevation={3} className="shadow-md">
-            <Table>
-              <TableHead className="bg-[#E27585] text-white">
-                <TableRow>
-                  <TableCell align="center">No</TableCell>
-                  <TableCell align="center">Date</TableCell>
-                  <TableCell align="center">Time</TableCell>
-                  <TableCell align="center">Skin Type</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredQuizResults.map((result, index) => (
-                  <TableRow
-                    key={result._id}
-                    className="transition duration-300 hover:bg-gray-100"
-                  >
-                    <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell align="center">
-                      {new Date(result.createdDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell align="center">
-                      {new Date(result.createdDate).toLocaleTimeString()}
-                    </TableCell>
-                    <TableCell align="center">{result.skinType}</TableCell>
+          <>
+            <TableContainer component={Paper} elevation={3} className="shadow-md">
+              <Table>
+                <TableHead className="bg-[#E27585] text-white">
+                  <TableRow>
+                    <TableCell align="center">No</TableCell>
+                    <TableCell align="center">Date</TableCell>
+                    <TableCell align="center">Time</TableCell>
+                    <TableCell align="center">Skin Type</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {filteredQuizResults
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((result, index) => (
+                      <TableRow
+                        key={result._id}
+                        className="transition duration-300 hover:bg-gray-100"
+                      >
+                        <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
+                        <TableCell align="center">
+                          {new Date(result.createdDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell align="center">
+                          {new Date(result.createdDate).toLocaleTimeString()}
+                        </TableCell>
+                        <TableCell align="center">{result.skinType}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredQuizResults.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </>
         )}
         <Fab
           color="primary"
