@@ -15,12 +15,15 @@ import {
   Box,
   CircularProgress,
   Alert,
+  Pagination, // Import Pagination component
 } from "@mui/material";
 import Sidebar from "../../components/ManagerSidebar";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "../../utils/axiosInstance";
 import { FaEdit, FaTrash } from "react-icons/fa";
+
+const ITEMS_PER_PAGE = 6; // Số câu hỏi mỗi trang
 
 const QuestionCard = ({ question, onDelete, onEdit }) => {
   return (
@@ -60,6 +63,7 @@ const QuestionManagement = () => {
   const [newAnswerOptions, setNewAnswerOptions] = useState([{ answerText: "", weight: 0 }]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1); // Thêm trạng thái cho trang hiện tại
 
   useEffect(() => {
     axios
@@ -160,6 +164,9 @@ const QuestionManagement = () => {
       : b.questionText.localeCompare(a.questionText);
   });
 
+  const totalPages = Math.ceil(sortedQuestions.length / ITEMS_PER_PAGE); // Tính tổng số trang
+  const currentQuestions = sortedQuestions.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Lấy câu hỏi cho trang hiện tại
+
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f4f6f8" }}>
       <Sidebar />
@@ -193,13 +200,23 @@ const QuestionManagement = () => {
             {error}
           </Alert>
         ) : (
-          <Grid container spacing={3}>
-            {sortedQuestions.map((question) => (
-              <Grid item xs={12} sm={6} key={question._id}>
-                <QuestionCard question={question} onDelete={handleDelete} onEdit={handleEdit} />
-              </Grid>
-            ))}
-          </Grid>
+          <>
+            <Grid container spacing={3}>
+              {currentQuestions.map((question) => (
+                <Grid item xs={12} sm={6} key={question._id}>
+                  <QuestionCard question={question} onDelete={handleDelete} onEdit={handleEdit} />
+                </Grid>
+              ))}
+            </Grid>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={(event, value) => setCurrentPage(value)}
+                color="primary"
+              />
+            </Box>
+          </>
         )}
       </Container>
       <Dialog open={editDialog.open} onClose={() => setEditDialog({ open: false, question: null })}>
@@ -269,3 +286,5 @@ const QuestionManagement = () => {
 };
 
 export default QuestionManagement;
+
+
