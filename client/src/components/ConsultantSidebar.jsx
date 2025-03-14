@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Drawer, List, ListItemButton, ListItemText, Toolbar, Typography, Divider, Button } from "@mui/material";
-import axios from "axios";
+import axios from "../utils/axiosInstance";
 
 axios.defaults.withCredentials = true;
 
@@ -9,15 +9,12 @@ const ConsultantSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
-  const [averageRating, setAverageRating] = useState(null); // ✅ Thêm state lưu điểm trung bình
+  const [averageRating, setAverageRating] = useState("N/A");
 
-  const menuItems = [{ name: "To Do", path: "/view-booked" }];
-
-  // ✅ Lấy điểm trung bình khi component mount
   useEffect(() => {
-    axios.get("/api/consultants/average-rating")
+    axios.get("/api/feedbacks/consultant-rating")
       .then(response => {
-        setAverageRating(response.data.averageRating || "N/A");
+        setAverageRating(response.data.averageRating?.toFixed(1) || "N/A"); 
       })
       .catch(error => {
         console.error("Error fetching average rating:", error);
@@ -71,13 +68,11 @@ const ConsultantSidebar = () => {
       <Divider sx={{ backgroundColor: "gray" }} />
 
       <List>
-        {menuItems.map((item) => (
-          <NavLink key={item.name} to={item.path} style={{ textDecoration: "none", color: "inherit" }}>
-            <ListItemButton selected={location.pathname === item.path}>
-              <ListItemText primary={item.name} />
-            </ListItemButton>
-          </NavLink>
-        ))}
+        <NavLink to="/view-booked" style={{ textDecoration: "none", color: "inherit" }}>
+          <ListItemButton selected={location.pathname === "/view-booked"}>
+            <ListItemText primary="To Do" />
+          </ListItemButton>
+        </NavLink>
       </List>
 
       <Button
