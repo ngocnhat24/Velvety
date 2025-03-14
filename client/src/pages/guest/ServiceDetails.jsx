@@ -109,18 +109,31 @@ export default function ServiceDetails() {
             />
           ))}
         </div>
+        {comments.map((comment, index) => {
+  console.log("Rating:", comment.rating); // Kiểm tra rating trong console
 
-        {comments.map((comment, index) => (
-          <div key={index} className="border-b border-gray-200 pb-6">
-            <p className="font-semibold text-gray-800 text-lg">
-              {comment.bookingRequestId?.customerID?.firstName}{" "}
-              {comment.bookingRequestId?.customerID?.lastName || "Anonymous"}
-            </p>
-            <p className="text-gray-700 mt-2 leading-relaxed">
-              {comment.serviceComment || comment.consultantComment}
-            </p>
-          </div>
-        ))}
+  return (
+    <div key={index} className="border-b border-gray-200 pb-6">
+      <div className="mt-3 flex items-center gap-2">
+        <p className="font-semibold text-gray-800 text-lg">
+          {comment.bookingRequestId?.customerID?.firstName}{" "}
+          {comment.bookingRequestId?.customerID?.lastName || "Anonymous"}
+        </p>
+        <div className="flex text-yellow-500 text-sm">
+          {Array.from({ length: Math.max(0, Math.min(comment.rating || 0, 5)) }).map((_, i) => (
+            <span key={i}>⭐</span>
+          ))}
+        </div>
+      </div>
+      <p className="text-gray-700 mt-2 leading-relaxed">
+        {comment.serviceComment || comment.consultantComment}
+      </p>
+    </div>
+  );
+})}
+
+
+
 
         {/* Booking Button */}
         <div className="flex justify-center mt-4">

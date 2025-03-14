@@ -6,12 +6,29 @@ const ViewBooked = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         const response = await axios.get("/api/booking-requests/my-bookings");
-        setBookings(response.data.bookings || []);
+        const bookingsData = response.data.bookings || [];
+        
+        // Lấy feedback cho từng dịch vụ
+        const bookingsWithFeedback = await Promise.all(
+          bookingsData.map(async (booking) => {
+            if (booking.serviceID?._id) {
+              try {
+                const feedbackRes = await axios.get(`/api/feedbacks/service/${id}`);
+                return { ...booking, feedback: feedbackRes.data.feedback || "No feedback yet", rating: feedbackRes.data.rating || "N/A" };
+              } catch {
+                return { ...booking, feedback: "No feedback yet", rating: "N/A" };
+              }
+            }
+            return { ...booking, feedback: "No feedback yet", rating: "N/A" };
+          })
+        );
+
+        setBookings(bookingsWithFeedback);
       } catch (error) {
         setError("Failed to load bookings. Please try again later.");
       } finally {
@@ -29,9 +46,7 @@ const ViewBooked = () => {
       <Sidebar />
       <div className="ml-64 p-6 w-full">
         <h2 className="text-2xl font-bold mb-4">My Bookings</h2>
-
         {error && <p className="text-red-500">{error}</p>}
-
         {bookings.length === 0 ? (
           <p>No bookings assigned to you yet.</p>
         ) : (
@@ -44,7 +59,8 @@ const ViewBooked = () => {
                   <th className="border px-4 py-2">Date</th>
                   <th className="border px-4 py-2">Time</th>
                   <th className="border px-4 py-2">Status</th>
-                  <th className="border px-4 py-2">Feedback</th> {/* ✅ Thêm cột Feedback */}
+                  <th className="border px-4 py-2">Feedback</th>
+                  <th className="border px-4 py-2">Rating</th>
                 </tr>
               </thead>
               <tbody>
@@ -59,7 +75,8 @@ const ViewBooked = () => {
                     </td>
                     <td className="border px-4 py-2">{booking.time || "N/A"}</td>
                     <td className="border px-4 py-2">{booking.status || "N/A"}</td>
-                    <td className="border px-4 py-2">{booking.feedback || "No feedback yet"}</td> {/* ✅ Hiển thị feedback */}
+                    <td className="border px-4 py-2">{booking.feedback}</td>
+                    <td className="border px-4 py-2">{booking.rating}</td>
                   </tr>
                 ))}
               </tbody>
