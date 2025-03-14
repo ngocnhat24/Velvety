@@ -12,6 +12,7 @@ const CustomerSidebar = () => {
   const menuItems = [
     { name: "Account Details", path: "/customer-profile" },
     { name: "Booking History", path: "/booking-history" },
+    { name: "Quiz Result History", path: "/quiz-result-history" },
   ];
 
   const handleLogout = () => {

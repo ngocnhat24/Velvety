@@ -23,7 +23,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Rating, // Add this import
+  Rating, 
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { motion } from "framer-motion";
