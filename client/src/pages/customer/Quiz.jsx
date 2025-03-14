@@ -47,23 +47,27 @@ const Quiz = () => {
     const token = localStorage.getItem("authToken");
 
     if (!token) {
-      setShowLoginModal(true); // Show the modal if not logged in
-      return;
+        setShowLoginModal(true);
+        return;
     }
+
+    console.log("Submitting answers:", answers); // Debug: Kiểm tra xem answers có dữ liệu không
 
     try {
-      const response = await axios.post(
-        "/api/quiz-results/",
-        { answers },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        const response = await axios.post(
+            "/api/quiz-results/save",
+            { answers },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      setQuizResult(response.data.quizResult);
+        console.log("Response from server:", response.data); // Debug: Kiểm tra phản hồi từ server
+        setQuizResult(response.data.quizResult);
     } catch (error) {
-      console.error("Error submitting quiz:", error);
-      setError("Something went wrong. Please try again.");
+        console.error("Error submitting quiz:", error);
+        setError("Something went wrong. Please try again.");
     }
-  };
+};
+
 
   const handleLoginRedirect = () => {
     setShowLoginModal(false);
@@ -122,9 +126,8 @@ const Quiz = () => {
               return (
                 <button
                   key={index}
-                  className={`w-full py-3 px-4 ${
-                    isSelected ? "bg-[#faf5f0]" : "bg-gray-200"
-                  } hover:bg-gray-300 text-left rounded-lg transition-all transform hover:scale-105 duration-150`}
+                  className={`w-full py-3 px-4 ${isSelected ? "bg-[#faf5f0]" : "bg-gray-200"
+                    } hover:bg-gray-300 text-left rounded-lg transition-all transform hover:scale-105 duration-150`}
                   onClick={() =>
                     handleAnswerSelection(option.weight, currentQuestion._id, option.answerText)
                   }
@@ -148,11 +151,10 @@ const Quiz = () => {
           {currentQuestionIndex < questions.length - 1 ? (
             <button
               disabled={!answers.some(answer => answer.questionId === currentQuestion._id)}
-              className={`py-2 px-6 ${
-                !answers.some(answer => answer.questionId === currentQuestion._id)
-                  ? "bg-gray-300"
-                  : "bg-[#f1baba]"
-              } text-white rounded-lg hover:bg-[#e78999] transition`}
+              className={`py-2 px-6 ${!answers.some(answer => answer.questionId === currentQuestion._id)
+                ? "bg-gray-300"
+                : "bg-[#f1baba]"
+                } text-white rounded-lg hover:bg-[#e78999] transition`}
               onClick={handleNextQuestion}
             >
               Next
@@ -210,33 +212,33 @@ const Quiz = () => {
           </div>
         </div>
       )}
-       {/* Booking Now Button */}
-            <div className="fixed bottom-4 right-4">
-            {/* Ping effect */}
-            <span className="absolute -inset-1 inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
-      
-            {/* Animated Button */}
-            <motion.button
-              onClick={() => navigate("/services")}
-              className="relative px-6 py-3 text-white rounded-full shadow-lg pacifico-regular focus:outline-none focus:ring-4 focus:ring-green-300"
-              style={{
-                background: "linear-gradient(135deg, #6B8E23, #32CD32)",
-                boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-              }}
-              animate={{
-                y: [0, -5, 5, -5, 0], // Floating animation
-                transition: {
-                  duration: 7,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                },
-              }}
-              whileHover={{ scale: 1.1, rotate: 5, boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Book Now
-            </motion.button>
-            </div>
+      {/* Booking Now Button */}
+      <div className="fixed bottom-4 right-4">
+        {/* Ping effect */}
+        <span className="absolute -inset-1 inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
+
+        {/* Animated Button */}
+        <motion.button
+          onClick={() => navigate("/services")}
+          className="relative px-6 py-3 text-white rounded-full shadow-lg pacifico-regular focus:outline-none focus:ring-4 focus:ring-green-300"
+          style={{
+            background: "linear-gradient(135deg, #6B8E23, #32CD32)",
+            boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+          }}
+          animate={{
+            y: [0, -5, 5, -5, 0], // Floating animation
+            transition: {
+              duration: 7,
+              repeat: Infinity,
+              ease: "easeInOut",
+            },
+          }}
+          whileHover={{ scale: 1.1, rotate: 5, boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)" }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Book Now
+        </motion.button>
+      </div>
 
       <Footer />
     </div>
