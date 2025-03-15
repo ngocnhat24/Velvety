@@ -60,6 +60,7 @@ export default function ServiceDetails() {
         });
   }, [id]);
   
+  
 
   const handleBookingNow = async () => {
     const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -131,7 +132,7 @@ export default function ServiceDetails() {
           ))}
         </div>
 
-
+        <div className="mt-6 space-y-6">
         {comments.slice(0, visibleCount).map((comment, index) => {
   console.log("Comment:", comment);
 
@@ -158,6 +159,7 @@ export default function ServiceDetails() {
           </div>
         </div>
       </div>
+    
 
       {/* Nội dung bình luận */}
       <p className="text-gray-700 mt-2 leading-relaxed">
@@ -166,7 +168,7 @@ export default function ServiceDetails() {
     </div>
   );
 })}
-
+  </div>
 
         {/* Booking Button */}
         <div className="flex justify-center mt-4">
