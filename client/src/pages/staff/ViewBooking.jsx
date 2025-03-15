@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import StaffSidebar from "../../components/StaffSidebar";
 import { toast, ToastContainer } from "react-toastify";
-
+import { MdPayment } from "react-icons/md";
 const ViewBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -181,7 +181,7 @@ const ViewBooking = () => {
                     onClick={() => handlePaymentClick(booking._id)}
                     className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
                   >
-                    Use Payment
+                    <MdPayment className="text-white-500 text-2xl" />
                   </button>
                 </td>
 
