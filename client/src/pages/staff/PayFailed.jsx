@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "@/utils/axiosInstance";  
+import axios from "@/utils/axiosInstance";
 
 export const PayFailed = () => {
     const orderCode = sessionStorage.getItem("orderCode") || localStorage.getItem("orderCode");
