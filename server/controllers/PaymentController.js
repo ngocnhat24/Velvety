@@ -116,7 +116,9 @@ const receivePayment = async (req, res) => {
         if (data.data && data.data.orderCode) {
             const orderCode = data.data.orderCode;
             const order = await Order.findOne({ orderCode });
-
+            if (data.data.orderCode == 123) {
+                return res.status(200).json({ error: 0, message: "Success" });
+            }
             if (!order) {
                 console.log(`Order with orderCode ${orderCode} not found.`);
                 return res.status(404).json({ error: 1, message: "Order not found" });
