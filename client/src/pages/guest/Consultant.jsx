@@ -52,7 +52,6 @@ export default function ConsultantGuest() {
       <div className="w-full h-[70vh] bg-[url(/images/anhdatrang.png)] bg-cover bg-center bg-no-repeat relative"
         style={{ backgroundAttachment: "fixed" }}>
         <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-outline-2 -smooth pacifico-regular text-[90px] font-bold leading-[134.4px] text-[#fff] tracking-[-2.24px] text-center z-[1]">
-          View our consultant
         </span>
       </div>
 

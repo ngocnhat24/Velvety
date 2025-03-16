@@ -36,4 +36,6 @@ router.post(
 // Reset password for consultant 
 router.post('/:id/reset-password', authenticate, authorize(['Admin']), ConsultantController.resetPassword);
 
+router.get('/available/:bookingID',authenticate, authorize(['Staff']), ConsultantController.getAvailableConsultants);
+
 module.exports = router;
