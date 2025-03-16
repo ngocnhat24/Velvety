@@ -15,6 +15,7 @@ const orderSchema = new Schema(
     transactionDateTime: { type: Date, default: Date.now }, // Date and time of the transaction
     currency: { type: String, default: 'VND' }, // Currency used for the payment (default to VND)
     paymentMethod: { type: String, default: 'PayOS' }, // Payment method used
+    bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'BookingRequest' },
   },
   { timestamps: true }
 );

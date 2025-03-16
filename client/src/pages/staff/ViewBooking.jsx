@@ -15,8 +15,20 @@ const ViewBooking = () => {
     const fetchBookings = async () => {
       try {
         const response = await axios.get("/api/booking-requests");
-        console.log("Booking Response:", response);
-        setBookings(response.data);
+        const bookingsData = response.data;
+  
+        // Map qua và fetch từng user
+        const bookingsWithCustomer = await Promise.all(
+          bookingsData.map(async (booking) => {
+            const customerRes = await axios.get(`/api/users/${booking.customerID}`);
+            return {
+              ...booking,
+              customerInfo: customerRes.data,
+            };
+          })
+        );
+  
+        setBookings(bookingsWithCustomer);
       } catch (err) {
         console.error("Error fetching bookings:", err.response ? err.response.data : err.message);
         setError(err.response ? err.response.data.message : err.message);
@@ -24,9 +36,10 @@ const ViewBooking = () => {
         setLoading(false);
       }
     };
+  
     fetchBookings();
   }, []);
-
+  
 
   const handlePaymentClick = async (bookingId) => {
     try {
@@ -137,6 +150,7 @@ const ViewBooking = () => {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-200">
+            <th className="border p-2 text-center">Customer Name</th>
               <th className="border p-2 text-center">Service Name</th>
               <th className="border p-2 text-center">Date</th>
               <th className="border p-2 text-center">Time</th>
@@ -149,6 +163,10 @@ const ViewBooking = () => {
           <tbody>
             {bookings.map((booking) => (
               <tr key={booking._id} className="border">
+                <td className="border p-2 text-center">
+  {booking.customerInfo?.firstName} {booking.customerInfo?.lastName}
+</td>
+
                 <td className="border p-2 text-center">{booking.serviceID?.name || "Not Available"}</td>
                 <td className="border p-2 text-center">{new Date(booking.date).toLocaleDateString()}</td>
                 <td className="border p-2 text-center">{booking.time}</td>
