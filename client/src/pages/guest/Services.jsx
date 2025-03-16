@@ -8,6 +8,7 @@ import ServiceCard from "../../components/ServiceCard";
 export default function ServiceGuest() {
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const servicesPerPage = 8;
   const navigate = useNavigate();
   const chooseServiceRef = useRef(null);
@@ -45,7 +46,11 @@ export default function ServiceGuest() {
 
   const indexOfLastService = currentPage * servicesPerPage;
   const indexOfFirstService = indexOfLastService - servicesPerPage;
-  const currentServices = services.slice(indexOfFirstService, indexOfLastService);
+  const currentServices = services
+    .filter((service) =>
+      service.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(indexOfFirstService, indexOfLastService);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -98,6 +103,17 @@ export default function ServiceGuest() {
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
 
+      {/* Search bar */}
+      <div className="w-full max-w-[1800px] h-auto relative z-10 mt-[20px] mb-[10px] mx-auto flex justify-end px-4">
+        <input
+          type="text"
+          placeholder="Search your services"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full max-w-[300px] px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C54759] focus:border-transparent border-[#C54759] rounded-lg"
+        />
+      </div>
+
       {/* Service cards section */}
       <div className="w-full px-4 flex justify-center ">
         <div className="w-full max-w-[1200px] px-4 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-[60px] gap-y-[20px] mt-4 mb-[40px] mx-auto place-items-center">
@@ -109,6 +125,7 @@ export default function ServiceGuest() {
               description={service.description}
               price={service.price}
               onChoose={() => handleChoose(service._id)}
+              className="border border-[#C54759] rounded-lg"
             />
           ))}
         </div>

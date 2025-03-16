@@ -9,6 +9,7 @@ const bookingRequestSchema = new Schema({
     consultantID: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Renamed from therapistID
     status: { type: String, enum: ["Pending", "Confirmed", "Completed", "Cancelled"], required: true },
     isConsultantAssignedByCustomer: { type: Boolean, default: false },
+    
 });
 
 module.exports = mongoose.model("BookingRequest", bookingRequestSchema);
