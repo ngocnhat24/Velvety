@@ -10,6 +10,8 @@ export default function ConsultantGuest() {
   const navigate = useNavigate();
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [consultants, setConsultants] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const consultantsPerPage = 6;
 
   useEffect(() => {
     fetchConsultants();
@@ -38,6 +40,12 @@ export default function ConsultantGuest() {
     setSelectedConsultant(null);
   };
 
+  const indexOfLastConsultant = currentPage * consultantsPerPage;
+  const indexOfFirstConsultant = indexOfLastConsultant - consultantsPerPage;
+  const currentConsultants = consultants.slice(indexOfFirstConsultant, indexOfLastConsultant);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0 font-['Lato']">
       <Navbar />
@@ -57,11 +65,11 @@ export default function ConsultantGuest() {
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
 
-      <div className="w-full max-w-[800px] mx-auto grid grid-cols-2 md:grid-cols-3 gap-6 px-4 mt-10">
-        {consultants.map((consultant, index) => (
+      <div className="w-full max-w-[800px] mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 px-4 mt-10">
+        {currentConsultants.map((consultant, index) => (
           <div
             key={index}
-            className="flex flex-col items-center bg-white p-4 rounded-xl shadow-lg transition-all duration-300 hover:border-2 hover:border-[#ffc0cb]"
+            className="flex flex-col items-center bg-white p-5 rounded-xl shadow-lg transition-all duration-300 hover:border-2 hover:border-[#ffc0cb]"
           >
             {consultant.image ? (
               <motion.img
@@ -73,21 +81,21 @@ export default function ConsultantGuest() {
                   ease: "easeInOut",
                 }}
                 alt="Consultant"
-                className="w-[100px] h-[100px] rounded-full"
+                className="w-[120px] h-[120px] rounded-full"
               />
             ) : (
               <span className="text-gray-500">No Image</span>
             )}
-            <span className="text-[16px] font-semibold text-[#000] mt-2">
+            <span className="text-[18px] font-semibold text-[#000] mt-3">
               {consultant.firstName} {consultant.lastName}
             </span>
-            <div className="relative mt-[10px] flex items-center justify-center">
+            <div className="relative mt-[15px] flex items-center justify-center">
               <span className="absolute top-[-10px] right-[-10px] flex size-3">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff8a8a] opacity-75"></span>
                 <span className="relative inline-flex size-3 rounded-full bg-[#C54759]"></span>
               </span>
               <motion.button
-                className="w-[100px] h-[32px] bg-[#ffc0cb] rounded-full border hover:bg-[#ff8a8a] transition duration-300 mt-3"
+                className="w-[110px] h-[36px] bg-[#ffc0cb] rounded-full border hover:bg-[#ff8a8a] transition duration-300 mt-3"
                 whileHover={{
                   scale: 1.1,
                   boxShadow: "0 5px 15px rgba(0, 0, 0, 0.3)",
@@ -95,7 +103,7 @@ export default function ConsultantGuest() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleViewMore(consultant)}
               >
-                <span className="text-[14px] font-bold text-[#C54759]">
+                <span className="text-[15px] font-bold text-[#C54759]">
                   View More
                 </span>
               </motion.button>
@@ -104,38 +112,49 @@ export default function ConsultantGuest() {
         ))}
       </div>
 
+      <div className="flex justify-center mt-6">
+        {Array.from({ length: Math.ceil(consultants.length / consultantsPerPage) }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => paginate(index + 1)}
+            className={`mx-1 px-3 py-1 rounded-full ${currentPage === index + 1 ? 'bg-[#C54759] text-white' : 'bg-gray-200 text-gray-700'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
 
       {selectedConsultant && (
-        <motion.div
-          initial={{ x: 300, opacity: 0 }} // Bắt đầu từ bên phải và ẩn đi
-          animate={{ x: 0, opacity: 1 }} // Hiện ra dần dần
-          exit={{ x: 300, opacity: 0 }} // Khi ẩn đi thì trượt về bên phải
-          transition={{ duration: 0.4, ease: "easeOut" }} // Tạo hiệu ứng mượt mà
-          className="fixed top-20 right-0 h-[800px] w-[300px] bg-white shadow-lg z-50 p-6 rounded-xl border-2 border-[#C54759]"
-        >
-          <button
-            className="absolute top-2 right-2 text-xl text-[#C54759] hover:text-[#ff8a8a] transition-colors duration-300"
-            onClick={closePanel}
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white p-6 rounded-xl shadow-lg w-[90%] max-w-[800px] relative flex"
           >
-            ✖
-          </button>
-          <div className="mt-6">
+            <button
+              className="absolute top-2 right-2 text-xl text-[#C54759] hover:text-[#ff8a8a] transition-colors duration-300"
+              onClick={closePanel}
+            >
+              ✖
+            </button>
             {selectedConsultant.image && (
               <img
                 src={selectedConsultant.image}
                 alt="Consultant"
-                className="w-full rounded-lg mb-4"
+                className="w-1/3 rounded-lg mb-4"
               />
             )}
-            <h2 className="text-lg font-semibold">
-              {selectedConsultant.firstName} {selectedConsultant.lastName}
-            </h2>
-            <p className="text-sm text-gray-600 mt-2">{selectedConsultant.note}</p>
-          </div>
-        </motion.div>
+            <div className="ml-6 w-2/3">
+              <h2 className="text-lg font-semibold">
+                {selectedConsultant.firstName} {selectedConsultant.lastName}
+              </h2>
+              <p className="text-sm text-gray-600 mt-2">{selectedConsultant.note}</p>
+            </div>
+          </motion.div>
+        </div>
       )}
-
-
 
       <div className="flex items-center justify-center mt-10 mb-10">
         <div className="relative">
