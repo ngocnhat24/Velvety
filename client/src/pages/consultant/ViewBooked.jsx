@@ -18,11 +18,10 @@ const ViewBooked = () => {
         // Lấy feedback cho từng dịch vụ
         const bookingsWithFeedback = await Promise.all(
           bookingsData.map(async (booking) => {
-            if (booking.serviceID?._id) {
+            if (booking.serviceID._id) {
               try {
-                const feedbackRes = await axios.get(`/api/feedbacks/service/${id}`);
-        
-                return { ...booking, feedback: feedbackRes.data.feedback || "No feedback yet", rating: feedbackRes.data.rating || "N/A" };
+                const feedbackRes = await axios.get(`/api/feedbacks/service/${booking.serviceID._id}`);                
+                return { ...booking, feedback: feedbackRes.data[0].serviceComment || "No feedback yet", rating: feedbackRes.data[0].consultantRating || "N/A" };
               } catch {
                 return { ...booking, feedback: "No feedback yet ", rating: "N/A" }; 
               }
@@ -30,6 +29,7 @@ const ViewBooked = () => {
             return { ...booking, feedback: "No feedback yet", rating: "N/A" };
           })
         );
+
         const handleSort = (column) => {
           const newSortOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
         
