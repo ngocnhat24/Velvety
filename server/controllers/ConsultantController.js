@@ -252,6 +252,50 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
+exports.getAvailableConsultants = async (req, res) => {
+    try {
+        const { bookingID } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(bookingID)) {
+            return res.status(400).json({ message: "Invalid booking ID format" });
+        }
+        if (!bookingID) {
+          return res.status(400).json({ message: "Booking ID is required" });
+        }
+    
+        // Fetch the booking request details
+        const booking = await BookingRequest.findById(bookingID);
+        if (!booking) {
+          return res.status(404).json({ message: "Booking request not found" });
+        }
+    
+        // Ignore cancelled bookings
+        if (booking.status === "Cancelled") {
+          return res.json([]); // No need to assign consultants to cancelled bookings
+        }
+    
+        // Find consultants already booked for the same date & time (excluding cancelled bookings)
+        const bookedConsultants = await BookingRequest.find({
+          date: booking.date,
+          time: booking.time,
+          consultantID: { $ne: null }, // Only consider bookings with assigned consultants
+          status: { $in: ["Pending", "Confirmed"] }, // Exclude cancelled/completed bookings
+        }).distinct("consultantID");
+    
+        // Find available consultants (roleName: "Consultant") who are not booked
+        const availableConsultants = await User.find({
+          roleName: "Consultant",
+          _id: { $nin: bookedConsultants }, // Exclude booked consultants
+        }).select("firstName lastName email phoneNumber");
+    
+        res.json(availableConsultants);
+      } catch (error) {
+        console.error("Error fetching available consultants:", error);
+        res.status(500).json({ message: "Server error" });
+      }
+    };
+    
+    
 
 
   
