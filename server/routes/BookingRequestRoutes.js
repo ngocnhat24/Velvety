@@ -21,7 +21,6 @@ const router = express.Router();
 
 router.post('/', createBookingRequest);
 router.get('/', getAllBookingRequests);
-router.put('/:id/assign-consultant', assignConsultant); 
 router.put('/:id/status', updateBookingRequestStatus);
 router.get('/booked-times', getBookingsByConsultantAndDate);
 router.get("/my-bookings",authenticate, authorize(["Consultant"]),getConsultantBookings);
@@ -32,8 +31,8 @@ router.put("/:id/confirm", authenticate, authorize(["Staff"]), confirmBooking);
 router.put("/:id/complete", authenticate, authorize(["Staff"]), completeBooking);
 router.put("/:id/cancel", authenticate, authorize(["Customer", "Staff"]), cancelBooking);
 router.get("/:id", authenticate, getBookingById);
-router.post('/update-status', updateBookingStatus);
-
+router.post('/update-status', authenticate, authorize(['Staff, Customer']), updateBookingStatus);
+router.put('/:bookingId/assign', authenticate, authorize(['Staff']), assignConsultant)
 
 
 
