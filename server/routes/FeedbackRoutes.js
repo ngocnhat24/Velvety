@@ -10,7 +10,8 @@ const { authenticate } = require('../middlewares/AuthMiddleware'); // Require au
 
 const router = express.Router();
 
-router.get('/service-rating',  getAverageServiceRating); // Lấy rating trung bình của dịch vụ
+router.get('/service-rating/:serviceId', getAverageServiceRating);
+ // Lấy rating trung bình của dịch vụ
 router.get('/consultant-rating', getAverageConsultantRating); // Lấy rating trung bình của tư vấn viên
 router.post('/',createFeedback); // Require authentication to create feedback
 router.get('/:bookingRequestId',  getFeedbackByBooking); // Secure route

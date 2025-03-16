@@ -17,9 +17,9 @@ const createEmbeddedPaymentLink = async (req, res) => {
             return res.status(404).json({ error: 1, message: 'Booking request not found' });
         }
 
-        // Check if booking status is "Completed"
-        if (bookingRequest.status !== "Completed") {
-            return res.status(400).json({ error: 1, message: 'Booking request is not completed yet' });
+        // Check if booking status is "Comfirmed"
+        if (bookingRequest.status !== "Comfirmed") {
+            return res.status(400).json({ error: 1, message: 'Booking request is not Comfirmed yet' });
         }
 
         const userId = bookingRequest.customerID;
@@ -140,14 +140,30 @@ const receivePayment = async (req, res) => {
         if (data.success) {
             order.status = "Paid";
             order.currency = data.data.currency;
-            order.paymentMethod = "PayOS"; // You can change this to match your actual payment gateway
+            order.paymentMethod = "PayOS";
             order.paymentStatus = data.data.desc || "Payment Successful";
+        
+            // Sau khi thanh toán thành công, cập nhật booking
+            if (order.bookingId) {
+                const bookingRequest = await BookingRequest.findById(order.bookingId);
+                if (bookingRequest) {
+                    if (bookingRequest.status === "Confirmed") {
+                        bookingRequest.status = "Completed";
+                        await bookingRequest.save();
+                        console.log(`Booking ${order.bookingId} updated to Completed.`);
+                    } else {
+                        console.log(`Booking ${order.bookingId} not updated. Current status: ${bookingRequest.status}`);
+                    }
+                }
+            }
+        
             console.log(`Order ${orderCode} updated to Paid.`);
         } else {
             order.status = "Canceled";
             order.paymentStatus = data.data.desc || "Payment Failed";
             console.log(`Order ${orderCode} updated to Canceled.`);
         }
+        
 
         await order.save(); // Save the updated order status
 
