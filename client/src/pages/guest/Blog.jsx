@@ -10,6 +10,8 @@ import styled from 'styled-components';
 
 export default function Blog() {
   const [blogPosts, setBlogPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogPostsPerPage = 6; // Define the number of blog posts per page
   const navigate = useNavigate(); // Hook to programmatically navigate
   const BlogPostWrapper = styled.div`
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -35,7 +37,14 @@ export default function Blog() {
   const handleReadMore = (postId) => {
     navigate(`/blog/${postId}`); // This would navigate to a detailed blog page (e.g., `/blog/123`)
   };
-  
+
+  // Calculate the indices for the current page
+  const indexOfLastBlogPost = currentPage * blogPostsPerPage;
+  const indexOfFirstBlogPost = indexOfLastBlogPost - blogPostsPerPage;
+  const currentBlogPosts = blogPosts.slice(indexOfFirstBlogPost, indexOfLastBlogPost);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0">
       <Navbar />
@@ -56,47 +65,60 @@ export default function Blog() {
 
       {/* Render blog posts */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-[30px] mb-[30px] mx-auto px-4 max-w-screen-xl">
-      {blogPosts.map((post) => (
-        <BlogPostWrapper
-          key={post._id}
-          onClick={() => handleReadMore(post._id)}
-        >
-          <BlogCard
-            image={post.image}
-            title={<span className="text-[#E68A98]">{post.title}</span>}
-            description={post.description}
-            createdDate={post.createdDate}
-          />
-        </BlogPostWrapper>
-      ))}
-
-        {/* Booking Now Button */}
-        <div className="fixed bottom-4 right-4">
-          {/* Ping effect */}
-          <span className="absolute -inset-1 inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
-
-          {/* Animated Button */}
-          <motion.button
-            onClick={() => navigate("/services")}
-            className="relative px-6 py-3 text-white rounded-full shadow-lg pacifico-regular focus:outline-none focus:ring-4 focus:ring-green-300"
-            style={{
-              background: "linear-gradient(135deg, #6B8E23, #32CD32)",
-              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-            }}
-            animate={{
-              y: [0, -5, 5, -5, 0], // Floating animation
-              transition: {
-                duration: 7,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-            }}
-            whileHover={{ scale: 1.1, rotate: 5, boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)" }}
-            whileTap={{ scale: 0.95 }}
+        {currentBlogPosts.map((post) => (
+          <BlogPostWrapper
+            key={post._id}
+            onClick={() => handleReadMore(post._id)}
           >
-            Book Now
-          </motion.button>
-        </div>
+            <BlogCard
+              image={post.image}
+              title={<span className="text-[#E68A98]">{post.title}</span>}
+              description={post.description}
+              createdDate={post.createdDate}
+            />
+          </BlogPostWrapper>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-5 mb-10">
+        {Array.from({ length: Math.ceil(blogPosts.length / blogPostsPerPage) }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => paginate(index + 1)}
+            className={`mx-1 px-3 py-1 rounded-full ${currentPage === index + 1 ? 'bg-[#C54759] text-white' : 'bg-gray-200 text-gray-700'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+
+      {/* Booking Now Button */}
+      <div className="fixed bottom-4 right-4">
+        {/* Ping effect */}
+        <span className="absolute -inset-1 inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
+
+        {/* Animated Button */}
+        <motion.button
+          onClick={() => navigate("/services")}
+          className="relative px-6 py-3 text-white rounded-full shadow-lg pacifico-regular focus:outline-none focus:ring-4 focus:ring-green-300"
+          style={{
+            background: "linear-gradient(135deg, #6B8E23, #32CD32)",
+            boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+          }}
+          animate={{
+            y: [0, -5, 5, -5, 0], // Floating animation
+            transition: {
+              duration: 7,
+              repeat: Infinity,
+              ease: "easeInOut",
+            },
+          }}
+          whileHover={{ scale: 1.1, rotate: 5, boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)" }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Book Now
+        </motion.button>
       </div>
       <Footer />
     </div>
