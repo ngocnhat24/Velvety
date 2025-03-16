@@ -1,5 +1,7 @@
 const Feedback = require('../models/Feedback');
 const BookingRequest = require('../models/BookingRequest')
+const mongoose = require("mongoose");
+
 
 exports.createFeedback = async (req, res) => {
   try {
@@ -93,6 +95,31 @@ exports.getAverageConsultantRating = async (req, res) => {
     const result = await Feedback.aggregate([
       {
         $match: { consultantId: { $exists: true, $ne: null }, consultantRating: { $exists: true } }
+      },
+      {
+        $group: {
+          _id: "$consultantId",
+          averageRating: { $avg: "$consultantRating" },
+          totalReviews: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getAverageConsultantRatingById = async (req, res) => {
+  try {
+    const consultantId = req.params.id;
+    console.log("Consultant ID:", consultantId);
+
+    const objectId = new mongoose.Types.ObjectId(consultantId);
+    const result = await Feedback.aggregate([
+      {
+        $match: { consultantId: objectId, consultantRating: { $exists: true } }
       },
       {
         $group: {

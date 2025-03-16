@@ -9,12 +9,16 @@ const ConsultantSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
+  const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
   const [averageRating, setAverageRating] = useState("N/A");
 
   useEffect(() => {
-    axios.get("/api/feedbacks/consultant-rating")
+    axios.get(`/api/feedbacks/consultant-rating/${userId}`)
       .then(response => {
-        setAverageRating(response.data.averageRating?.toFixed(1) || "N/A"); 
+        setAverageRating(response.data[0].averageRating?.toFixed(1) || "N/A"); 
+        console.log("Average rating:", response.data);
+        
+
       })
       .catch(error => {
         console.error("Error fetching average rating:", error);
