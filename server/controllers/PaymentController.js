@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Function to create an embedded payment link
+// Function to create an embedded payment link
 const createEmbeddedPaymentLink = async (req, res) => {
     try {
         const { bookingId } = req.params;
@@ -105,20 +106,20 @@ const createEmbeddedPaymentLink = async (req, res) => {
 };
 
 
-
 const receivePayment = async (req, res) => {
     try {
-        let data = req.body; // Lấy dữ liệu webhook từ PayOS
+        let data = req.body;
 
         console.log('Webhook received:', data);
 
-        // Kiểm tra và xử lý orderCode
         if (data.data && data.data.orderCode) {
             const orderCode = data.data.orderCode;
             const order = await Order.findOne({ orderCode });
+
             if (data.data.orderCode == 123) {
                 return res.status(200).json({ error: 0, message: "Success" });
             }
+
             if (!order) {
                 console.log(`Order with orderCode ${orderCode} not found.`);
                 return res.status(404).json({ error: 1, message: "Order not found" });
@@ -130,8 +131,10 @@ const receivePayment = async (req, res) => {
                 order.paymentMethod = "PayOS";
                 order.paymentStatus = data.data.desc || "Payment Successful";
 
+                // Xử lý booking
                 if (order.bookingId) {
                     const bookingRequest = await BookingRequest.findById(order.bookingId);
+
                     if (bookingRequest) {
                         if (bookingRequest.status === "Completed") {
                             console.log(`You already paid for booking ${order.bookingId}`);
@@ -162,5 +165,6 @@ const receivePayment = async (req, res) => {
         return res.status(500).json({ error: 1, message: "Internal server error" });
     }
 };
+
 
 module.exports = { createEmbeddedPaymentLink, receivePayment };

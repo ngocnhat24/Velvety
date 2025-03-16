@@ -178,66 +178,76 @@ const ViewBooking = () => {
             </tr>
           </thead>
           <tbody>
-            {bookings.map((booking) => (
-              <tr key={booking._id} className="border">
-                <td className="border p-2 text-center">
-                  {booking.serviceID?.name || "Not Available"}
-                </td>
-                <td className="border p-2 text-center">
-                  {new Date(booking.date).toLocaleDateString()}
-                </td>
-                <td className="border p-2 text-center">{booking.time}</td>
-                <td
-                  className="border p-2 text-center cursor-pointer text-blue-500"
-                  onClick={() =>
-                    handleConsultantClick(
-                      booking.consultantID?._id,
-                      booking._id
-                    )
-                  }
-                >
-                  {booking.consultantID?.firstName || "Not Assigned"}
-                </td>
-                <td className="border p-2 text-center">
-                  <span
-                    className={`p-1 rounded ${
-                      booking.status === "Pending"
-                        ? "bg-yellow-200"
-                        : booking.status === "Confirmed"
-                        ? "bg-blue-200"
-                        : booking.status === "Completed"
-                        ? "bg-green-200"
-                        : "bg-red-200"
-                    }`}
-                  >
-                    {booking.status}
-                  </span>
-                </td>
-                <td className="border p-2 text-center">
-                  <select
-                    value={booking.status}
-                    onChange={(e) =>
-                      handleStatusUpdate(booking._id, e.target.value)
-                    }
-                    className="border p-1"
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </td>
-                <td className="border p-2 text-center">
-                  <button
-                    onClick={() => handlePaymentClick(booking._id)}
-                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
-                  >
-                    <MdPayment className="text-white-500 text-2xl" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {bookings.map((booking) => (
+    <tr key={booking._id} className="border">
+      <td className="border p-2 text-center">
+        {booking.serviceID?.name || "Not Available"}
+      </td>
+      <td className="border p-2 text-center">
+        {new Date(booking.date).toLocaleDateString()}
+      </td>
+      <td className="border p-2 text-center">{booking.time}</td>
+
+      {/* Thêm cột Tên Khách Hàng */}
+      <td className="border p-2 text-center">
+        {booking.customerID
+          ? `${booking.customerID.firstName} ${booking.customerID.lastName}`
+          : "Unknown"}
+      </td>
+
+      <td
+        className="border p-2 text-center cursor-pointer text-blue-500"
+        onClick={() =>
+          handleConsultantClick(
+            booking.consultantID?._id,
+            booking._id
+          )
+        }
+      >
+        {booking.consultantID?.firstName || "Not Assigned"}
+      </td>
+
+      <td className="border p-2 text-center">
+        <span
+          className={`p-1 rounded ${
+            booking.status === "Pending"
+              ? "bg-yellow-200"
+              : booking.status === "Confirmed"
+              ? "bg-blue-200"
+              : booking.status === "Completed"
+              ? "bg-green-200"
+              : "bg-red-200"
+          }`}
+        >
+          {booking.status}
+        </span>
+      </td>
+      <td className="border p-2 text-center">
+        <select
+          value={booking.status}
+          onChange={(e) =>
+            handleStatusUpdate(booking._id, e.target.value)
+          }
+          className="border p-1"
+        >
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </td>
+      <td className="border p-2 text-center">
+        <button
+          onClick={() => handlePaymentClick(booking._id)}
+          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+        >
+          <MdPayment className="text-white-500 text-2xl" />
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
 
         {/* Hiển thị chi tiết Consultant nếu đã có */}
