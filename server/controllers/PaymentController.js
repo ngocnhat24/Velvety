@@ -9,7 +9,7 @@ dotenv.config();
 // Function to create an embedded payment link
 const createEmbeddedPaymentLink = async (req, res) => {
     try {
-        const { bookingId } = req.params; // Get booking ID from the request parameters
+        const { bookingId } = req.params;
 
         const bookingRequest = await BookingRequest.findById(bookingId);
 
@@ -17,15 +17,17 @@ const createEmbeddedPaymentLink = async (req, res) => {
             return res.status(404).json({ error: 1, message: 'Booking request not found' });
         }
 
-        // Check if booking status is "Comfirmed"
-        if (bookingRequest.status !== "Comfirmed") {
-            return res.status(400).json({ error: 1, message: 'Booking request is not Comfirmed yet' });
+        if (bookingRequest.status === "Completed") {
+            return res.status(400).json({ error: 1, message: 'You already paid' });
+        }
+
+        if (bookingRequest.status !== "Confirmed") {
+            return res.status(400).json({ error: 1, message: 'Booking request is not Confirmed yet' });
         }
 
         const userId = bookingRequest.customerID;
         const serviceId = bookingRequest.serviceID;
 
-        // Fetch user and service data
         const user = await User.findById(userId);
         const service = await Service.findById(serviceId);
 
@@ -39,7 +41,6 @@ const createEmbeddedPaymentLink = async (req, res) => {
 
         const transactionDateTime = new Date();
 
-        // Generate a unique order code
         let orderCode;
         while (true) {
             orderCode = Number(Date.now().toString().slice(-8) + Math.floor(Math.random() * 100).toString().padStart(2, '0'));
@@ -47,10 +48,11 @@ const createEmbeddedPaymentLink = async (req, res) => {
             if (!existingOrder) break;
         }
 
-        // Create a new order in the database
+        // Thêm bookingId vào order để liên kết
         const newOrder = new Order({
             memberId: userId,
             serviceId: serviceId,
+            bookingId: bookingId,
             status: "Pending",
             amount: service.price,
             orderCode,
@@ -62,46 +64,35 @@ const createEmbeddedPaymentLink = async (req, res) => {
         });
         await newOrder.save();
 
-        // Payment link parameters
         const amount = service.price;
         const description = "Service Payment";
         const items = [{ name: service.name, quantity: 1, price: service.price }];
         const returnUrl = process.env.RETURN_URL || "http://localhost:5173/pay-success";
         const cancelUrl = process.env.CANCEL_URL || "http://localhost:5173/pay-failed";
 
-        try {
-            const paymentLinkRes = await PayOS.createPaymentLink({
-                orderCode,
-                amount,
-                description,
-                items,
-                returnUrl,
-                cancelUrl,
-            });
+        const paymentLinkRes = await PayOS.createPaymentLink({
+            orderCode,
+            amount,
+            description,
+            items,
+            returnUrl,
+            cancelUrl,
+        });
 
-            return res.json({
-                error: 0,
-                message: "Success",
-                data: {
-                    bin: paymentLinkRes.bin,
-                    checkoutUrl: paymentLinkRes.checkoutUrl,
-                    accountNumber: paymentLinkRes.accountNumber,
-                    accountName: paymentLinkRes.accountName,
-                    amount: paymentLinkRes.amount,
-                    description: paymentLinkRes.description,
-                    orderCode: paymentLinkRes.orderCode,
-                    qrCode: paymentLinkRes.qrCode,
-                },
-            });
-
-        } catch (error) {
-            console.log(error);
-            return res.json({
-                error: -1,
-                message: "Failed to create payment link",
-                data: null,
-            });
-        }
+        return res.json({
+            error: 0,
+            message: "Success",
+            data: {
+                bin: paymentLinkRes.bin,
+                checkoutUrl: paymentLinkRes.checkoutUrl,
+                accountNumber: paymentLinkRes.accountNumber,
+                accountName: paymentLinkRes.accountName,
+                amount: paymentLinkRes.amount,
+                description: paymentLinkRes.description,
+                orderCode: paymentLinkRes.orderCode,
+                qrCode: paymentLinkRes.qrCode,
+            },
+        });
 
     } catch (error) {
         console.log(error);
@@ -115,60 +106,54 @@ const createEmbeddedPaymentLink = async (req, res) => {
 
 
 
-// Function to handle payment status (webhook)
 const receivePayment = async (req, res) => {
     try {
-        let data = req.body; // Get data from the webhook
-
-        if (data.data.orderCode == 123) {
-            return res.status(200).json({ error: 0, message: "Success" });
-        }
+        let data = req.body; // Lấy dữ liệu webhook từ PayOS
 
         console.log('Webhook received:', data);
 
+        // Kiểm tra và xử lý orderCode
         if (data.data && data.data.orderCode) {
             const orderCode = data.data.orderCode;
-
             const order = await Order.findOne({ orderCode });
 
-        if (!order) {
-            console.log(`Order with orderCode ${orderCode} not found.`);
-            return res.status(404).json({ error: 1, message: "Order not found" });
-        }
+            if (!order) {
+                console.log(`Order with orderCode ${orderCode} not found.`);
+                return res.status(404).json({ error: 1, message: "Order not found" });
+            }
 
-        // Update order status based on payment success/failure
-        if (data.success) {
-            order.status = "Paid";
-            order.currency = data.data.currency;
-            order.paymentMethod = "PayOS";
-            order.paymentStatus = data.data.desc || "Payment Successful";
-        
-            // Sau khi thanh toán thành công, cập nhật booking
-            if (order.bookingId) {
-                const bookingRequest = await BookingRequest.findById(order.bookingId);
-                if (bookingRequest) {
-                    if (bookingRequest.status === "Confirmed") {
-                        bookingRequest.status = "Completed";
-                        await bookingRequest.save();
-                        console.log(`Booking ${order.bookingId} updated to Completed.`);
-                    } else {
-                        console.log(`Booking ${order.bookingId} not updated. Current status: ${bookingRequest.status}`);
+            if (data.success) {
+                order.status = "Paid";
+                order.currency = data.data.currency;
+                order.paymentMethod = "PayOS";
+                order.paymentStatus = data.data.desc || "Payment Successful";
+
+                if (order.bookingId) {
+                    const bookingRequest = await BookingRequest.findById(order.bookingId);
+                    if (bookingRequest) {
+                        if (bookingRequest.status === "Completed") {
+                            console.log(`You already paid for booking ${order.bookingId}`);
+                        } else if (bookingRequest.status === "Confirmed") {
+                            bookingRequest.status = "Completed";
+                            await bookingRequest.save();
+                            console.log(`Booking ${order.bookingId} updated to Completed.`);
+                        } else {
+                            console.log(`Booking ${order.bookingId} has status ${bookingRequest.status}, skipping update.`);
+                        }
                     }
                 }
+
+                console.log(`Order ${orderCode} updated to Paid.`);
+            } else {
+                order.status = "Canceled";
+                order.paymentStatus = data.data.desc || "Payment Failed";
+                console.log(`Order ${orderCode} updated to Canceled.`);
             }
-        
-            console.log(`Order ${orderCode} updated to Paid.`);
-        } else {
-            order.status = "Canceled";
-            order.paymentStatus = data.data.desc || "Payment Failed";
-            console.log(`Order ${orderCode} updated to Canceled.`);
-        }
-        
 
-        await order.save(); // Save the updated order status
-
-        return res.status(200).json({ error: 0, message: "Order updated successfully", order });
+            await order.save();
+            return res.status(200).json({ error: 0, message: "Order updated successfully", order });
         }
+
         return res.status(400).json({ error: 1, message: "Invalid payment data" });
     } catch (error) {
         console.error("Error processing webhook:", error);

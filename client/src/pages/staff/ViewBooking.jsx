@@ -258,31 +258,51 @@ const ViewBooking = () => {
           </div>
         )}
 
-        {availableConsultants.length > 0 && (
+     {/* Modal for Assigning Consultant */}
+     {currentBooking && availableConsultants.length > 0 && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Select a Consultant</h3>
-              
-              {availableConsultants.map((consultant) => (
+              <div className="flex justify-between items-center border-b pb-3">
+                <h3 className="text-xl font-semibold text-gray-800">
+                  Assign a Consultant
+                </h3>
                 <button
-                  key={consultant._id}
-                  className="w-full text-left p-2 border-b hover:bg-gray-100"
-                  onClick={() => assignConsultant(currentBooking, consultant._id)}
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={() => setAvailableConsultants([])}
                 >
-                  {consultant.firstName} {consultant.lastName}
+                  ✕
                 </button>
-              ))}
-        
-              <button
-                className="mt-4 w-full bg-gray-300 p-2 rounded text-center"
-                onClick={() => setAvailableConsultants([])}
-              >
-                Cancel
-              </button>
+              </div>
+
+              <div className="mt-4">
+                {availableConsultants.map((consultant) => (
+                  <div
+                    key={consultant._id}
+                    className="flex justify-between items-center border-b py-2"
+                  >
+                    <div>
+                      <p className="text-gray-800 font-medium">
+                        {consultant.firstName} {consultant.lastName}
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        {consultant.email}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() =>
+                        assignConsultant(currentBooking, consultant._id)
+                      }
+                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700"
+                    >
+                      Assign
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
-      </div>
+    </div>
     </div>
   );
 };
