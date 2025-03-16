@@ -5,9 +5,10 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ServiceCard from "../../components/ServiceCard";
 
-
 export default function ServiceGuest() {
   const [services, setServices] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const servicesPerPage = 8;
   const navigate = useNavigate();
   const chooseServiceRef = useRef(null);
 
@@ -33,19 +34,20 @@ export default function ServiceGuest() {
     if (chooseServiceRef.current) {
       chooseServiceRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
       setTimeout(() => {
-        window.scrollBy({ top: 1200, behavior: "smooth" }); // Tăng giá trị 'top' để cuộn xuống nhiều hơn
+        window.scrollBy({ top: 1050, behavior: "smooth" }); // Tăng giá trị 'top' để cuộn xuống nhiều hơn
       }, 180); // Trì hoãn một chút để tránh nhảy cuộn
     }
-  }, []);
-
-  // Scroll to top on mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
   }, []);
 
   const handleChoose = (serviceId) => {
     navigate(`/services/${serviceId}`);
   };
+
+  const indexOfLastService = currentPage * servicesPerPage;
+  const indexOfFirstService = indexOfLastService - servicesPerPage;
+  const currentServices = services.slice(indexOfFirstService, indexOfLastService);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="main-container w-full h-auto bg-[#f9faef] relative overflow-hidden mx-auto my-0 -smooth ">
@@ -99,7 +101,7 @@ export default function ServiceGuest() {
       {/* Service cards section */}
       <div className="w-full px-4 flex justify-center ">
         <div className="w-full max-w-[1200px] px-4 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-[60px] gap-y-[20px] mt-4 mb-[40px] mx-auto place-items-center">
-          {services.map((service) => (
+          {currentServices.map((service) => (
             <ServiceCard
               key={service._id}
               image={service.image}
@@ -112,6 +114,17 @@ export default function ServiceGuest() {
         </div>
       </div>
 
+      <div className="flex justify-center mt-5 mb-10">
+        {Array.from({ length: Math.ceil(services.length / servicesPerPage) }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => paginate(index + 1)}
+            className={`mx-1 px-3 py-1 rounded-full ${currentPage === index + 1 ? 'bg-[#C54759] text-white' : 'bg-gray-200 text-gray-700'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
       {/* Footer */}
       <Footer />
     </div>
