@@ -71,9 +71,11 @@ exports.getAllFeedback = async (req, res) => {
 exports.getAverageServiceRating = async (req, res) => {
   try {
     const serviceId = req.params.serviceId;
+    const objectId = new mongoose.Types.ObjectId(serviceId);
+
     const result = await Feedback.aggregate([
       {
-        $match: { serviceId: serviceId, serviceRating: { $exists: true } }
+        $match: { serviceId: objectId, serviceRating: { $exists: true } }
       },
       {
         $group: {
