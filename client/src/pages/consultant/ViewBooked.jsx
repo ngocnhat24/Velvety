@@ -21,7 +21,7 @@ const ViewBooked = () => {
             if (booking.serviceID._id) {
               try {
                 const feedbackRes = await axios.get(`/api/feedbacks/service/${booking.serviceID._id}`);                
-                return { ...booking, feedback: feedbackRes.data[0].serviceComment || "No feedback yet", rating: feedbackRes.data[0].consultantRating || "N/A" };
+                return { ...booking, feedback: feedbackRes.data[0].consultantComment || "No feedback yet", rating: feedbackRes.data[0].consultantRating || "N/A" };
               } catch {
                 return { ...booking, feedback: "No feedback yet ", rating: "N/A" }; 
               }
@@ -116,7 +116,13 @@ const handleSort = (column) => {
                     <td className="border px-4 py-2">{booking.time || "N/A"}</td>
                     <td className="border px-4 py-2">{booking.status || "N/A"}</td>
                     <td className="border px-4 py-2">{booking.feedback || "N/A"}</td>
-                    <td className="border px-4 py-2">{booking.rating || "N/A"}</td>
+                    <td className="border px-4 py-2">
+                       {booking.rating && booking.rating !== "N/A" 
+                       ? "⭐".repeat(Math.round(booking.rating)) 
+                        : "N/A"
+  }
+</td>
+
                   </tr>
                 ))}
               </tbody>

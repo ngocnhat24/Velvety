@@ -12,6 +12,7 @@ export default function ServiceDetails() {
   const navigate = useNavigate();
   const [service, setService] = useState(null);
   const [comments, setComments] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
   const [error, setError] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showImagePopup, setShowImagePopup] = useState(false);
@@ -24,6 +25,8 @@ export default function ServiceDetails() {
       .get(`/api/services/${id}`)
       .then((response) => {
         setService(response.data);
+
+        
         setGalleryImages([
           response.data.image,
           response.data.effectimage,
@@ -46,18 +49,12 @@ export default function ServiceDetails() {
       });
 
       axios
-        .get(`/api/feedbacks/service-rating`)
-        .then((response) => {
-          const serviceRatingData = response.data.find(item => item._id === id);
-          if (serviceRatingData) {
-            setAverageRating(serviceRatingData.averageRating);
-          } else {
-            setAverageRating(null);
-          }
-        })
+        .get(`/api/feedbacks/service-rating/67b1d1122471c950ede13673`)
+        .then((response) => setAverageRating(response.data[0].averageRating))
         .catch((error) => {
           console.error("Error fetching service rating:", error);
         });
+        
   }, [id]);
   
   
@@ -113,8 +110,12 @@ export default function ServiceDetails() {
               className="text-gray-600 mt-6 leading-relaxed border-t-2 border-gray-200 pt-6"
               dangerouslySetInnerHTML={{ __html: service.detaildescription }}
             />
-          {/* Hiển thị avg sao rating của ServiceId tương ứng bằng filterr */}
-          
+          {/* Hiển thị avg sao rating của ServiceId tương ứng bằng filter */}
+          <div className="flex text-yellow-500 text-lg mt-4">
+            {Array.from({ length: Math.max(0, Math.min(averageRating, 5)) }).map((_, i) => (
+              <span key={i}>⭐</span>
+            ))}
+          </div>
           </div>
         </div>
 
@@ -134,7 +135,6 @@ export default function ServiceDetails() {
 
         <div className="mt-6 space-y-6">
         {comments.slice(0, visibleCount).map((comment, index) => {
-  console.log("Comment:", comment);
 
   // Kiểm tra nếu có bookingRequestId và customerID
   const customer = comment.bookingRequestId?.customerID;

@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 export default function ConsultantGuest() {
   const navigate = useNavigate();
   const [selectedConsultant, setSelectedConsultant] = useState(null);
+  const [selectedConsultantRating, setSelectedConsultantRating] = useState(0);
   const [consultants, setConsultants] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState(""); // Add search term state
@@ -33,12 +34,16 @@ export default function ConsultantGuest() {
     }
   };
 
-  const handleViewMore = (consultant) => {
+  const handleViewMore = async (consultant) => {
     setSelectedConsultant(consultant);
+    await axios.get(`/api/feedbacks/consultant-rating/${consultant._id}`).then((res) => {
+      setSelectedConsultantRating(res.data[0].averageRating);
+    })
   };
 
   const closePanel = () => {
     setSelectedConsultant(null);
+    setSelectedConsultantRating(0);
   };
 
   const indexOfLastConsultant = currentPage * consultantsPerPage;
@@ -166,6 +171,12 @@ export default function ConsultantGuest() {
                 {selectedConsultant.firstName} {selectedConsultant.lastName}
               </h2>
               <p className="text-sm text-gray-600 mt-2">{selectedConsultant.note}</p>
+              <div className="mt-2">
+                <span className="text-sm text-gray-600">Average Rating:</span>
+                <span className="text-sm text-[#C54759] font-semibold ml-1">
+                  {selectedConsultantRating.toFixed(2)}
+                </span>
+              </div>
             </div>
           </motion.div>
         </div>
