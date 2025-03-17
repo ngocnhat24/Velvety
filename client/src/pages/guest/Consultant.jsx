@@ -11,6 +11,7 @@ export default function ConsultantGuest() {
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [consultants, setConsultants] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(""); // Add search term state
   const consultantsPerPage = 6;
 
   useEffect(() => {
@@ -42,7 +43,11 @@ export default function ConsultantGuest() {
 
   const indexOfLastConsultant = currentPage * consultantsPerPage;
   const indexOfFirstConsultant = indexOfLastConsultant - consultantsPerPage;
-  const currentConsultants = consultants.slice(indexOfFirstConsultant, indexOfLastConsultant);
+  const currentConsultants = consultants
+    .filter((consultant) =>
+      `${consultant.firstName} ${consultant.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(indexOfFirstConsultant, indexOfLastConsultant);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -62,6 +67,17 @@ export default function ConsultantGuest() {
           bout Our Consultants
         </span>
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
+      </div>
+
+      {/* Search bar */}
+      <div className="w-full max-w-[1800px] h-auto relative z-10 mt-[20px] mb-[10px] mx-auto flex justify-end px-4">
+        <input
+          type="text"
+          placeholder="Search your consultants"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full max-w-[300px] px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C54759] focus:border-transparent border-[#C54759] rounded-lg"
+        />
       </div>
 
       <div className="w-full max-w-[800px] mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 px-4 mt-10">
