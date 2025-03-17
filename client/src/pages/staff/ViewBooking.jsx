@@ -3,6 +3,10 @@ import axios from "../../utils/axiosInstance";
 import StaffSidebar from "../../components/StaffSidebar";
 import { toast, ToastContainer } from "react-toastify";
 import { MdPayment } from "react-icons/md";
+import { Pagination } from "@mui/material"; // Import Pagination component
+
+const ITEMS_PER_PAGE = 10; // Number of bookings per page
+
 const ViewBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,13 +14,14 @@ const ViewBooking = () => {
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [availableConsultants, setAvailableConsultants] = useState([]);
   const [currentBooking, setCurrentBooking] = useState(null); // booking hiện tại khi chưa có consultant
+  const [currentPage, setCurrentPage] = useState(1); // Add state for current page
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         const response = await axios.get("/api/booking-requests");
         const bookingsData = response.data;
-  
+
         // Map qua và fetch từng user
         const bookingsWithCustomer = await Promise.all(
           bookingsData.map(async (booking) => {
@@ -27,7 +32,7 @@ const ViewBooking = () => {
             };
           })
         );
-  
+
         setBookings(bookingsWithCustomer);
       } catch (err) {
         console.error(
@@ -39,7 +44,7 @@ const ViewBooking = () => {
         setLoading(false);
       }
     };
-  
+
     fetchBookings();
   }, []);
 
@@ -156,6 +161,15 @@ const ViewBooking = () => {
     }
   };
 
+  const sortedBookings = bookings.sort((a, b) => {
+    if (a.status === "Pending" && b.status !== "Pending") return -1;
+    if (a.status !== "Pending" && b.status === "Pending") return 1;
+    return new Date(b.createdAt) - new Date(a.createdAt); // Sort by creation date, newest first
+  });
+
+  const totalPages = Math.ceil(sortedBookings.length / ITEMS_PER_PAGE); // Calculate total pages
+  const currentBookings = sortedBookings.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Get bookings for current page
+
   return (
     <div className="flex">
       <StaffSidebar />
@@ -167,7 +181,7 @@ const ViewBooking = () => {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-200">
-            <th className="border p-2 text-center">Customer Name</th>
+              <th className="border p-2 text-center">Customer Name</th>
               <th className="border p-2 text-center">Service Name</th>
               <th className="border p-2 text-center">Date</th>
               <th className="border p-2 text-center">Time</th>
@@ -178,77 +192,85 @@ const ViewBooking = () => {
             </tr>
           </thead>
           <tbody>
-  {bookings.map((booking) => (
-    <tr key={booking._id} className="border">
-      <td className="border p-2 text-center">
-        {booking.serviceID?.name || "Not Available"}
-      </td>
-      <td className="border p-2 text-center">
-        {new Date(booking.date).toLocaleDateString()}
-      </td>
-      <td className="border p-2 text-center">{booking.time}</td>
+            {currentBookings.map((booking) => (
+              <tr key={booking._id} className="border">
+                {/* Thêm cột Tên Khách Hàng */}
+                <td className="border p-2 text-center">
+                  {booking.customerInfo
+                    ? `${booking.customerInfo.firstName} ${booking.customerInfo.lastName}`
+                    : "Unknown"}
+                </td>
+                <td className="border p-2 text-center">
+                  {booking.serviceID?.name || "Not Available"}
+                </td>
 
-      {/* Thêm cột Tên Khách Hàng */}
-      <td className="border p-2 text-center">
-        {booking.customerID
-          ? `${booking.customerID.firstName} ${booking.customerID.lastName}`
-          : "Unknown"}
-      </td>
+                <td className="border p-2 text-center">
+                  {new Date(booking.date).toLocaleDateString()}
+                </td>
+                <td className="border p-2 text-center">{booking.time}</td>
 
-      <td
-        className="border p-2 text-center cursor-pointer text-blue-500"
-        onClick={() =>
-          handleConsultantClick(
-            booking.consultantID?._id,
-            booking._id
-          )
-        }
-      >
-        {booking.consultantID?.firstName || "Not Assigned"}
-      </td>
+                <td
+                  className="border p-2 text-center cursor-pointer text-blue-500"
+                  onClick={() =>
+                    handleConsultantClick(
+                      booking.consultantID?._id,
+                      booking._id
+                    )
+                  }
+                >
+                  {booking.consultantID?.firstName || "Not Assigned"}
+                </td>
 
-      <td className="border p-2 text-center">
-        <span
-          className={`p-1 rounded ${
-            booking.status === "Pending"
-              ? "bg-yellow-200"
-              : booking.status === "Confirmed"
-              ? "bg-blue-200"
-              : booking.status === "Completed"
-              ? "bg-green-200"
-              : "bg-red-200"
-          }`}
-        >
-          {booking.status}
-        </span>
-      </td>
-      <td className="border p-2 text-center">
-        <select
-          value={booking.status}
-          onChange={(e) =>
-            handleStatusUpdate(booking._id, e.target.value)
-          }
-          className="border p-1"
-        >
-          <option value="Pending">Pending</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
-      </td>
-      <td className="border p-2 text-center">
-        <button
-          onClick={() => handlePaymentClick(booking._id)}
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
-        >
-          <MdPayment className="text-white-500 text-2xl" />
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
+                <td className="border p-2 text-center">
+                  <span
+                    className={`p-1 rounded ${booking.status === "Pending"
+                      ? "bg-yellow-200"
+                      : booking.status === "Confirmed"
+                        ? "bg-blue-200"
+                        : booking.status === "Completed"
+                          ? "bg-green-200"
+                          : "bg-red-200"
+                      }`}
+                  >
+                    {booking.status}
+                  </span>
+                </td>
+                <td className="border p-2 text-center">
+                  <select
+                    value={booking.status}
+                    onChange={(e) =>
+                      handleStatusUpdate(booking._id, e.target.value)
+                    }
+                    className="border p-1"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </td>
+                <td className="border p-2 text-center">
+                  <button
+                    onClick={() => handlePaymentClick(booking._id)}
+                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+                  >
+                    <MdPayment className="text-white-500 text-2xl" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
 
         </table>
+
+        <div className="flex justify-center mt-4">
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={(event, value) => setCurrentPage(value)}
+            color="primary"
+          />
+        </div>
 
         {/* Hiển thị chi tiết Consultant nếu đã có */}
         {selectedConsultant && (
@@ -300,11 +322,10 @@ const ViewBooking = () => {
                 <div className="flex justify-between">
                   <span className="font-medium text-gray-600">Verified:</span>
                   <span
-                    className={`font-semibold ${
-                      selectedConsultant.verified
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
+                    className={`font-semibold ${selectedConsultant.verified
+                      ? "text-green-600"
+                      : "text-red-600"
+                      }`}
                   >
                     {selectedConsultant.verified ? "Yes" : "No"}
                   </span>
@@ -317,8 +338,8 @@ const ViewBooking = () => {
         )}
 
 
-     {/* Modal for Assigning Consultant */}
-     {currentBooking && availableConsultants.length > 0 && (
+        {/* Modal for Assigning Consultant */}
+        {currentBooking && availableConsultants.length > 0 && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
               <div className="flex justify-between items-center border-b pb-3">
@@ -361,7 +382,7 @@ const ViewBooking = () => {
             </div>
           </div>
         )}
-    </div>
+      </div>
     </div>
   );
 };
