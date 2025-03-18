@@ -5,6 +5,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const SkincareBooking = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -18,6 +19,7 @@ const SkincareBooking = () => {
     const id = localStorage.getItem("consultantId");
     const serviceId = localStorage.getItem("serviceId");
     const [serviceName, setServiceName] = useState("");
+    const navigate = useNavigate();  // Get the navigation function
 
 
 
@@ -121,25 +123,50 @@ const SkincareBooking = () => {
     };
 
     const handleConfirm = async () => {
-        await createBookingRequest(); // Gửi API sau khi người dùng bấm Confirm
-        setShowConfirmModal(false); // Đóng popup sau khi gửi thành công
-
-        const successMessage = document.createElement("div");
-        successMessage.innerText = `Successfully booked for ${selectedDate.toDateString()} at ${selectedTime}`;
-        successMessage.style.position = "fixed";
-        successMessage.style.top = "10%";
-        successMessage.style.left = "50%";
-        successMessage.style.transform = "translate(-50%, -10%)";
-        successMessage.style.backgroundColor = "#4CAF50";
-        successMessage.style.color = "white";
-        successMessage.style.padding = "10px";
-        successMessage.style.borderRadius = "5px";
-        successMessage.style.zIndex = "1000";
-        successMessage.style.fontSize = "14px";
-        document.body.appendChild(successMessage);
-
-        window.location.href = "/about"; // Chuyển trang sau khi booking
+        try {
+            console.log("🔄 Sending booking request...");
+            const response = await createBookingRequest();
+            
+            if (response && response.status === 201) {
+                console.log("✅ Booking successful! Preparing redirection...");
+                setShowConfirmModal(false);
+    
+                // Display success message
+                const successMessage = document.createElement("div");
+                successMessage.innerText = `Successfully booked for ${selectedDate.toDateString()} at ${selectedTime}`;
+                successMessage.style.position = "fixed";
+                successMessage.style.top = "10%";
+                successMessage.style.left = "50%";
+                successMessage.style.transform = "translate(-50%, -10%)";
+                successMessage.style.backgroundColor = "#4CAF50";
+                successMessage.style.color = "white";
+                successMessage.style.padding = "10px";
+                successMessage.style.borderRadius = "5px";
+                successMessage.style.zIndex = "1000";
+                successMessage.style.fontSize = "14px";
+                document.body.appendChild(successMessage);
+    
+                console.log("⏳ Redirecting in 2 seconds...");
+    
+                setTimeout(() => {
+                    console.log("🚀 Redirecting to /about now!");
+                    window.location.href = "/about"; // Direct page reload
+                }, 2000);
+            } else {
+                console.log("❌ Booking request did not return expected status:", response);
+            }
+        } catch (error) {
+            console.error("❌ Error creating booking request:", error);
+            if (error.response) {
+                console.error("⚠️ Backend response error:", error.response.data);
+                toast.error(`Failed to create booking: ${error.response.data.message || "Unknown error"}`);
+            } else {
+                toast.error("Failed to create booking request. Please try again.");
+            }
+        }
     };
+    
+    
 
 
     const handleCancel = () => {
@@ -169,10 +196,11 @@ const SkincareBooking = () => {
     const createBookingRequest = async () => {
         if (!serviceId || !selectedTime || !selectedDate) {
             toast.error("Please select a service, date, and time.");
-            return;
+            return null; // Return null explicitly to avoid undefined issues
         }
+    
         const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-
+    
         try {
             const payload = {
                 serviceID: serviceId,
@@ -183,16 +211,24 @@ const SkincareBooking = () => {
                 status: "Pending",
                 isConsultantAssignedByCustomer: !!id,
             };
-
+    
+            console.log("📤 Sending request with payload:", payload);
             const response = await axios.post("/api/booking-requests/", payload);
-
+    
+            console.log("📥 API Response:", response);
+    
             if (response.status === 201) {
                 toast.success("Booking request created successfully!");
-                // Chỉ ẩn popup sau khi người dùng bấm Cancel hoặc hết thời gian chờ
+                return response; // ✅ Ensure response is returned
+            } else {
+                console.error("❌ Unexpected response status:", response.status);
+                return null;
             }
         } catch (error) {
-            console.error("Error creating booking request:", error);
-            toast.error("Failed to create booking request.");
+            console.error("❌ Error creating booking request:", error);
+    
+            toast.error("This consultant is already booked at the selected date and time.");
+            return null; // Return null in case of error
         }
     };
 
@@ -265,8 +301,8 @@ const SkincareBooking = () => {
                                 <p className="text-gray-700 mb-4"><strong className="text-[#C54759]">Consultant:</strong> {consultants.firstName} {consultants.lastName}</p>
                             )}
                             <div className="flex justify-end gap-4 mt-6">
-                                <button className="bg-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300 rounded-xl" onClick={handleConfirm}>Confirm</button>
-                                <button className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 rounded-xl" onClick={() => setShowConfirmModal(false)}>Cancel</button>
+                                <button className="bg-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300" onClick={handleConfirm}>Confirm</button>
+                                <button className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300" onClick={() => setShowConfirmModal(false)}>Cancel</button>
                             </div>
                         </div>
                     </div>

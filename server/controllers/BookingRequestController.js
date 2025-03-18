@@ -3,19 +3,43 @@ const Consultant = require("../models/Consultant");
 const mongoose = require('mongoose');
 
 exports.createBookingRequest = async (req, res) => {
-  const { serviceID, customerID, date, time, consultantID } = req.body;
-
-  if (!serviceID || !customerID || !date || !time) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-
   try {
+    const { serviceID, customerID, date, time, consultantID } = req.body;
+
+    // Validate required fields
+    if (!serviceID || !customerID || !date || !time) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Convert date to ISO format (YYYY-MM-DD) to avoid time zone issues
+    const bookingDate = new Date(date);
+    if (isNaN(bookingDate.getTime())) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    console.log("Checking for existing bookings:", { date: bookingDate, time, consultantID });
+
+    // Check if the consultant is already booked at the same date and time
+    if (consultantID) {
+      const existingBooking = await BookingRequest.findOne({ 
+        date: new Date(date), // Convert input date to a Date object
+        time, 
+        consultantID 
+      });
+
+      if (existingBooking) {
+        console.log("Conflict found:", existingBooking);
+        return res.status(400).json({ message: "This consultant is already booked at the selected date and time." });
+      }
+    }
+
+    // Create new booking request
     const newBooking = new BookingRequest({
       serviceID,
       customerID,
-      date,
+      date: bookingDate.toISOString().split("T")[0], // Ensures consistent date format
       time,
-      consultantID,
+      consultantID: consultantID || null, 
       status: req.body.status || "Pending",
       isConsultantAssignedByCustomer: req.body.isConsultantAssignedByCustomer || false,
     });
@@ -23,7 +47,13 @@ exports.createBookingRequest = async (req, res) => {
     const bookingRequest = await newBooking.save();
     res.status(201).json(bookingRequest);
   } catch (error) {
-    console.error(error);
+    console.error("Error creating booking request:", error);
+
+    // Handle duplicate key error from MongoDB
+    if (error.code === 11000) {
+      return res.status(400).json({ error: "This consultant is already booked at the selected date and time." });
+    }
+
     res.status(500).json({ error: "Failed to create booking request" });
   }
 };
