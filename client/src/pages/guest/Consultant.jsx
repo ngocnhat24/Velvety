@@ -5,7 +5,7 @@ import Footer from "../../components/Footer";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 export default function ConsultantGuest() {
   const navigate = useNavigate();
   const [selectedConsultant, setSelectedConsultant] = useState(null);
@@ -172,10 +172,19 @@ export default function ConsultantGuest() {
               </h2>
               <p className="text-sm text-gray-600 mt-2">{selectedConsultant.note}</p>
               <div className="mt-2">
-                <span className="text-sm text-gray-600">Average Rating:</span>
-                <span className="text-sm text-[#C54759] font-semibold ml-1">
-                  {selectedConsultantRating.toFixed(2)}
-                </span>
+              <span className="text-sm text-gray-600">Average Rating:</span>
+<span className="flex items-center ml-1">
+  {Array.from({ length: 5 }, (_, index) => {
+    const starValue = index + 1;
+    if (selectedConsultantRating >= starValue) {
+      return <FaStar key={index} className="text-[#C54759] w-4 h-4" />;
+    } else if (selectedConsultantRating >= starValue - 0.5) {
+      return <FaStarHalfAlt key={index} className="text-[#C54759] w-4 h-4" />;
+    } else {
+      return <FaRegStar key={index} className="text-[#C54759] w-4 h-4" />;
+    }
+  })}
+</span>
               </div>
             </div>
           </motion.div>

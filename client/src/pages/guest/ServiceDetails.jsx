@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
 export default function ServiceDetails() {
   const { id } = useParams();
@@ -111,11 +111,21 @@ export default function ServiceDetails() {
               dangerouslySetInnerHTML={{ __html: service.detaildescription }}
             />
           {/* Hiển thị avg sao rating của ServiceId tương ứng bằng filter */}
-          <div className="flex text-yellow-500 text-lg mt-4">
-            {Array.from({ length: Math.max(0, Math.min(averageRating, 5)) }).map((_, i) => (
-              <span key={i}>⭐</span>
-            ))}
-          </div>
+         
+
+<div className="flex text-yellow-500 text-lg mt-4">
+  {Array.from({ length: 5 }, (_, i) => {
+    const starValue = i + 1;
+    if (averageRating >= starValue) {
+      return <FaStar key={i} />;
+    } else if (averageRating >= starValue - 0.5) {
+      return <FaStarHalfAlt key={i} />;
+    } else {
+      return <FaRegStar key={i} />;
+    }
+  })}
+</div>
+
           </div>
         </div>
 
