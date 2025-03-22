@@ -428,3 +428,23 @@ exports.assignConsultant = async (req, res) => {
     res.status(500).json({ message: "Error assigning consultant", error });
   }
 };
+
+exports.getPendingBookingsForConsultant = async (req, res) => {
+  try {
+    const { consultantId } = req.params; // Extract consultant ID from URL params
+    
+    if (!consultantId) {
+        return res.status(400).json({ error: "Consultant ID is required" });
+    }
+
+    const pendingBookings = await BookingRequest.find({
+        consultantID: consultantId,
+        status: "Pending",
+    }); // Populate related data if needed
+
+    res.json(pendingBookings);
+} catch (error) {
+    console.error("Error fetching pending bookings:", error);
+    res.status(500).json({ error: "Failed to fetch pending bookings" });
+}
+};

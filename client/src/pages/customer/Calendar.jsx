@@ -18,12 +18,15 @@ const SkincareBooking = () => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const id = localStorage.getItem("consultantId");
     const serviceId = localStorage.getItem("serviceId");
+    const [bookedSlots, setBookedSlots] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const navigate = useNavigate();  // Get the navigation function
-
-
-
-
+    
+    useEffect(() => {
+        if (id && id !== "null") {
+            setSelectedConsultant(id);
+        }
+    }, [id]);
 
     const times = [
         "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -65,24 +68,22 @@ const SkincareBooking = () => {
 
 
     useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const response = await axios.get("/api/calendars/events", {
-                    params: {
-                        service: selectedService,
-                        consultant: selectedConsultant
-                    }
-                });
-                setEvents(response.data);
-            } catch (error) {
-                console.error("Error fetching events:", error);
-            }
-        };
-
-        if (selectedService && selectedConsultant) {
-            fetchEvents();
+        if (selectedConsultant && selectedDate) {
+            axios.get(`/api/booking-requests/${selectedConsultant}/pending-bookings`)
+                .then(response => {
+                    const pendingBookings = response.data;
+    
+                    // Extract booked time slots for the selected date
+                    const bookedTimes = pendingBookings
+                        .filter(booking => new Date(booking.date).toDateString() === new Date(selectedDate).toDateString())
+                        .map(booking => booking.time.trim()); // Ensure time format consistency
+    
+                    setBookedSlots(bookedTimes);
+                })
+                .catch(error => console.error("Error fetching booked slots:", error));
         }
-    }, [selectedService, selectedConsultant]);
+    }, [selectedConsultant, selectedDate]); 
+
 
     useEffect(() => {
         const updateAvailableTimes = () => {
@@ -174,22 +175,37 @@ const SkincareBooking = () => {
         window.location.href = "/consultant-customer"; // Chuyển về trang consultant khi bấm Cancel
     };
 
-    const isTimeDisabled = (time) => {
-        const now = new Date();
-        const selectedDay = new Date(selectedDate);
-        const currentTime = now.getHours() * 60 + now.getMinutes();
-        const [hour, minute] = time.split(/[: ]/);
-        const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
+   const isTimeDisabled = (time) => {
+    const now = new Date();
+    const selectedDay = new Date(selectedDate);
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const [hour, minute] = time.split(/[: ]/);
+    const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
 
-        return selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime;
-    };
+    // Disable past slots for today
+    if (selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime) {
+        return true;
+    }
 
-    const tileDisabled = ({ date, view }) => {
-        if (view === 'month') {
-            return date < new Date().setHours(0, 0, 0, 0);
+    // Disable already booked slots
+    return bookedSlots.includes(time.trim()); // Ensure consistency in time format
+};
+
+const tileDisabled = ({ date, view }) => {
+    if (view === 'month') {
+        const today = new Date().setHours(0, 0, 0, 0);
+        const formattedDate = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+        // Disable past dates
+        if (date < today) {
+            return true;
         }
-        return false;
-    };
+
+        // Disable fully booked dates
+        return bookedSlots.includes(formattedDate); 
+    }
+    return false;
+};
 
     // Gui api request tao booking 
 
@@ -259,11 +275,17 @@ const SkincareBooking = () => {
                         <h3 className="text-lg font-semibold mb-2">
                             Available Times for <span className="text-[#C54759]">{selectedDate.toDateString()}</span>
                         </h3>
-                        <div className="grid grid-cols-3 gap-3" >
+                        <div className="grid grid-cols-3 gap-3">
                             {times.map((time, index) => (
                                 <button
                                     key={index}
-                                    className={`border p-3 rounded-lg text-sm font-medium ${selectedTime === time ? 'bg-pink-400 text-white' : 'bg-gray-100 hover:bg-gray-200'} ${isTimeDisabled(time) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    className={`border p-2 rounded-lg text-xs font-medium transition 
+                                        ${selectedTime === time
+                                            ? 'bg-pink-400 text-white'
+                                            : isTimeDisabled(time)
+                                                ? 'bg-gray-300 text-gray-400 cursor-not-allowed opacity-50'
+                                                : 'bg-gray-100 hover:bg-pink-100 hover:text-pink-600'
+                                        }`}
                                     onClick={() => handleTimeSelect(time)}
                                     aria-label={`Select time ${time}`}
                                     disabled={isTimeDisabled(time)}
