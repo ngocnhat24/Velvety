@@ -15,9 +15,10 @@ export default function ServiceDetails() {
   const [averageRating, setAverageRating] = useState(0);
   const [error, setError] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showImagePopup, setShowImagePopup] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
   const [visibleCount, setVisibleCount] = useState(3); // Hiển thị 3 comment đầu tiên
+  const [currentImageIndex, setCurrentImageIndex] = useState(0); // Chỉ số ảnh hiện tại
+
   const loadMore = () => { setVisibleCount(prev => prev + 3); };
 
   useEffect(() => {
@@ -25,7 +26,6 @@ export default function ServiceDetails() {
       .get(`/api/services/${id}`)
       .then((response) => {
         setService(response.data);
-
 
         setGalleryImages([
           response.data.image,
@@ -56,8 +56,6 @@ export default function ServiceDetails() {
       });
 
   }, [id]);
-
-
 
   const handleBookingNow = async () => {
     const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -95,12 +93,20 @@ export default function ServiceDetails() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-lg shadow-lg">
           {service.image && (
-            <img
-              src={service.image}
-              alt={service.name}
-              className="w-full h-96 object-cover rounded-xl border-4 border-gray-200 shadow-lg transition-transform transform hover:scale-105 duration-300 cursor-pointer"
-              onClick={() => setShowImagePopup(true)}
-            />
+            <div className="w-full max-h-[60vh] overflow-hidden flex justify-center items-center">
+              <ImageGallery
+                items={galleryImages.map((img) => ({ original: img }))}
+                showThumbnails={false}
+                showFullscreenButton={false}
+                showPlayButton={false}
+                slideDuration={600} // Increase the duration for smoother transition
+                slideInterval={3000} // Set the interval for automatic slide transition
+                showBullets={false}
+                showNav={false}
+                startIndex={currentImageIndex}
+                additionalClass="object-contain"
+              />
+            </div>
           )}
           <div>
             <h1 className="text-5xl font-extrabold text-[#9d3847] leading-tight">{service.name}</h1>
@@ -111,7 +117,6 @@ export default function ServiceDetails() {
               dangerouslySetInnerHTML={{ __html: service.detaildescription }}
             />
             {/* Hiển thị avg sao rating của ServiceId tương ứng bằng filter */}
-
 
             <div className="flex text-yellow-500 text-lg mt-4">
               {Array.from({ length: 5 }, (_, i) => {
@@ -152,21 +157,20 @@ export default function ServiceDetails() {
 
         {/* Additional Images */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-
-          {[service.effectimage, service.resultimage, service.sensationimage].filter(img => img).map((img, index) => (
+          {[service.image, service.effectimage, service.resultimage, service.sensationimage].filter(img => img).map((img, index) => (
             <img
               key={index}
               src={img}
               alt={`Service Image ${index}`}
               className="w-full h-40 object-cover rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300 cursor-pointer"
-              onClick={() => setShowImagePopup(true)}
+              onClick={() => setCurrentImageIndex(index)} // Cập nhật chỉ số ảnh hiện tại
+
             />
           ))}
         </div>
 
         <div className="mt-6 space-y-6">
           {comments.slice(0, visibleCount).map((comment, index) => {
-
             // Kiểm tra nếu có bookingRequestId và customerID
             const customer = comment.bookingRequestId?.customerID;
             const avatarUrl = customer?.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
@@ -189,9 +193,7 @@ export default function ServiceDetails() {
                       ))}
                     </div>
                   </div>
-
                 </div>
-
 
                 {/* Nội dung bình luận */}
                 <p className="text-gray-700 mt-2 leading-relaxed">
@@ -201,7 +203,6 @@ export default function ServiceDetails() {
             );
           })}
         </div>
-
       </div>
 
       {/* Custom Login Modal */}
@@ -225,43 +226,6 @@ export default function ServiceDetails() {
               >
                 Log In
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-
-
-      {/* Image Popup */}
-      {showImagePopup && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={() => setShowImagePopup(false)}
-        >
-          {/* Nút đóng */}
-          <button
-            className="absolute top-5 right-5 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600 transition z-50"
-            onClick={() => setShowImagePopup(false)}
-          >
-            ✖
-          </button>
-
-          <div
-            className="w-[80%] max-w-[500px] max-h-[80vh] relative flex flex-col items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Nội dung ảnh */}
-            <div className="w-full max-h-[60vh] flex justify-center items-center">
-              <ImageGallery
-                items={galleryImages.map((img) => ({ original: img, thumbnail: img }))}
-                showThumbnails={true}
-                showFullscreenButton={false}
-                showPlayButton={false}
-                slideDuration={400}
-                showBullets={true}
-                additionalClass="w-full max-h-[60vh] object-contain flex justify-center items-center"
-                showNav={true}
-              />
             </div>
           </div>
         </div>
