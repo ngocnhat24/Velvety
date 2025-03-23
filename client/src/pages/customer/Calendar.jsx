@@ -21,7 +21,7 @@ const SkincareBooking = () => {
     const [bookedSlots, setBookedSlots] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const navigate = useNavigate();  // Get the navigation function
-    
+
     useEffect(() => {
         if (id && id !== "null") {
             setSelectedConsultant(id);
@@ -72,17 +72,17 @@ const SkincareBooking = () => {
             axios.get(`/api/booking-requests/${selectedConsultant}/pending-bookings`)
                 .then(response => {
                     const pendingBookings = response.data;
-    
+
                     // Extract booked time slots for the selected date
                     const bookedTimes = pendingBookings
                         .filter(booking => new Date(booking.date).toDateString() === new Date(selectedDate).toDateString())
                         .map(booking => booking.time.trim()); // Ensure time format consistency
-    
+
                     setBookedSlots(bookedTimes);
                 })
                 .catch(error => console.error("Error fetching booked slots:", error));
         }
-    }, [selectedConsultant, selectedDate]); 
+    }, [selectedConsultant, selectedDate]);
 
 
     useEffect(() => {
@@ -127,11 +127,11 @@ const SkincareBooking = () => {
         try {
             console.log("🔄 Sending booking request...");
             const response = await createBookingRequest();
-            
+
             if (response && response.status === 201) {
                 console.log("✅ Booking successful! Preparing redirection...");
                 setShowConfirmModal(false);
-    
+
                 // Display success message
                 const successMessage = document.createElement("div");
                 successMessage.innerText = `Successfully booked for ${selectedDate.toDateString()} at ${selectedTime}`;
@@ -146,9 +146,9 @@ const SkincareBooking = () => {
                 successMessage.style.zIndex = "1000";
                 successMessage.style.fontSize = "14px";
                 document.body.appendChild(successMessage);
-    
+
                 console.log("⏳ Redirecting in 2 seconds...");
-    
+
                 setTimeout(() => {
                     console.log("🚀 Redirecting to /about now!");
                     window.location.href = "/about"; // Direct page reload
@@ -166,8 +166,8 @@ const SkincareBooking = () => {
             }
         }
     };
-    
-    
+
+
 
 
     const handleCancel = () => {
@@ -175,37 +175,37 @@ const SkincareBooking = () => {
         window.location.href = "/consultant-customer"; // Chuyển về trang consultant khi bấm Cancel
     };
 
-   const isTimeDisabled = (time) => {
-    const now = new Date();
-    const selectedDay = new Date(selectedDate);
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    const [hour, minute] = time.split(/[: ]/);
-    const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
+    const isTimeDisabled = (time) => {
+        const now = new Date();
+        const selectedDay = new Date(selectedDate);
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const [hour, minute] = time.split(/[: ]/);
+        const timeInMinutes = (parseInt(hour) % 12 + (time.includes("PM") ? 12 : 0)) * 60 + parseInt(minute);
 
-    // Disable past slots for today
-    if (selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime) {
-        return true;
-    }
-
-    // Disable already booked slots
-    return bookedSlots.includes(time.trim()); // Ensure consistency in time format
-};
-
-const tileDisabled = ({ date, view }) => {
-    if (view === 'month') {
-        const today = new Date().setHours(0, 0, 0, 0);
-        const formattedDate = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-
-        // Disable past dates
-        if (date < today) {
+        // Disable past slots for today
+        if (selectedDay.toDateString() === now.toDateString() && timeInMinutes <= currentTime) {
             return true;
         }
 
-        // Disable fully booked dates
-        return bookedSlots.includes(formattedDate); 
-    }
-    return false;
-};
+        // Disable already booked slots
+        return bookedSlots.includes(time.trim()); // Ensure consistency in time format
+    };
+
+    const tileDisabled = ({ date, view }) => {
+        if (view === 'month') {
+            const today = new Date().setHours(0, 0, 0, 0);
+            const formattedDate = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+            // Disable past dates
+            if (date < today) {
+                return true;
+            }
+
+            // Disable fully booked dates
+            return bookedSlots.includes(formattedDate);
+        }
+        return false;
+    };
 
     // Gui api request tao booking 
 
@@ -214,9 +214,9 @@ const tileDisabled = ({ date, view }) => {
             toast.error("Please select a service, date, and time.");
             return null; // Return null explicitly to avoid undefined issues
         }
-    
+
         const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-    
+
         try {
             const payload = {
                 serviceID: serviceId,
@@ -227,12 +227,12 @@ const tileDisabled = ({ date, view }) => {
                 status: "Pending",
                 isConsultantAssignedByCustomer: !!id,
             };
-    
+
             console.log("📤 Sending request with payload:", payload);
             const response = await axios.post("/api/booking-requests/", payload);
-    
+
             console.log("📥 API Response:", response);
-    
+
             if (response.status === 201) {
                 toast.success("Booking request created successfully!");
                 return response; // ✅ Ensure response is returned
@@ -242,7 +242,7 @@ const tileDisabled = ({ date, view }) => {
             }
         } catch (error) {
             console.error("❌ Error creating booking request:", error);
-    
+
             toast.error("This consultant is already booked at the selected date and time.");
             return null; // Return null in case of error
         }
