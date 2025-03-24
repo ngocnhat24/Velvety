@@ -130,6 +130,12 @@ export default function ServiceDetails() {
                 }
               })}
             </div>
+
+            {/* Product Price */}
+            <div className=" text-2xl font-bold text-[#C54759] mt-4">
+              Price: {service.price.toLocaleString('vi-VN')} VND
+            </div>
+
             {/* Booking Button */}
             <div className="flex justify-center mt-4">
               <button
