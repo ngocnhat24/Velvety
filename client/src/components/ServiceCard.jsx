@@ -1,6 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+// Helper function to format price
+const formatPrice = (price) => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+};
+
+// Helper function to capitalize the first letter of the name
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const ServiceCard = ({ image, name, description, price, onChoose }) => {
   return (
     <motion.div
@@ -16,7 +26,7 @@ const ServiceCard = ({ image, name, description, price, onChoose }) => {
 
       {/* Title */}
       <span className="text-[18px] font-bold leading-[20px] text-[#AB152A] text-center mt-4">
-        {name}
+        {capitalizeFirstLetter(name)}
       </span>
 
       {/* Description */}
@@ -27,7 +37,7 @@ const ServiceCard = ({ image, name, description, price, onChoose }) => {
 
       {/* Price */}
       <span className="text-[16px] font-normal leading-[19px] text-[#000] mt-2">
-        {price} VNĐ
+        <strong>{formatPrice(price)}</strong>
       </span>
 
       {/* Choose Button with Small Pulsing Dot */}
