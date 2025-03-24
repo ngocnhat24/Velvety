@@ -15,10 +15,11 @@ export default function ServiceDetails() {
   const [averageRating, setAverageRating] = useState(0);
   const [error, setError] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showImagePopup, setShowImagePopup] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
   const [visibleCount, setVisibleCount] = useState(3); // Hiển thị 3 comment đầu tiên
-  const loadMore = () => {setVisibleCount(prev => prev + 3); };  
+  const [currentImageIndex, setCurrentImageIndex] = useState(0); // Chỉ số ảnh hiện tại
+
+  const loadMore = () => { setVisibleCount(prev => prev + 3); };
 
   useEffect(() => {
     axios
@@ -26,7 +27,6 @@ export default function ServiceDetails() {
       .then((response) => {
         setService(response.data);
 
-        
         setGalleryImages([
           response.data.image,
           response.data.effectimage,
@@ -48,16 +48,14 @@ export default function ServiceDetails() {
         setComments([]);
       });
 
-      axios
-        .get(`/api/feedbacks/service-rating/67b1d1122471c950ede13673`)
-        .then((response) => setAverageRating(response.data[0].averageRating))
-        .catch((error) => {
-          console.error("Error fetching service rating:", error);
-        });
-        
+    axios
+      .get(`/api/feedbacks/service-rating/67b1d1122471c950ede13673`)
+      .then((response) => setAverageRating(response.data[0].averageRating))
+      .catch((error) => {
+        console.error("Error fetching service rating:", error);
+      });
+
   }, [id]);
-  
-  
 
   const handleBookingNow = async () => {
     const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -95,12 +93,20 @@ export default function ServiceDetails() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-lg shadow-lg">
           {service.image && (
-            <img
-              src={service.image}
-              alt={service.name}
-              className="w-full h-96 object-cover rounded-xl border-4 border-gray-200 shadow-lg transition-transform transform hover:scale-105 duration-300 cursor-pointer"
-              onClick={() => setShowImagePopup(true)}
-            />
+            <div className="w-full max-h-[60vh] overflow-hidden flex justify-center items-center">
+              <ImageGallery
+                items={galleryImages.map((img) => ({ original: img }))}
+                showThumbnails={false}
+                showFullscreenButton={false}
+                showPlayButton={false}
+                slideDuration={600} // Increase the duration for smoother transition
+                slideInterval={3000} // Set the interval for automatic slide transition
+                showBullets={false}
+                showNav={false}
+                startIndex={currentImageIndex}
+                additionalClass="object-contain"
+              />
+            </div>
           )}
           <div>
             <h1 className="text-5xl font-extrabold text-[#9d3847] leading-tight">{service.name}</h1>
@@ -110,96 +116,92 @@ export default function ServiceDetails() {
               className="text-gray-600 mt-6 leading-relaxed border-t-2 border-gray-200 pt-6"
               dangerouslySetInnerHTML={{ __html: service.detaildescription }}
             />
-          {/* Hiển thị avg sao rating của ServiceId tương ứng bằng filter */}
-         
+            {/* Hiển thị avg sao rating của ServiceId tương ứng bằng filter */}
 
-<div className="flex text-yellow-500 text-lg mt-4">
-  {Array.from({ length: 5 }, (_, i) => {
-    const starValue = i + 1;
-    if (averageRating >= starValue) {
-      return <FaStar key={i} />;
-    } else if (averageRating >= starValue - 0.5) {
-      return <FaStarHalfAlt key={i} />;
-    } else {
-      return <FaRegStar key={i} />;
-    }
-  })}
-</div>
+            <div className="flex text-yellow-500 text-lg mt-4">
+              {Array.from({ length: 5 }, (_, i) => {
+                const starValue = i + 1;
+                if (averageRating >= starValue) {
+                  return <FaStar key={i} />;
+                } else if (averageRating >= starValue - 0.5) {
+                  return <FaStarHalfAlt key={i} />;
+                } else {
+                  return <FaRegStar key={i} />;
+                }
+              })}
+            </div>
+            {/* Booking Button */}
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={handleBookingNow}
+                className="w-[169px] h-[44px] rounded-full border-solid border-[1px] text-[20px] font-bold leading-[24px] text-[#C54759] pacifico-regular flex items-center justify-center hover:bg-[#ff8a8a] bg-[#ffc0cb] transition duration-300"
+                style={{
+                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+                  transition: 'all 0.3s ease-in-out',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.1) rotate(3deg)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+                }}
+              >
+                Booking Now
+              </button>
+            </div>
 
           </div>
         </div>
 
         {/* Additional Images */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-          
-          {[service.effectimage, service.resultimage, service.sensationimage].filter(img => img).map((img, index) => (
+          {[service.image, service.effectimage, service.resultimage, service.sensationimage].filter(img => img).map((img, index) => (
             <img
               key={index}
               src={img}
               alt={`Service Image ${index}`}
               className="w-full h-40 object-cover rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300 cursor-pointer"
-              onClick={() => setShowImagePopup(true)}
+              onClick={() => setCurrentImageIndex(index)} // Cập nhật chỉ số ảnh hiện tại
+
             />
           ))}
         </div>
 
         <div className="mt-6 space-y-6">
-        {comments.slice(0, visibleCount).map((comment, index) => {
+          {comments.slice(0, visibleCount).map((comment, index) => {
+            // Kiểm tra nếu có bookingRequestId và customerID
+            const customer = comment.bookingRequestId?.customerID;
+            const avatarUrl = customer?.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+            const fullName = customer ? `${customer.firstName} ${customer.lastName}` : "Anonymous";
 
-  // Kiểm tra nếu có bookingRequestId và customerID
-  const customer = comment.bookingRequestId?.customerID;
-  const avatarUrl = customer?.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-  const fullName = customer ? `${customer.firstName} ${customer.lastName}` : "Anonymous";
+            return (
+              <div key={index} className="border-b border-gray-200 pb-6 mb-6">
+                <div className="mt-3 flex items-center gap-3 mb-3">
+                  {/* Avatar */}
+                  <img src={avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
 
-  return (
-    <div key={index} className="border-b border-gray-200 pb-6 mb-6">
-      <div className="mt-3 flex items-center gap-3 mb-3">
-        {/* Avatar */}
-        <img src={avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
+                  {/* Tên và Rating */}
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-gray-800 text-lg">{fullName}</p>
 
-        {/* Tên và Rating */}
-        <div className="flex items-center gap-2">
-          <p className="font-semibold text-gray-800 text-lg">{fullName}</p>
+                    {/* Rating sao */}
+                    <div className="flex text-yellow-500 text-sm">
+                      {Array.from({ length: Math.max(0, Math.min(comment.serviceRating, 5)) }).map((_, i) => (
+                        <span key={i}>⭐</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
-          {/* Rating sao */}
-          <div className="flex text-yellow-500 text-sm">
-            {Array.from({ length: Math.max(0, Math.min(comment.serviceRating, 5)) }).map((_, i) => (
-              <span key={i}>⭐</span>
-            ))}
-          </div>
-        </div>
-      </div>
-    
-
-      {/* Nội dung bình luận */}
-      <p className="text-gray-700 mt-2 leading-relaxed">
-        {comment.serviceComment || comment.consultantComment}
-      </p>
-    </div>
-  );
-})}
-  </div>
-
-        {/* Booking Button */}
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleBookingNow}
-            className="w-[169px] h-[44px] rounded-full border-solid border-[1px] text-[20px] font-bold leading-[24px] text-[#C54759] pacifico-regular flex items-center justify-center hover:bg-[#ff8a8a] bg-[#ffc0cb] transition duration-300"
-            style={{
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-              transition: 'all 0.3s ease-in-out',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.1) rotate(3deg)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1.05)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-            }}
-          >
-            Booking Now
-          </button>
+                {/* Nội dung bình luận */}
+                <p className="text-gray-700 mt-2 leading-relaxed">
+                  {comment.serviceComment || comment.consultantComment}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -224,43 +226,6 @@ export default function ServiceDetails() {
               >
                 Log In
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-
-
-      {/* Image Popup */}
-      {showImagePopup && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={() => setShowImagePopup(false)}
-        >
-          {/* Nút đóng */}
-          <button
-            className="absolute top-5 right-5 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600 transition z-50"
-            onClick={() => setShowImagePopup(false)}
-          >
-            ✖
-          </button>
-
-          <div
-            className="w-[80%] max-w-[500px] max-h-[80vh] relative flex flex-col items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Nội dung ảnh */}
-            <div className="w-full max-h-[60vh] flex justify-center items-center">
-              <ImageGallery
-                items={galleryImages.map((img) => ({ original: img, thumbnail: img }))}
-                showThumbnails={true}
-                showFullscreenButton={false}
-                showPlayButton={false}
-                slideDuration={400}
-                showBullets={true}
-                additionalClass="w-full max-h-[60vh] object-contain flex justify-center items-center"
-                showNav={true}
-              />
             </div>
           </div>
         </div>
