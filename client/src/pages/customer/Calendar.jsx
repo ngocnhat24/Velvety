@@ -20,6 +20,7 @@ const SkincareBooking = () => {
     const serviceId = localStorage.getItem("serviceId");
     const [bookedSlots, setBookedSlots] = useState([]);
     const [serviceName, setServiceName] = useState("");
+    const [servicePrice, setServicePrice] = useState(""); // Add state for service price
     const navigate = useNavigate();  // Get the navigation function
 
     useEffect(() => {
@@ -38,8 +39,9 @@ const SkincareBooking = () => {
             try {
                 const res = await axios.get(`/api/services/${serviceId}`);
                 setServiceName(res.data.name);
+                setServicePrice(res.data.price); // Set the service price
             } catch (err) {
-                console.error("Failed to fetch service name");
+                console.error("Failed to fetch service name and price");
             }
         };
 
@@ -48,7 +50,9 @@ const SkincareBooking = () => {
         }
     }, [serviceId]);
 
-
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    };
 
     useEffect(() => {
         const fetchConsultantById = async () => {
@@ -317,6 +321,7 @@ const SkincareBooking = () => {
                         <div className="bg-white p-8 rounded-xl shadow-2xl w-96">
                             <h2 className="text-xl font-bold text-center text-[#C54759] mb-6 ">Booking Confirmation</h2>
                             <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Service:</strong> {serviceName}</p>
+                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Price:</strong> {formatPrice(servicePrice)}</p> {/* Display service price in VND */}
                             <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Date:</strong> {selectedDate.toDateString()}</p>
                             <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Time:</strong> {selectedTime}</p>
                             {consultants && id !== "null" && (
