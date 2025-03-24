@@ -15,9 +15,9 @@ const ConsultantSidebar = () => {
   useEffect(() => {
     axios.get(`/api/feedbacks/consultant-rating/${userId}`)
       .then(response => {
-        setAverageRating(response.data[0].averageRating?.toFixed(1) || "N/A"); 
+        setAverageRating(response.data[0].averageRating?.toFixed(1) || "N/A");
         console.log("Average rating:", response.data);
-        
+
 
       })
       .catch(error => {
@@ -74,7 +74,7 @@ const ConsultantSidebar = () => {
       <List>
         <NavLink to="/view-booked" style={{ textDecoration: "none", color: "inherit" }}>
           <ListItemButton selected={location.pathname === "/view-booked"}>
-            <ListItemText primary="To Do" />
+            <ListItemText primary="Work Schedule" />
           </ListItemButton>
         </NavLink>
       </List>
