@@ -9,6 +9,7 @@ const ViewBooked = () => {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [expandedFeedback, setExpandedFeedback] = useState({});
+  const [selectedWeek, setSelectedWeek] = useState("");
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -63,7 +64,25 @@ const ViewBooked = () => {
     }));
   };
 
+  const getWeekRange = (date) => {
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    return `${startOfWeek.toLocaleDateString()} To ${endOfWeek.toLocaleDateString()}`;
+  };
+
+  const handleWeekChange = (event) => {
+    setSelectedWeek(event.target.value);
+  };
+
+  const filteredBookings = selectedWeek
+    ? bookings.filter((booking) => getWeekRange(new Date(booking.date)) === selectedWeek)
+    : bookings;
+
   if (loading) return <p className="text-center mt-5">Loading...</p>;
+
+  const uniqueWeeks = [...new Set(bookings.map((booking) => getWeekRange(new Date(booking.date))))];
 
   return (
     <div className={`flex transition-opacity duration-500 ${loading ? "opacity-50" : "opacity-100"}`}>
@@ -71,7 +90,16 @@ const ViewBooked = () => {
       <div className="ml-2 p-6 w-full">
         <h2 className="text-2xl font-bold mb-4">My Bookings</h2>
         {error && <p className="text-red-500">{error}</p>}
-        {bookings.length === 0 ? (
+        <div className="mb-4">
+          <label htmlFor="week-select" className="mr-2">Chọn tuần:</label>
+          <select id="week-select" value={selectedWeek} onChange={handleWeekChange} className="border p-2">
+            <option value="">Tất cả</option>
+            {uniqueWeeks.map((week) => (
+              <option key={week} value={week}>{week}</option>
+            ))}
+          </select>
+        </div>
+        {filteredBookings.length === 0 ? (
           <p>No bookings assigned to you yet.</p>
         ) : (
           <div className="overflow-x-auto">
@@ -98,7 +126,7 @@ const ViewBooked = () => {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((booking) => (
+                {filteredBookings.map((booking) => (
                   <tr key={booking._id} className="text-center">
                     <td className="border px-4 py-2">{booking.serviceID?.name || "N/A"}</td>
                     <td className="border px-4 py-2">
