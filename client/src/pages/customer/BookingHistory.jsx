@@ -366,12 +366,12 @@ const ViewBookingHistory = () => {
                       <TableCell align="center">
                         <span
                           className={`p-1 rounded ${booking.status === "Pending"
-                            ? "bg-yellow-200"
+                            ? "text-yellow-500"
                             : booking.status === "Confirmed"
-                              ? "bg-blue-200"
+                              ? "text-blue-500"
                               : booking.status === "Completed"
-                                ? "bg-green-200"
-                                : "bg-red-200"
+                                ? "text-green-500"
+                                : "text-red-500"
                             }`}
                         >
                           {booking.status}
@@ -438,7 +438,7 @@ const ViewBookingHistory = () => {
             </Typography>
 
             {selectedConsultant && (
-              <div className="space-y-3 text-gray-700">
+              <div className="space-y-3 text-gray-500">
                 <Typography>
                   <strong>First Name:</strong> {selectedConsultant.firstName}
                 </Typography>

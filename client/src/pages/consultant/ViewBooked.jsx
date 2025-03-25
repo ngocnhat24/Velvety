@@ -9,6 +9,7 @@ const ViewBooked = () => {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [expandedFeedback, setExpandedFeedback] = useState({});
+  const [selectedWeek, setSelectedWeek] = useState("");
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -63,7 +64,25 @@ const ViewBooked = () => {
     }));
   };
 
+  const getWeekRange = (date) => {
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    return `${startOfWeek.toLocaleDateString()} To ${endOfWeek.toLocaleDateString()}`;
+  };
+
+  const handleWeekChange = (event) => {
+    setSelectedWeek(event.target.value);
+  };
+
+  const filteredBookings = selectedWeek
+    ? bookings.filter((booking) => getWeekRange(new Date(booking.date)) === selectedWeek)
+    : bookings;
+
   if (loading) return <p className="text-center mt-5">Loading...</p>;
+
+  const uniqueWeeks = [...new Set(bookings.map((booking) => getWeekRange(new Date(booking.date))))];
 
   return (
     <div className={`flex transition-opacity duration-500 ${loading ? "opacity-50" : "opacity-100"}`}>
@@ -71,13 +90,22 @@ const ViewBooked = () => {
       <div className="ml-2 p-6 w-full">
         <h2 className="text-2xl font-bold mb-4">My Bookings</h2>
         {error && <p className="text-red-500">{error}</p>}
-        {bookings.length === 0 ? (
-          <p>No bookings assigned to you yet.</p>
+        <div className="mb-4">
+          <label htmlFor="week-select" className="mr-2">Choose week:</label>
+          <select id="week-select" value={selectedWeek} onChange={handleWeekChange} className="border p-2 rounded">
+            <option value="">All</option>
+            {uniqueWeeks.map((week) => (
+              <option key={week} value={week}>{week}</option>
+            ))}
+          </select>
+        </div>
+        {filteredBookings.length === 0 ? (
+          <p className="text-center text-gray-500">No bookings assigned to you yet.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 shadow-md">
+            <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
               <thead>
-                <tr className="bg-gray-100">
+                <tr className="bg-blue-100">
                   {[
                     { key: "serviceID.name", label: "Service" },
                     { key: "customerID.firstName", label: "Customer" },
@@ -89,7 +117,7 @@ const ViewBooked = () => {
                   ].map(({ key, label }) => (
                     <th
                       key={key}
-                      className="border px-4 py-2 cursor-pointer hover:bg-gray-200 transition"
+                      className="border px-4 py-2 cursor-pointer hover:bg-blue-200 transition text-left"
                       onClick={() => handleSort(key)}
                     >
                       {label} {sortBy === key && (sortOrder === "asc" ? " 🔼" : " 🔽")}
@@ -98,8 +126,8 @@ const ViewBooked = () => {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((booking) => (
-                  <tr key={booking._id} className="text-center">
+                {filteredBookings.map((booking) => (
+                  <tr key={booking._id} className="hover:bg-gray-50 transition">
                     <td className="border px-4 py-2">{booking.serviceID?.name || "N/A"}</td>
                     <td className="border px-4 py-2">
                       {`${booking.customerID?.firstName || ""} ${booking.customerID?.lastName || ""}`.trim() || "N/A"}
@@ -110,7 +138,7 @@ const ViewBooked = () => {
                     <td className="border px-4 py-2">{booking.time || "N/A"}</td>
                     <td className="border px-4 py-2">{booking.status || "N/A"}</td>
                     <td className="border px-4 py-2">
-                      <span onClick={() => toggleFeedback(booking._id)} className="cursor-pointer">
+                      <span onClick={() => toggleFeedback(booking._id)} className="cursor-pointer text-blue-500 hover:underline">
                         {expandedFeedback[booking._id]
                           ? booking.feedback
                           : `${booking.feedback.slice(0, 10)}...`}
