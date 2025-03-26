@@ -112,10 +112,34 @@ const getUserResults = async (req, res) => {
     }
 };
 
+const deleteQuizResult = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Check if the quiz result exists
+        const quizResult = await QuizResult.findById(id);
+        if (!quizResult) {
+            return res.status(404).json({ message: "Quiz result not found." });
+        }
+
+        // Ensure the user owns the quiz result or is an admin
+        if (quizResult.userID.toString() !== req.user.id && !req.user.roles.includes("Admin")) {
+            return res.status(403).json({ message: "You are not authorized to delete this quiz result." });
+        }
+
+        // Delete the quiz result
+        await QuizResult.findByIdAndDelete(id);
+        res.status(200).json({ message: "Quiz result deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting quiz result:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
 
 module.exports = {
     saveQuizResult,
     getAllResults,
     getUserResults,
+    deleteQuizResult,
     determineSkinType,
 };
