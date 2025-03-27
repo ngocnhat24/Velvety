@@ -188,6 +188,13 @@ const ViewBookingHistory = () => {
       if (response.status === 201) {
         toast.success("Feedback submitted successfully!");
         setShowFeedbackModal(false);
+        setFeedbackData({
+          consultantRating: 0,
+          consultantComment: "",
+          serviceRating: 0,
+          serviceComment: "",
+          bookingId: null,
+        }); // Reset feedback form fields
         setRefresh((prev) => !prev);
       }
     } catch (error) {
