@@ -21,6 +21,7 @@ import {
   TablePagination,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -44,6 +45,21 @@ const QuizResultHistory = () => {
       setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`/api/quiz-results/${id}`);
+      if (response.status === 200) {
+        setQuizResults((prevResults) => prevResults.filter((result) => result._id !== id));
+        toast.success("Quiz result deleted successfully!");
+      } else {
+        toast.error("Failed to delete quiz result. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error deleting quiz result:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "Failed to delete quiz result.");
     }
   };
 
@@ -165,6 +181,7 @@ const QuizResultHistory = () => {
                     <TableCell align="center">Date</TableCell>
                     <TableCell align="center">Time</TableCell>
                     <TableCell align="center">Skin Type</TableCell>
+                    <TableCell align="center">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -183,6 +200,19 @@ const QuizResultHistory = () => {
                           {new Date(result.createdDate).toLocaleTimeString()}
                         </TableCell>
                         <TableCell align="center">{result.skinType}</TableCell>
+                        <TableCell align="center">
+                          <Fab
+                            size="small"
+                            color="secondary"
+                            onClick={() => handleDelete(result._id)}
+                            sx={{
+                              backgroundColor: "#E27585",
+                              "&:hover": { backgroundColor: "#a92a4e" },
+                            }}
+                          >
+                            <DeleteIcon />
+                          </Fab>
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
