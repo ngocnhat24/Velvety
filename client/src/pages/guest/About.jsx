@@ -63,8 +63,8 @@ export default function About() {
       <Box
         sx={{
           width: "100%",
-          height: "50vh",
-          backgroundImage: "url(/images/about_1.png)",
+          height: "70vh",
+          backgroundImage: "url(/images/1740975512430.png)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
@@ -74,28 +74,13 @@ export default function About() {
           backgroundAttachment: "fixed",
         }}
       >
-        <Typography
-          variant="h1"
-          sx={{
-            color: "#fff",
-            fontWeight: "bold",
-            textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
-            position: "absolute",
-            fontFamily: "'Pacifico', cursive", // Pacifico font
-            fontSize: "90px", // text-[90px]
-            WebkitFontSmoothing: "antialiased", // smooth text
-            MozOsxFontSmoothing: "grayscale",
-          }}
-        >
-          Our Story
-        </Typography>
       </Box>
 
       <Container sx={{ textAlign: "center", py: 5 }}>
-        <Typography variant="h4" fontWeight={600} gutterBottom>
-          Since our founding in 1973, Velvety has had one goal – To create safe, effective skin treatments that produce visible results… at a reasonable price.
+        <Typography variant="h3" fontWeight={200} gutterBottom>
+          Since our founding in 1973, Velvety has had one goal. To create safe, effective skin treatments that produce visible results… at a reasonable price.
         </Typography>
-        <Typography variant="h6" color="text.secondary" gutterBottom>
+        <Typography variant="h5" color="text.secondary" gutterBottom>
           Great <span style={{ color: "#c86c79" }}>natural skin care</span> that’s affordable and works!
         </Typography>
       </Container>
@@ -192,7 +177,7 @@ export default function About() {
       </motion.div>
 
 
-      <div className="flex flex-col items-center justify-center bg-gray-100 text-gray-900 py-20 mt-10 mb-10">
+      <div className="flex flex-col items-center justify-center text-[18px] font-light leading-[32px] tracking-[0.8px] text-gray-900 py-20 mt-10 mb-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -200,7 +185,7 @@ export default function About() {
           className="max-w-4xl text-center mx-auto p-6"
         >
           <motion.h1
-            className="text-5xl font-extrabold text-green-700 mb-3"
+            className="text-5xl meow-script-regular font-extrabold text-[#df6073] mb-3"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
@@ -209,7 +194,7 @@ export default function About() {
           </motion.h1>
 
           <motion.p
-            className="text-xl text-gray-800 leading-relaxed"
+            className="text-xl text-gray-800 text-[18px] font-light leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
@@ -229,10 +214,15 @@ export default function About() {
         </motion.div>
 
         <Container sx={{ textAlign: "center", py: 5 }}>
-          <Typography variant="h4" fontWeight={600} gutterBottom>
+        <motion.h1
+            className="text-4xl meow-script-regular font-extrabold text-[#df6073] mb-3"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+          >
             Our Values
-          </Typography>
-          <Grid container spacing={4}>
+          </motion.h1>
+          <Grid container spacing={4} justifyContent="center">
             {[
               { title: "Quality", desc: "We use only the best natural ingredients in our skincare products." },
               { title: "Innovation", desc: "Continuous research to bring the most effective skincare solutions." },
@@ -251,9 +241,14 @@ export default function About() {
         </Container>
 
         <Container sx={{ textAlign: "center", py: 5 }}>
-          <Typography variant="h4" fontWeight={600} gutterBottom>
-            Our Achievements
-          </Typography>
+          <motion.h1
+            className="text-4xl meow-script-regular font-extrabold text-[#df6073] mb-3"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+          >
+            Our Awards
+          </motion.h1>
           <Grid container spacing={4} justifyContent="center">
             {[
               { image: "/images/award_1.png", text: "Best Natural Skincare Brand 2022" },
@@ -302,11 +297,16 @@ export default function About() {
       </div>
 
       {/* New section for consultants */}
-      <Box sx={{ bgcolor: "#f9faef", py: 5 }}>
+      <Box sx={{ py: 5 }}>
         <Container sx={{ textAlign: "center" }}>
-          <Typography variant="h4" fontWeight={600} gutterBottom>
-            Meet Our Consultants
-          </Typography>
+          <motion.h1
+            className="text-4xl meow-script-regular font-extrabold text-[#df6073] mb-3"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+          >
+            Our Consultants
+          </motion.h1>
           <Slider {...consultantSettings}>
             {consultants.map((consultant) => (
               <Box key={consultant._id} sx={{ px: 2, textAlign: "center", position: "relative" }}>
@@ -356,9 +356,14 @@ export default function About() {
         </Container>
       </Box>
       <Container sx={{ textAlign: "center", py: 5 }}>
-        <Typography variant="h4" fontWeight={600} gutterBottom>
-          What Our Customers Say
-        </Typography>
+          <motion.h1
+            className="text-4xl meow-script-regular font-extrabold text-[#df6073] mb-3"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+          >
+            What Our Customers Say
+          </motion.h1>
         <Slider {...settings}>
           {[
             { name: "Sarah M.", review: "Velvety changed my skin completely! Their products are amazing.", rating: 5 },
