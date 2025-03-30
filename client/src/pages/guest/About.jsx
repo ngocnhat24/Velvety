@@ -7,13 +7,15 @@ import axios from "axios";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Container, Typography, Box } from "@mui/material";
+import { Container, Typography, Box, Grid, Card, CardContent, CardMedia } from "@mui/material";
 
 export default function About() {
   const [popularServices, setServices] = useState([]);
+  const [consultants, setConsultants] = useState([]); // State for consultants
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch popular services
     axios
       .get("/api/services/")
       .then((response) => {
@@ -22,9 +24,29 @@ export default function About() {
       .catch((error) => {
         console.error("Error fetching services:", error);
       });
+
+    // Fetch consultants
+    axios
+      .get("/api/consultants/")
+      .then((response) => {
+        setConsultants(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching consultants:", error);
+      });
   }, []);
 
   const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+  };
+
+  const consultantSettings = {
     dots: true,
     infinite: true,
     speed: 500,
@@ -240,6 +262,59 @@ export default function About() {
           Book Now
         </motion.button>
       </div>
+
+      {/* New section for consultants */}
+      <Box sx={{ bgcolor: "#f9faef" }}>
+        <Container sx={{ py: 5, textAlign: "center" }}>
+          <Typography variant="h4" fontWeight={600} gutterBottom>
+            Meet Our Consultants
+          </Typography>
+          <Slider {...consultantSettings}>
+            {consultants.map((consultant) => (
+              <Box key={consultant._id} sx={{ px: 2, textAlign: "center", position: "relative" }}>
+                <Card sx={{ maxWidth: 240, mx: "auto", minHeight: 320, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <CardMedia
+                    component="img"
+                    image={consultant.image || "/images/default-avatar.png"}
+                    alt={consultant.firstName}
+                    sx={{
+                      height: 250, // Đảm bảo chiều cao đồng đều
+                      objectFit: "cover", // Tránh méo ảnh
+                      borderRadius: "10px",
+                    }}
+                  />
+                  <CardContent sx={{ textAlign: "center", minHeight: 70 }}> {/* Canh giữa nội dung */}
+                    <Typography variant="h6" fontWeight={600}>
+                      {consultant.firstName} {consultant.lastName}
+                    </Typography>
+                  </CardContent>
+                </Card>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: 10,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    bgcolor: "rgba(0, 0, 0, 0.7)",
+                    color: "#fff",
+                    padding: "8px 12px",
+                    borderRadius: "5px",
+                    opacity: 0,
+                    transition: "opacity 0.3s ease-in-out",
+                    pointerEvents: "none",
+                  }}
+                  className="consultant-info"
+                >
+                  <Typography variant="body2">
+                    {consultant.note || "No additional information available."}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </Slider>
+        </Container>
+      </Box>
+
       <Footer />
     </Box>
   );
