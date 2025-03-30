@@ -7,6 +7,7 @@ import axios from "axios";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import StarIcon from "@mui/icons-material/Star";
 import { Container, Typography, Box, Grid, Card, CardContent, CardMedia } from "@mui/material";
 
 export default function About() {
@@ -224,15 +225,52 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 1 }}
           >
-            <button
-              className="px-6 py-3 bg-green-600 text-white rounded-full text-lg font-semibold shadow-lg 
-               hover:bg-green-700 transition duration-300"
-              onClick={() => navigate("/services")}
-            >
-              Explore Our Services
-            </button>
           </motion.div>
         </motion.div>
+
+        <Container sx={{ textAlign: "center", py: 5 }}>
+          <Typography variant="h4" fontWeight={600} gutterBottom>
+            Our Values
+          </Typography>
+          <Grid container spacing={4}>
+            {[
+              { title: "Quality", desc: "We use only the best natural ingredients in our skincare products." },
+              { title: "Innovation", desc: "Continuous research to bring the most effective skincare solutions." },
+              { title: "Sustainability", desc: "We are committed to eco-friendly packaging and cruelty-free testing." },
+            ].map((value, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+                  <Card sx={{ p: 3, textAlign: "center", boxShadow: 3 }}>
+                    <Typography variant="h6" fontWeight={600}>{value.title}</Typography>
+                    <Typography variant="body2" color="text.secondary">{value.desc}</Typography>
+                  </Card>
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+
+        <Container sx={{ textAlign: "center", py: 5 }}>
+          <Typography variant="h4" fontWeight={600} gutterBottom>
+            Our Achievements
+          </Typography>
+          <Grid container spacing={4} justifyContent="center">
+            {[
+              { image: "/images/award_1.png", text: "Best Natural Skincare Brand 2022" },
+              { image: "/images/award_2.png", text: "Sustainable Beauty Award 2023" },
+              { image: "/images/award_3.png", text: "Over 1 Million Happy Customers" },
+            ].map((achievement, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+                  <Card sx={{ p: 3, textAlign: "center", boxShadow: 3 }}>
+                    <CardMedia component="img" image={achievement.image} alt={achievement.text} sx={{ height: 150, objectFit: "contain" }} />
+                    <Typography variant="body1" sx={{ mt: 2 }}>{achievement.text}</Typography>
+                  </Card>
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
       </div>
 
       {/* Booking Now Button */}
@@ -264,32 +302,35 @@ export default function About() {
       </div>
 
       {/* New section for consultants */}
-      <Box sx={{ bgcolor: "#f9faef" }}>
-        <Container sx={{ py: 5, textAlign: "center" }}>
+      <Box sx={{ bgcolor: "#f9faef", py: 5 }}>
+        <Container sx={{ textAlign: "center" }}>
           <Typography variant="h4" fontWeight={600} gutterBottom>
             Meet Our Consultants
           </Typography>
           <Slider {...consultantSettings}>
             {consultants.map((consultant) => (
               <Box key={consultant._id} sx={{ px: 2, textAlign: "center", position: "relative" }}>
-                <Card sx={{ maxWidth: 240, mx: "auto", minHeight: 320, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                <Card
+                  sx={{ maxWidth: 240, mx: "auto", minHeight: 320, cursor: "pointer", transition: "0.3s", "&:hover .consultant-info": { opacity: 1 } }}
+                >
                   <CardMedia
                     component="img"
                     image={consultant.image || "/images/default-avatar.png"}
                     alt={consultant.firstName}
                     sx={{
-                      height: 250, // Đảm bảo chiều cao đồng đều
-                      objectFit: "cover", // Tránh méo ảnh
+                      height: 250,
+                      objectFit: "cover",
                       borderRadius: "10px",
                     }}
                   />
-                  <CardContent sx={{ textAlign: "center", minHeight: 70 }}> {/* Canh giữa nội dung */}
+                  <CardContent sx={{ textAlign: "center", minHeight: 70 }}>
                     <Typography variant="h6" fontWeight={600}>
                       {consultant.firstName} {consultant.lastName}
                     </Typography>
                   </CardContent>
                 </Card>
                 <Box
+                  className="consultant-info"
                   sx={{
                     position: "absolute",
                     bottom: 10,
@@ -302,11 +343,11 @@ export default function About() {
                     opacity: 0,
                     transition: "opacity 0.3s ease-in-out",
                     pointerEvents: "none",
+                    maxWidth: "200px",
                   }}
-                  className="consultant-info"
                 >
                   <Typography variant="body2">
-                    {consultant.note || "No additional information available."}
+                    {consultant.note || "Click to learn more."}
                   </Typography>
                 </Box>
               </Box>
@@ -314,7 +355,42 @@ export default function About() {
           </Slider>
         </Container>
       </Box>
-
+      <Container sx={{ textAlign: "center", py: 5 }}>
+        <Typography variant="h4" fontWeight={600} gutterBottom>
+          What Our Customers Say
+        </Typography>
+        <Slider {...settings}>
+          {[
+            { name: "Sarah M.", review: "Velvety changed my skin completely! Their products are amazing.", rating: 5 },
+            { name: "John D.", review: "Best skincare brand I've ever used. Highly recommend!", rating: 4 },
+            { name: "Emily R.", review: "Great value for money. My skin feels so fresh and healthy.", rating: 5 },
+            { name: "Michael K.", review: "Love the service", rating: 4 },
+            { name: "Sophie L.", review: "Great customer service.", rating: 5 }
+          ].map((testimonial, index) => (
+            <Box key={index} sx={{ p: 2, textAlign: "center" }}>
+              <Card
+                sx={{
+                  height: 200, // Đặt chiều cao cố định để card bằng nhau
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  boxShadow: 3,
+                  p: 3,
+                }}
+              >
+                <Typography variant="body1" textAlign="center">"{testimonial.review}"</Typography>
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <StarIcon key={i} sx={{ color: "#FFD700" }} />
+                  ))}
+                </Box>
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600 }}>{testimonial.name}</Typography>
+              </Card>
+            </Box>
+          ))}
+        </Slider>
+      </Container>
       <Footer />
     </Box>
   );
