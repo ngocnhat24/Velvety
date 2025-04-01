@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import axios from "../../utils/axiosInstance";
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
 export default function ConsultantGuest() {
   const navigate = useNavigate();
@@ -18,11 +19,18 @@ export default function ConsultantGuest() {
   const fetchConsultants = async () => {
     try {
       const res = await axios.get("/api/consultants");
-      setConsultants(res.data.map(c => ({
-        ...c,
-        note: c.note,
-        image: c.image
-      })));
+      const consultantsWithRatings = await Promise.all(
+        res.data.map(async (c) => {
+          const ratingRes = await axios.get(`/api/feedbacks/consultant-rating/${c._id}`);
+          return {
+            ...c,
+            note: c.note,
+            image: c.image,
+            rating: ratingRes.data[0]?.averageRating || 0,
+          };
+        })
+      );
+      setConsultants(consultantsWithRatings);
     } catch (err) {
       toast.error("Failed to fetch consultants");
     }
@@ -67,7 +75,18 @@ export default function ConsultantGuest() {
               <span className="text-[14px] font-normal leading-[20px] text-[#555] tracking-[-0.4px]">
                 {consultant.note}
               </span>
-
+              <div className="flex items-center mt-2">
+                {Array.from({ length: 5 }, (_, index) => {
+                  const starValue = index + 1;
+                  if (consultant.rating >= starValue) {
+                    return <FaStar key={index} className="text-[#C54759] w-4 h-4" />;
+                  } else if (consultant.rating >= starValue - 0.5) {
+                    return <FaStarHalfAlt key={index} className="text-[#C54759] w-4 h-4" />;
+                  } else {
+                    return <FaRegStar key={index} className="text-[#C54759] w-4 h-4" />;
+                  }
+                })}
+              </div>
               {visibleNoteIndex === index && (
                 <span className="mt-2 text-[14px] font-normal leading-[20px] text-[#555] tracking-[-0.4px]">
                   No additional notes available.
