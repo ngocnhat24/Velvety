@@ -22,39 +22,47 @@ export default function ServiceDetails() {
   const loadMore = () => { setVisibleCount(prev => prev + 3); };
 
   useEffect(() => {
-    axios
-      .get(`/api/services/${id}`)
-      .then((response) => {
-        setService(response.data);
+    const fetchServiceDetails = async () => {
+      try {
+        const serviceRes = await axios.get(`/api/services/${id}`);
+        setService(serviceRes.data);
 
         setGalleryImages([
-          response.data.image,
-          response.data.effectimage,
-          response.data.resultimage,
-          response.data.sensationimage,
+          serviceRes.data.image,
+          serviceRes.data.effectimage,
+          serviceRes.data.resultimage,
+          serviceRes.data.sensationimage,
         ].filter(img => img)); // Loại bỏ ảnh null hoặc undefined
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching service:", error);
         setError("Failed to load service details.");
         setService(null);
-      });
+      }
+    };
 
-    axios
-      .get(`/api/feedbacks/service/${id}`)
-      .then((response) => setComments(response.data))
-      .catch((error) => {
+    const fetchComments = async () => {
+      try {
+        const commentsRes = await axios.get(`/api/feedbacks/service/${id}`);
+        setComments(commentsRes.data);
+      } catch (error) {
         console.error("Error fetching comments:", error);
         setComments([]);
-      });
+      }
+    };
 
-    axios
-      .get(`/api/feedbacks/service-rating/67b1d1122471c950ede13673`)
-      .then((response) => setAverageRating(response.data[0].averageRating))
-      .catch((error) => {
+    const fetchAverageRating = async () => {
+      try {
+        const ratingRes = await axios.get(`/api/feedbacks/service-rating/${id}`);
+        setAverageRating(ratingRes.data[0]?.averageRating || 0); // Ensure default is 0 if no ratings
+      } catch (error) {
         console.error("Error fetching service rating:", error);
-      });
+        setAverageRating(0); // Default to 0 if error occurs
+      }
+    };
 
+    fetchServiceDetails();
+    fetchComments();
+    fetchAverageRating();
   }, [id]);
 
   const handleBookingNow = async () => {

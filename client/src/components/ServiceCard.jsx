@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 // Helper function to format price
 const formatPrice = (price) => {
@@ -11,7 +12,7 @@ const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-const ServiceCard = ({ image, name, description, price, onChoose }) => {
+const ServiceCard = ({ image, name, description, price, rating, onChoose }) => {
   return (
     <motion.div
       className="flex flex-col items-center justify-between w-[300px] h-[400px] relative font-['Lato'] bg-white p-6 rounded-lg shadow-lg border border-gray-200"
@@ -39,6 +40,20 @@ const ServiceCard = ({ image, name, description, price, onChoose }) => {
       <span className="text-[16px] font-normal leading-[19px] text-[#000] mt-2">
         <strong>{formatPrice(price)}</strong>
       </span>
+
+      {/* Average Rating */}
+      <div className="flex text-yellow-500 text-lg mt-2">
+        {Array.from({ length: 5 }, (_, i) => {
+          const starValue = i + 1;
+          if (rating >= starValue) {
+            return <FaStar key={i} />;
+          } else if (rating >= starValue - 0.5) {
+            return <FaStarHalfAlt key={i} />;
+          } else {
+            return <FaRegStar key={i} />;
+          }
+        })}
+      </div>
 
       {/* Choose Button with Small Pulsing Dot */}
       <div className="relative mt-[10px] flex items-center justify-center">
