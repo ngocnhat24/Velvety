@@ -249,26 +249,6 @@ const ViewBooking = () => {
             onChange={handleSearch}
             className="border p-2 rounded w-1/3"
           />
-          <div>
-            <button
-              onClick={() => handleSort("customerInfo.firstName")}
-              className={`p-2 ${sortField === "customerInfo.firstName" ? "font-bold" : ""}`}
-            >
-              Customer
-            </button>
-            <button
-              onClick={() => handleSort("serviceID.name")}
-              className={`p-2 ${sortField === "serviceID.name" ? "font-bold" : ""}`}
-            >
-              Service
-            </button>
-            <button
-              onClick={() => handleSort("createdAt")}
-              className={`p-2 ${sortField === "createdAt" ? "font-bold" : ""}`}
-            >
-              Date
-            </button>
-          </div>
         </div>
 
         <table className="min-w-full bg-white border border-gray-200">
