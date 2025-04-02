@@ -10,6 +10,7 @@ const ViewBooked = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [expandedFeedback, setExpandedFeedback] = useState({});
   const [selectedWeek, setSelectedWeek] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -66,9 +67,22 @@ const ViewBooked = () => {
     setSelectedWeek(event.target.value);
   };
 
-  const filteredBookings = selectedWeek
-    ? bookings.filter((booking) => getWeekRange(new Date(booking.date)) === selectedWeek)
-    : bookings;
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredBookings = bookings
+    .filter((booking) => {
+      const customerName = `${booking.customerID?.firstName || ""} ${booking.customerID?.lastName || ""}`.trim();
+      const serviceName = booking.serviceID?.name || "";
+      return (
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        serviceName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    })
+    .filter((booking) =>
+      selectedWeek ? getWeekRange(new Date(booking.date)) === selectedWeek : true
+    );
 
   const handleSort = (column) => {
     const newSortOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
@@ -101,14 +115,23 @@ const ViewBooked = () => {
       <div className="ml-2 p-6 w-full">
         <h1 className="text-2xl font-bold mb-4">Work Schedule and Assessment</h1>
         {error && <p className="text-red-500">{error}</p>}
-        <div className="mb-4">
-          <label htmlFor="week-select" className="mr-2">choose week:</label>
-          <select id="week-select" value={selectedWeek} onChange={handleWeekChange} className="border p-2">
-            <option value="">All</option>
-            {uniqueWeeks.map((week) => (
-              <option key={week} value={week}>{week}</option>
-            ))}
-          </select>
+        <div className="mb-4 flex justify-between">
+          <div>
+            <label htmlFor="week-select" className="mr-2">Choose week:</label>
+            <select id="week-select" value={selectedWeek} onChange={handleWeekChange} className="border p-2">
+              <option value="">All</option>
+              {uniqueWeeks.map((week) => (
+                <option key={week} value={week}>{week}</option>
+              ))}
+            </select>
+          </div>
+          <input
+            type="text"
+            placeholder="Search by customer or service"
+            value={searchTerm}
+            onChange={handleSearch}
+            className="border p-2 rounded w-1/3"
+          />
         </div>
         {filteredBookings.length === 0 ? (
           <p>No bookings assigned to you yet.</p>
