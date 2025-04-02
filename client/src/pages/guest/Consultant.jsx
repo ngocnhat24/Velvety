@@ -163,7 +163,7 @@ export default function ConsultantGuest() {
               <img
                 src={selectedConsultant.image}
                 alt="Consultant"
-                className="w-1/3 rounded-lg mb-4"
+                className="w-[350px] h-[400px] object-cover rounded-lg mb-4"
               />
             )}
             <div className="ml-6 w-2/3">
@@ -172,19 +172,19 @@ export default function ConsultantGuest() {
               </h2>
               <p className="text-sm text-gray-600 mt-2">{selectedConsultant.note}</p>
               <div className="mt-2">
-              <span className="text-sm text-gray-600">Average Rating:</span>
-<span className="flex items-center ml-1">
-  {Array.from({ length: 5 }, (_, index) => {
-    const starValue = index + 1;
-    if (selectedConsultantRating >= starValue) {
-      return <FaStar key={index} className="text-[#C54759] w-4 h-4" />;
-    } else if (selectedConsultantRating >= starValue - 0.5) {
-      return <FaStarHalfAlt key={index} className="text-[#C54759] w-4 h-4" />;
-    } else {
-      return <FaRegStar key={index} className="text-[#C54759] w-4 h-4" />;
-    }
-  })}
-</span>
+                <span className="text-sm text-gray-600">Average Rating:</span>
+                <span className="flex items-center ml-1">
+                  {Array.from({ length: 5 }, (_, index) => {
+                    const starValue = index + 1;
+                    if (selectedConsultantRating >= starValue) {
+                      return <FaStar key={index} className="text-[#C54759] w-4 h-4" />;
+                    } else if (selectedConsultantRating >= starValue - 0.5) {
+                      return <FaStarHalfAlt key={index} className="text-[#C54759] w-4 h-4" />;
+                    } else {
+                      return <FaRegStar key={index} className="text-[#C54759] w-4 h-4" />;
+                    }
+                  })}
+                </span>
               </div>
             </div>
           </motion.div>

@@ -12,21 +12,21 @@ export default function ForgotPassword() {
     setMessage(null);
     setError(null);
     setLoading(true);
-  
+
     try {
       const response = await fetch(`/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-  
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         // If the response is not ok, throw an error with the message from the server
         throw new Error(data.message || "Something went wrong");
       }
-  
+
       setMessage("Password reset link sent! Check your email.");
       setEmail("");
     } catch (err) {
