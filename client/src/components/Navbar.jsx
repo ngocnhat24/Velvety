@@ -30,7 +30,7 @@ const Navbar = () => {
       document.body.style.overflow = "auto";
     };
   }, [showModal]);
-  
+
 
   const isLoginPage = location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/customer-profile" || location.pathname === "/forgot-password";
 
@@ -74,7 +74,9 @@ const Navbar = () => {
             key={item}
             to={`/${item.toLowerCase()}`}
             className={({ isActive }) =>
-              `text-center text-[20px] font-semibold transition-colors ${isActive ? "text-[#fadade]" : "text-[#E27585] hover:text-[#fadade]"}`
+              `text-center text-[20px] font-semibold transition-all text-[#E27585] hover:text-[#fadade] ${isActive
+
+              }`
             }
           >
             {item}
@@ -109,8 +111,8 @@ const Navbar = () => {
           )}
         </div>
       )}
-       {/* Custom Logout Modal */}
-       {showModal && (
+      {/* Custom Logout Modal */}
+      {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
             <h3 className="text-xl font-bold text-gray-800 mb-4">Log out Confirmation</h3>
