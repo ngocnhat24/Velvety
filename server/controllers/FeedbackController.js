@@ -152,3 +152,31 @@ exports.getFeedbackByService = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getFeedbackByServiceByBookingId = async (req, res) => {
+  try {
+    const { bookingRequestId } = req.params;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(bookingRequestId)) {
+      return res.status(400).json({ error: "Invalid booking request ID." });
+    }
+
+    // Find feedback for the specific booking request
+    const feedback = await Feedback.findOne({ bookingRequestId }).lean();
+
+    if (!feedback) {
+      return res.status(200).json({
+        consultantComment: "No feedback yet",
+        consultantRating: "N/A",
+        serviceComment: "No feedback yet",
+        serviceRating: "N/A",
+      });
+    }
+
+    res.status(200).json(feedback);
+  } catch (error) {
+    console.error("Error fetching feedback:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
