@@ -15,6 +15,9 @@ const ViewBooking = () => {
   const [availableConsultants, setAvailableConsultants] = useState([]);
   const [currentBooking, setCurrentBooking] = useState(null); // booking hiện tại khi chưa có consultant
   const [currentPage, setCurrentPage] = useState(1); // Add state for current page
+  const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
+  const [sortField, setSortField] = useState("createdAt"); // Add state for sorting field
+  const [sortOrder, setSortOrder] = useState("desc"); // Add state for sorting order
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -161,14 +164,73 @@ const ViewBooking = () => {
     }
   };
 
-  const sortedBookings = bookings.sort((a, b) => {
-    if (a.status === "Pending" && b.status !== "Pending") return -1;
-    if (a.status !== "Pending" && b.status === "Pending") return 1;
-    return new Date(b.createdAt) - new Date(a.createdAt); // Sort by creation date, newest first
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const handleColumnSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const filteredBookings = bookings.filter((booking) => {
+    const customerName = booking.customerInfo
+      ? `${booking.customerInfo.firstName} ${booking.customerInfo.lastName}`
+      : "Unknown";
+    return (
+      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.serviceID?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
 
-  const totalPages = Math.ceil(sortedBookings.length / ITEMS_PER_PAGE); // Calculate total pages
-  const currentBookings = sortedBookings.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Get bookings for current page
+  const sortedBookings = filteredBookings.sort((a, b) => {
+    const fieldA =
+      sortField === "customerInfo"
+        ? `${a.customerInfo?.firstName || ""} ${a.customerInfo?.lastName || ""}`
+        : sortField === "serviceID.name"
+        ? a.serviceID?.name || ""
+        : a[sortField] || "";
+    const fieldB =
+      sortField === "customerInfo"
+        ? `${b.customerInfo?.firstName || ""} ${b.customerInfo?.lastName || ""}`
+        : sortField === "serviceID.name"
+        ? b.serviceID?.name || ""
+        : b[sortField] || "";
+
+    if (!isNaN(Date.parse(fieldA)) && !isNaN(Date.parse(fieldB))) {
+      // Sort by date if fields are valid dates
+      return sortOrder === "asc"
+        ? new Date(fieldA) - new Date(fieldB)
+        : new Date(fieldB) - new Date(fieldA);
+    } else if (!isNaN(fieldA) && !isNaN(fieldB)) {
+      // Sort numerically if fields are numbers
+      return sortOrder === "asc" ? fieldA - fieldB : fieldB - fieldA;
+    } else {
+      // Sort alphabetically for strings
+      return sortOrder === "asc"
+        ? fieldA.toString().localeCompare(fieldB.toString())
+        : fieldB.toString().localeCompare(fieldA.toString());
+    }
+  });
+
+  const totalPages = Math.ceil(sortedBookings.length / ITEMS_PER_PAGE);
+  const currentBookings = sortedBookings.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="flex">
@@ -178,15 +240,76 @@ const ViewBooking = () => {
         <h1 className="text-2xl font-bold mb-4">View Bookings</h1>
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
+
+        <div className="flex justify-between mb-4">
+          <input
+            type="text"
+            placeholder="Search by customer or service"
+            value={searchTerm}
+            onChange={handleSearch}
+            className="border p-2 rounded w-1/3"
+          />
+          <div>
+            <button
+              onClick={() => handleSort("customerInfo.firstName")}
+              className={`p-2 ${sortField === "customerInfo.firstName" ? "font-bold" : ""}`}
+            >
+              Customer
+            </button>
+            <button
+              onClick={() => handleSort("serviceID.name")}
+              className={`p-2 ${sortField === "serviceID.name" ? "font-bold" : ""}`}
+            >
+              Service
+            </button>
+            <button
+              onClick={() => handleSort("createdAt")}
+              className={`p-2 ${sortField === "createdAt" ? "font-bold" : ""}`}
+            >
+              Date
+            </button>
+          </div>
+        </div>
+
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border p-2 text-center">Customer Name</th>
-              <th className="border p-2 text-center">Service Name</th>
-              <th className="border p-2 text-center">Date</th>
-              <th className="border p-2 text-center">Time</th>
-              <th className="border p-2 text-center">Consultant</th>
-              <th className="border p-2 text-center">Status</th>
+              <th
+                className="border p-2 text-center cursor-pointer"
+                onClick={() => handleColumnSort("customerInfo")}
+              >
+                Customer Name {sortField === "customerInfo" && (sortOrder === "asc" ? "↑" : "↓")}
+              </th>
+              <th
+                className="border p-2 text-center cursor-pointer"
+                onClick={() => handleColumnSort("serviceID.name")}
+              >
+                Service Name {sortField === "serviceID.name" && (sortOrder === "asc" ? "↑" : "↓")}
+              </th>
+              <th
+                className="border p-2 text-center cursor-pointer"
+                onClick={() => handleColumnSort("date")}
+              >
+                Date {sortField === "date" && (sortOrder === "asc" ? "↑" : "↓")}
+              </th>
+              <th
+                className="border p-2 text-center cursor-pointer"
+                onClick={() => handleColumnSort("time")}
+              >
+                Time {sortField === "time" && (sortOrder === "asc" ? "↑" : "↓")}
+              </th>
+              <th
+                className="border p-2 text-center cursor-pointer"
+                onClick={() => handleColumnSort("consultantID.firstName")}
+              >
+                Consultant {sortField === "consultantID.firstName" && (sortOrder === "asc" ? "↑" : "↓")}
+              </th>
+              <th
+                className="border p-2 text-center cursor-pointer"
+                onClick={() => handleColumnSort("status")}
+              >
+                Status {sortField === "status" && (sortOrder === "asc" ? "↑" : "↓")}
+              </th>
               <th className="border p-2 text-center">Actions</th>
               <th className="border p-2 text-center">Payment</th>
             </tr>
