@@ -80,11 +80,15 @@ exports.getAverageServiceRating = async (req, res) => {
       {
         $group: {
           _id: "$serviceId",
-          averageRating: { $avg: "$serviceRating" },
+          averageRating: { $avg: "$serviceRating" }, // Calculate average rating
           totalReviews: { $sum: 1 }
         }
       }
     ]);
+
+    if (result.length === 0) {
+      return res.status(200).json([{ averageRating: 0, totalReviews: 0 }]); // Default response if no ratings
+    }
 
     res.status(200).json(result);
   } catch (error) {
