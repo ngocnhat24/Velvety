@@ -355,47 +355,7 @@ export default function About() {
           </Slider>
         </Container>
       </Box>
-      <Container sx={{ textAlign: "center", py: 5 }}>
-          <motion.h1
-            className="text-4xl meow-script-regular font-extrabold text-[#df6073] mb-3"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-          >
-            What Our Customers Say
-          </motion.h1>
-        <Slider {...settings}>
-          {[
-            { name: "Sarah M.", review: "Velvety changed my skin completely! Their products are amazing.", rating: 5 },
-            { name: "John D.", review: "Best skincare brand I've ever used. Highly recommend!", rating: 4 },
-            { name: "Emily R.", review: "Great value for money. My skin feels so fresh and healthy.", rating: 5 },
-            { name: "Michael K.", review: "Love the service", rating: 4 },
-            { name: "Sophie L.", review: "Great customer service.", rating: 5 }
-          ].map((testimonial, index) => (
-            <Box key={index} sx={{ p: 2, textAlign: "center" }}>
-              <Card
-                sx={{
-                  height: 200, // Đặt chiều cao cố định để card bằng nhau
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  boxShadow: 3,
-                  p: 3,
-                }}
-              >
-                <Typography variant="body1" textAlign="center">"{testimonial.review}"</Typography>
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <StarIcon key={i} sx={{ color: "#FFD700" }} />
-                  ))}
-                </Box>
-                <Typography variant="h6" sx={{ mt: 2, fontWeight: 600 }}>{testimonial.name}</Typography>
-              </Card>
-            </Box>
-          ))}
-        </Slider>
-      </Container>
+      
       <Footer />
     </Box>
   );
