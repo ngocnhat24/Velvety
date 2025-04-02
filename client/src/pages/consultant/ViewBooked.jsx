@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import Sidebar from "../../components/ConsultantSidebar";
+import { Pagination } from "@mui/material"; // Import Pagination component
 
 const ViewBooked = () => {
   const [bookings, setBookings] = useState([]);
@@ -11,6 +12,8 @@ const ViewBooked = () => {
   const [expandedFeedback, setExpandedFeedback] = useState({});
   const [selectedWeek, setSelectedWeek] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
+  const ITEMS_PER_PAGE = 10; // Number of bookings per page
+  const [currentPage, setCurrentPage] = useState(1); // Add state for current page
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -84,6 +87,12 @@ const ViewBooked = () => {
       selectedWeek ? getWeekRange(new Date(booking.date)) === selectedWeek : true
     );
 
+  const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
+  const currentBookings = filteredBookings.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   const handleSort = (column) => {
     const newSortOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
     const sortedData = [...bookings].sort((a, b) => {
@@ -133,7 +142,7 @@ const ViewBooked = () => {
             className="border p-2 rounded w-1/3"
           />
         </div>
-        {filteredBookings.length === 0 ? (
+        {currentBookings.length === 0 ? ( // Update to use currentBookings
           <p>No bookings assigned to you yet.</p>
         ) : (
           <div className="overflow-x-auto">
@@ -160,7 +169,7 @@ const ViewBooked = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredBookings.map((booking) => (
+                {currentBookings.map((booking) => ( // Update to use currentBookings
                   <tr key={booking._id} className="text-center">
                     <td className="border px-4 py-2">{booking.serviceID?.name || "N/A"}</td>
                     <td className="border px-4 py-2">
@@ -188,6 +197,14 @@ const ViewBooked = () => {
                 ))}
               </tbody>
             </table>
+            <div className="flex justify-center mt-4">
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={(event, value) => setCurrentPage(value)}
+                color="primary"
+              />
+            </div>
           </div>
         )}
       </div>
