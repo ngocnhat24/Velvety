@@ -20,15 +20,25 @@ const ViewBooked = () => {
         // Lấy feedback cho từng dịch vụ
         const bookingsWithFeedback = await Promise.all(
           bookingsData.map(async (booking) => {
-            if (booking.serviceID && booking.serviceID._id) { // Ensure serviceID is not null
-              try {
-                const feedbackRes = await axios.get(`/api/feedbacks/service/${booking.serviceID._id}`);
-                return { ...booking, feedback: feedbackRes.data[0].consultantComment || "No feedback yet", rating: feedbackRes.data[0].consultantRating || "N/A" };
-              } catch {
-                return { ...booking, feedback: "No feedback yet ", rating: "N/A" };
-              }
+            try {
+              console.log(`Fetching feedback for bookingID: ${booking._id}`);
+              
+              const feedbackRes = await axios.get(`/api/feedbacks/bookingRequest/${booking._id}`);
+              const feedbackData = feedbackRes.data;
+
+              return {
+                ...booking,
+                feedback: feedbackData.consultantComment || "No feedback yet",
+                rating: feedbackData.consultantRating || "N/A",
+              };
+            } catch (error) {
+              console.error(`Error fetching feedback for booking ${booking._id}:`, error);
+              return {
+                ...booking,
+                feedback: "No feedback yet",
+                rating: "N/A",
+              };
             }
-            return { ...booking, feedback: "No feedback yet", rating: "N/A" };
           })
         );
 
