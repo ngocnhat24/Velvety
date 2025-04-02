@@ -15,14 +15,30 @@ export default function ServiceGuest() {
 
   // Fetch data from the server
   useEffect(() => {
-    axios
-      .get("/api/services/") // Update with your actual backend API
-      .then((response) => {
-        setServices(response.data); // Assuming response.data is an array of service objects
-      })
-      .catch((error) => {
+    const fetchServicesWithRatings = async () => {
+      try {
+        const res = await axios.get("/api/services/");
+        const servicesWithRatings = await Promise.all(
+          res.data.map(async (service) => {
+            try {
+              const ratingRes = await axios.get(`/api/feedbacks/service-rating/${service._id}`);
+              return {
+                ...service,
+                averageRating: ratingRes.data[0]?.averageRating || 0, // Use average rating
+              };
+            } catch (err) {
+              console.error(`Failed to fetch rating for service ${service._id}:`, err);
+              return { ...service, averageRating: 0 }; // Default rating if error occurs
+            }
+          })
+        );
+        setServices(servicesWithRatings);
+      } catch (error) {
         console.error("Error fetching services:", error);
-      });
+      }
+    };
+
+    fetchServicesWithRatings();
   }, []);
 
   // Scroll to top on mount
@@ -124,6 +140,7 @@ export default function ServiceGuest() {
               name={service.name}
               description={service.description}
               price={service.price}
+              rating={service.averageRating}
               onChoose={() => handleChoose(service._id)}
               className="border border-[#C54759] rounded-lg"
             />

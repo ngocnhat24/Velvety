@@ -22,13 +22,25 @@ export default function ConsultantGuest() {
   const fetchConsultants = async () => {
     try {
       const res = await axios.get("/api/consultants");
-      setConsultants(
-        res.data.map((c) => ({
-          ...c,
-          note: c.note || "No additional notes available.",
-          image: c.image || null,
-        }))
+      const consultantsWithRatings = await Promise.all(
+        res.data.map(async (c) => {
+          try {
+            const ratingRes = await axios.get(`/api/feedbacks/consultant-rating/${c._id}`);
+            return {
+              ...c,
+              note: c.note || "No additional notes available.",
+              image: c.image || null,
+              rating: ratingRes.data[0]?.averageRating || 0, // Add rating
+            };
+          } catch (err) {
+            if (err.response && err.response.status === 401) {
+              toast.error("Unauthorized access to ratings");
+            }
+            return { ...c, rating: 0 }; // Default rating if unauthorized
+          }
+        })
       );
+      setConsultants(consultantsWithRatings);
     } catch (err) {
       toast.error("Failed to fetch consultants");
     }
@@ -109,6 +121,18 @@ export default function ConsultantGuest() {
             <span className="text-[18px] font-semibold text-[#000] mt-3">
               {consultant.firstName} {consultant.lastName}
             </span>
+            <div className="flex items-center mt-2">
+              {Array.from({ length: 5 }, (_, index) => {
+                const starValue = index + 1;
+                if (consultant.rating >= starValue) {
+                  return <FaStar key={index} className="text-[#C54759] w-4 h-4" />;
+                } else if (consultant.rating >= starValue - 0.5) {
+                  return <FaStarHalfAlt key={index} className="text-[#C54759] w-4 h-4" />;
+                } else {
+                  return <FaRegStar key={index} className="text-[#C54759] w-4 h-4" />;
+                }
+              })}
+            </div>
             <div className="relative mt-[15px] flex items-center justify-center">
               <span className="absolute top-[-10px] right-[-10px] flex size-3">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff8a8a] opacity-75"></span>

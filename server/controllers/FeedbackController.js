@@ -11,8 +11,8 @@ exports.createFeedback = async (req, res) => {
 
     // Kiểm tra booking request có tồn tại và hoàn thành chưa
     const bookingRequest = await BookingRequest.findById(bookingRequestId)
-       .populate({ path: "serviceID", select: "_id" })  // Chỉnh đúng serviceID
-       .populate({ path: "consultantID", select: "_id" });
+      .populate({ path: "serviceID", select: "_id" })  // Chỉnh đúng serviceID
+      .populate({ path: "consultantID", select: "_id" });
 
     if (!bookingRequest) {
       return res.status(404).json({ message: "Booking request not found" });
@@ -131,6 +131,10 @@ exports.getAverageConsultantRatingById = async (req, res) => {
         }
       }
     ]);
+
+    if (result.length === 0) {
+      return res.status(200).json([{ averageRating: 0, totalReviews: 0 }]); // Default response if no ratings
+    }
 
     res.status(200).json(result);
   } catch (error) {
