@@ -47,26 +47,26 @@ const Quiz = () => {
     const token = localStorage.getItem("authToken");
 
     if (!token) {
-        setShowLoginModal(true);
-        return;
+      setShowLoginModal(true);
+      return;
     }
 
     console.log("Submitting answers:", answers); // Debug: Kiểm tra xem answers có dữ liệu không
 
     try {
-        const response = await axios.post(
-            "/api/quiz-results/save",
-            { answers },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+      const response = await axios.post(
+        "/api/quiz-results/save",
+        { answers },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-        console.log("Response from server:", response.data); // Debug: Kiểm tra phản hồi từ server
-        setQuizResult(response.data.quizResult);
+      console.log("Response from server:", response.data); // Debug: Kiểm tra phản hồi từ server
+      setQuizResult(response.data.quizResult);
     } catch (error) {
-        console.error("Error submitting quiz:", error);
-        setError("Something went wrong. Please try again.");
+      console.error("Error submitting quiz:", error);
+      setError("Something went wrong. Please try again.");
     }
-};
+  };
 
 
   const handleLoginRedirect = () => {
@@ -93,7 +93,15 @@ const Quiz = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center">
+    <div
+      className="relative bg-gray-100 min-h-screen flex flex-col items-center"
+      style={{
+        backgroundImage: "url('/images/cuccot.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        // filter: "blur(8px)",
+      }}
+    >
       <Navbar />
       <div className="bg-white p-6 m-8 rounded-xl shadow-lg max-w-3xl w-full">
         <h2 className="text-3xl font-semibold text-center pacifico-regular text-gray-800 mb-8">
@@ -126,7 +134,7 @@ const Quiz = () => {
               return (
                 <button
                   key={index}
-                  className={`w-full py-3 px-4 ${isSelected ? "bg-[#faf5f0]" : "bg-gray-200"
+                  className={`w-full py-3 px-4 ${isSelected ? "bg-[#f6d7d7]" : "bg-gray-200"
                     } hover:bg-gray-300 text-left rounded-lg transition-all transform hover:scale-105 duration-150`}
                   onClick={() =>
                     handleAnswerSelection(option.weight, currentQuestion._id, option.answerText)
@@ -151,9 +159,7 @@ const Quiz = () => {
           {currentQuestionIndex < questions.length - 1 ? (
             <button
               disabled={!answers.some(answer => answer.questionId === currentQuestion._id)}
-              className={`py-2 px-6 ${!answers.some(answer => answer.questionId === currentQuestion._id)
-                ? "bg-gray-300"
-                : "bg-[#f1baba]"
+              className={`py-2 px-6 bg-[#f1baba]   ${!answers.some(answer => answer.questionId === currentQuestion._id)
                 } text-white rounded-lg hover:bg-[#e78999] transition`}
               onClick={handleNextQuestion}
             >
