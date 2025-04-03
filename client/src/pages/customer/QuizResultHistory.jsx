@@ -63,7 +63,11 @@ const QuizResultHistory = () => {
       setLoading(false);
     }
   };
-  
+
+  const handleServiceClick = (serviceId) => {
+    navigate(`/services/${serviceId}`);
+  };
+
   const handleDelete = async (id) => {
     try {
       const response = await axios.delete(`/api/quiz-results/${id}`);
@@ -197,7 +201,7 @@ const QuizResultHistory = () => {
                     <TableCell align="center">Date</TableCell>
                     <TableCell align="center">Time</TableCell>
                     <TableCell align="center">Skin Type</TableCell>
-                    <TableCell align="center">Recommend Services</TableCell> 
+                    <TableCell align="center">Recommend Services</TableCell>
                     <TableCell align="center">Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -218,11 +222,48 @@ const QuizResultHistory = () => {
                         </TableCell>
                         <TableCell align="center">{result.skinType}</TableCell>
                         <TableCell align="center">
-                          {result.recommendedServices.length > 0 
-                            ? result.recommendedServices.map((service) => (
-                                <div key={service._id}>{service.name}</div>
-                              ))
-                            : "N/A"}
+                          {result.recommendedServices.length > 0 ? (
+                            <div>
+                              {result.recommendedServices.slice(0, result.showAll ? result.recommendedServices.length : 3).map((service) => (
+                                <div
+                                  key={service._id}
+                                  onClick={() => handleServiceClick(service._id)}
+                                  style={{
+                                    cursor: "pointer",
+                                    transition: "transform 0.3s, color 0.3s",
+                                  }}
+                                  className="flex items-center gap-4 hover:scale-105 hover:text-[#C54759]"
+                                >
+                                  <img
+                                    src={service.image}
+                                    alt={service.name}
+                                    className="w-12 h-12 object-cover rounded-full mt-1"
+                                  />
+                                  <span>{service.name}</span>
+                                </div>
+                              ))}
+                              {result.recommendedServices.length > 3 && (
+                                <button
+                                  onClick={() => {
+                                    const updatedResults = quizResults.map((r) =>
+                                      r._id === result._id ? { ...r, showAll: !r.showAll } : r
+                                    );
+                                    setQuizResults(updatedResults);
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    transition: "transform 0.3s, color 0.3s",
+                                    color: "#C54759",
+                                  }}
+                                  className="flex items-center gap-4 hover:scale-105 hover:text-[#C54759] mt-2"
+                                >
+                                  {result.showAll ? "View Less" : "View More"}
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            "N/A"
+                          )}
                         </TableCell>
                         <TableCell align="center">
                           <Fab

@@ -140,11 +140,11 @@ export default function ServiceDetails() {
             </div>
 
             {/* Recommended for */}
-              <div className="mt-3 text-lg bold text-gray-700 leading-relaxed">
+            <div className="mt-3 text-lg bold text-gray-700 leading-relaxed">
               <h3>
                 Recommended for:{" "}
-                {service.category && service.category.length > 0 
-                  ? service.category.join(", ") 
+                {service.category && service.category.length > 0
+                  ? service.category.join(", ")
                   : "All skin types"}
               </h3>
             </div>
