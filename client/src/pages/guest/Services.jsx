@@ -9,6 +9,7 @@ export default function ServiceGuest() {
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const servicesPerPage = 8;
   const navigate = useNavigate();
   const chooseServiceRef = useRef(null);
@@ -62,7 +63,13 @@ export default function ServiceGuest() {
 
   const indexOfLastService = currentPage * servicesPerPage;
   const indexOfFirstService = indexOfLastService - servicesPerPage;
-  const currentServices = services
+
+  // Filter services by category
+  const filteredServices = services.filter((service) =>
+    selectedCategory === "All" || service.category.includes(selectedCategory)
+  );
+
+  const currentServices = filteredServices
     .filter((service) =>
       service.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -119,8 +126,22 @@ export default function ServiceGuest() {
         <div className="w-[300px] h-[1px] bg-[url(/images/line.png)] bg-cover bg-no-repeat flex-1" />
       </div>
 
-      {/* Search bar */}
-      <div className="w-full max-w-[1800px] h-auto relative z-10 mt-[20px] mb-[10px] mx-auto flex justify-end px-4">
+      {/* Filter and Search bar in the same row */}
+      <div className="w-full max-w-[1800px] h-auto relative z-10 mt-[20px] mb-[10px] mx-auto flex justify-between px-4">
+        {/* Filter by skin type */}
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="w-full max-w-[300px] px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C54759] focus:border-transparent border-[#C54759] rounded-lg"
+        >
+          <option value="All">All Skin Types</option>
+          <option value="Oily">Oily</option>
+          <option value="Dry">Dry</option>
+          <option value="Normal">Normal</option>
+          <option value="Combination">Combination</option>
+        </select>
+
+        {/* Search bar */}
         <input
           type="text"
           placeholder="Search your services"

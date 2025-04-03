@@ -30,7 +30,7 @@ const Quiz = () => {
     fetchQuestions();
   }, []);
 
-  
+
   const fetchRecommendedServices = async (quizResultId) => {
     try {
       setLoading(true);
@@ -49,7 +49,7 @@ const Quiz = () => {
       fetchRecommendedServices(quizResult._id); // Fetch recommended services if quizResult is available
     }
   }, [quizResult]);
-  
+
   const handleAnswerSelection = (weight, questionId, answerText) => {
     setAnswers((prevAnswers) => [
       ...prevAnswers.filter((answer) => answer.questionId !== questionId),
@@ -94,6 +94,10 @@ const Quiz = () => {
   const handleLoginRedirect = () => {
     setShowLoginModal(false);
     navigate("/login");
+  };
+
+  const handleServiceClick = (serviceId) => {
+    navigate(`/services/${serviceId}`);
   };
 
   if (error) {
@@ -198,8 +202,8 @@ const Quiz = () => {
         </div>
       </div>
 
-            {/* Show the quiz result and recommended services after submission */}
-            {quizResult && (
+      {/* Show the quiz result and recommended services after submission */}
+      {quizResult && (
         <div className="fixed inset-0 bg-[#faf5f0] bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
             <h3 className="text-xl font-bold text-gray-800 mb-4 pacifico-regular">
@@ -217,9 +221,24 @@ const Quiz = () => {
               ) : error ? (
                 <p className="text-red-500">{error}</p>
               ) : recommendedServices.length > 0 ? (
-                <ul className="list-disc list-inside text-gray-700">
-                  {recommendedServices.map((service, index) => (
-                    <li key={index}>{service.name}</li> // Assuming service has 'name' field
+                <ul className="list-none text-gray-700">
+                  {recommendedServices.map((service) => (
+                    <li
+                      key={service._id}
+                      onClick={() => handleServiceClick(service._id)}
+                      style={{
+                        cursor: "pointer",
+                        transition: "transform 0.3s, color 0.3s",
+                      }}
+                      className="flex items-center gap-4 hover:scale-105 hover:text-[#C54759]"
+                    >
+                      <img
+                        src={service.image}
+                        alt={service.name}
+                        className="w-12 h-12 object-cover rounded-full mt-2"
+                      />
+                      <span>{service.name}</span>
+                    </li>
                   ))}
                 </ul>
               ) : (
