@@ -144,6 +144,11 @@ export default function ServiceDetails() {
               Price: {service.price.toLocaleString('vi-VN')} VND
             </div>
 
+            {/* Recommended for */}
+            <div className="mt-4">
+              <h3 className="text-l font-semibold text-gray-800">Recommended for:  {service.recommendedFor || "All skin types"}</h3>
+            </div>
+
             {/* Booking Button */}
             <div className="flex justify-center mt-4">
               <button
