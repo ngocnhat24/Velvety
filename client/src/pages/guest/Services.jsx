@@ -141,6 +141,7 @@ export default function ServiceGuest() {
               description={service.description}
               price={service.price}
               rating={service.averageRating}
+              category={service.category}
               onChoose={() => handleChoose(service._id)}
               className="border border-[#C54759] rounded-lg"
             />

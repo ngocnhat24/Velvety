@@ -8,6 +8,8 @@ import { motion } from "framer-motion";
 const Quiz = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [recommendedServices, setRecommendedServices] = useState([]); // State for services
+  const [loading, setLoading] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [quizResult, setQuizResult] = useState(null);
   const [error, setError] = useState(null);
@@ -28,6 +30,26 @@ const Quiz = () => {
     fetchQuestions();
   }, []);
 
+  
+  const fetchRecommendedServices = async (quizResultId) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`/api/services/recommended-services/${quizResultId}`);
+      setRecommendedServices(response.data); // Set recommended services from response
+    } catch (err) {
+      console.error("Error fetching recommended services:", err);
+      setError("Failed to fetch recommended services");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (quizResult) {
+      fetchRecommendedServices(quizResult._id); // Fetch recommended services if quizResult is available
+    }
+  }, [quizResult]);
+  
   const handleAnswerSelection = (weight, questionId, answerText) => {
     setAnswers((prevAnswers) => [
       ...prevAnswers.filter((answer) => answer.questionId !== questionId),
@@ -44,7 +66,7 @@ const Quiz = () => {
   };
 
   const handleSubmitQuiz = async () => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
 
     if (!token) {
       setShowLoginModal(true);
@@ -176,7 +198,8 @@ const Quiz = () => {
         </div>
       </div>
 
-      {quizResult && (
+            {/* Show the quiz result and recommended services after submission */}
+            {quizResult && (
         <div className="fixed inset-0 bg-[#faf5f0] bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
             <h3 className="text-xl font-bold text-gray-800 mb-4 pacifico-regular">
@@ -189,20 +212,24 @@ const Quiz = () => {
               <h4 className="text-lg font-semibold text-gray-800 mb-2">
                 Recommended Services:
               </h4>
-              {quizResult.services && quizResult.services.length > 0 ? (
+              {loading ? (
+                <p>Loading services...</p>
+              ) : error ? (
+                <p className="text-red-500">{error}</p>
+              ) : recommendedServices.length > 0 ? (
                 <ul className="list-disc list-inside text-gray-700">
-                  {quizResult.services.map((service, index) => (
-                    <li key={index}>{service}</li>
+                  {recommendedServices.map((service, index) => (
+                    <li key={index}>{service.name}</li> // Assuming service has 'name' field
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-500">N/A</p>
+                <p className="text-gray-500">No services found for your skin type.</p>
               )}
             </div>
 
             <button
               className="mt-4 py-2 px-6 bg-[#f1baba] text-white rounded-lg hover:bg-[#e78999] transition"
-              onClick={() => setQuizResult(null)}
+              onClick={() => setQuizResult(null)} // Close result
             >
               Close
             </button>

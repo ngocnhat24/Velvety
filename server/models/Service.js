@@ -11,6 +11,12 @@ const serviceSchema = new Schema(
     effectimage: { type: String, default: "", match: /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i },
     resultimage: { type: String, default: "", match: /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i },
     sensationimage: { type: String, default: "", match: /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i },
+    category: { 
+      type: [String],
+      enum: ["Oily", "Dry", "Combination", "Normal"], 
+      required: true 
+    },
+    status: { type: String, required: true, enum: ["active", "inactive"] },
   },
   { timestamps: true }
 );

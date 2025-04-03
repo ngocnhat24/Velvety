@@ -14,6 +14,21 @@ const ITEMS_PER_PAGE = 6; // Number of services per page
 const ServiceManagement = () => {
   const [services, setServices] = useState([]);
   const [editingService, setEditingService] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState(editingService?.category || []);
+  const [selectedStatus, setSelectedStatus] = useState(editingService?.status || "");
+  const handleCategoryChange = (e) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedCategories((prev) => [...prev, value]);
+    } else {
+      setSelectedCategories((prev) => prev.filter((category) => category !== value));
+    }
+  };
+
+  const handleStatusChange = (e) => {
+    setSelectedStatus(e.target.value); // This will set the selected status
+  };
+
   const { register, handleSubmit, reset, setValue, watch } = useForm({
     defaultValues: {
       detaildescription: "",
@@ -69,19 +84,25 @@ const ServiceManagement = () => {
 
   const handleEdit = (service) => {
     setEditingService(service);
-    reset(); // Clear previous state completely
-    setTimeout(() => {
-      setValue("name", service.name || "");
-      setValue("price", service.price || "");
-      setValue("image", service.image || "");
-      setValue("effectimage", service.effectimage || "");
-      setValue("resultimage", service.resultimage || "");
-      setValue("sensationimage", service.sensationimage || "");
-      setValue("description", service.description || "");
-      setValue("detaildescription", service.detaildescription || "");
-    }, 0);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    reset(); // Reset the form state to initial values
+  
+    // Set form values directly after reset
+    setValue("name", service.name || "");
+    setValue("price", service.price || "");
+    setValue("image", service.image || "");
+    setValue("effectimage", service.effectimage || "");
+    setValue("resultimage", service.resultimage || "");
+    setValue("sensationimage", service.sensationimage || "");
+    setValue("description", service.description || "");
+    setValue("detaildescription", service.detaildescription || "");
+    setSelectedCategories(service.category || []); // Handle categories as an array
+    setSelectedStatus(service.status || ""); // Handle status as a string
+    setValue("category", service.category || "");
+    setValue("status", service.status || "");
+  
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top after editing starts
   };
+  
 
   const handleDelete = async () => {
     try {
@@ -118,25 +139,148 @@ const ServiceManagement = () => {
       <div className="p-6 w-full">
         <ToastContainer />
         <h2 className="text-2xl font-bold mb-4">Service Management</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-gray-100 p-4 rounded">
-          <input {...register("name", { required: true })} placeholder="Name" className="w-full p-2 border" />
-          <input {...register("price", { required: true })} placeholder="Price" className="w-full p-2 border" />
-          <input {...register("image")} placeholder="Image URL" className="w-full p-2 border" />
-          {editingService?.image && <img src={editingService.image} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
-          <input {...register("effectimage")} placeholder="Effect Image URL" className="w-full p-2 border" />
-          {editingService?.effectimage && <img src={editingService.effectimage} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
-          <input {...register("resultimage")} placeholder="Result Image URL" className="w-full p-2 border" />
-          {editingService?.resultimage && <img src={editingService.resultimage} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
-          <input {...register("sensationimage")} placeholder="Sensation Image URL" className="w-full p-2 border" />
-          {editingService?.sensationimage && <img src={editingService.sensationimage} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />}
-          <input {...register("description")} placeholder="Description" className="w-full p-2 border" />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-gray-100 p-6 rounded-lg shadow-md">
+        <h3 className="text-2xl font-semibold mb-4">Service Details</h3>
+
+        {/* Service Name */}
+        <div>
+          <label className="block text-gray-700 mb-2">Service Name</label>
+          <input
+            {...register("name", { required: true })}
+            placeholder="Enter service name"
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Price */}
+        <div>
+          <label className="block text-gray-700 mb-2">Price</label>
+          <input
+            {...register("price", { required: true })}
+            type="number"
+            placeholder="Enter price"
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Images Section */}
+        <div>
+          <h4 className="block text-gray-700 mb-2">Images</h4>
+          <div className="space-y-4">
+            <div>
+              <input
+                {...register("image")}
+                placeholder="Image URL"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {editingService?.image && (
+                <img src={editingService.image} alt="Service Preview" className="w-32 h-32 object-cover mt-2" />
+              )}
+            </div>
+            
+            <div>
+              <input
+                {...register("effectimage")}
+                placeholder="Effect Image URL"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {editingService?.effectimage && (
+                <img src={editingService.effectimage} alt="Effect Preview" className="w-32 h-32 object-cover mt-2" />
+              )}
+            </div>
+            
+            <div>
+              <input
+                {...register("resultimage")}
+                placeholder="Result Image URL"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {editingService?.resultimage && (
+                <img src={editingService.resultimage} alt="Result Preview" className="w-32 h-32 object-cover mt-2" />
+              )}
+            </div>
+
+            <div>
+              <input
+                {...register("sensationimage")}
+                placeholder="Sensation Image URL"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {editingService?.sensationimage && (
+                <img src={editingService.sensationimage} alt="Sensation Preview" className="w-32 h-32 object-cover mt-2" />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block text-gray-700 mb-2">Description</label>
+          <textarea
+            {...register("description")}
+            placeholder="Enter a brief description"
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className="block text-gray-700 mb-2">Category</label>
+          <div className="space-x-4">
+            {["Oily", "Dry", "Combination", "Normal"].map((category) => (
+              <label key={category} className="inline-flex items-center">
+                <input
+                  {...register("category", { required: true })}
+                  type="checkbox"
+                  value={category}
+                  checked={selectedCategories.includes(category)}
+                  onChange={handleCategoryChange}
+                  className="form-checkbox"
+                />
+                <span className="ml-2">{category}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Status */}
+        <div>
+          <label className="block text-gray-700 mb-2">Status</label>
+          <div className="space-x-4">
+            {["active", "inactive"].map((statusOption) => (
+              <label key={statusOption} className="inline-flex items-center">
+                <input
+                  {...register("status", { required: true })}
+                  type="radio"
+                  value={statusOption}
+                  checked={selectedStatus === statusOption} // Check if this is the selected status
+                  onChange={handleStatusChange} // Update state when the status changes
+                  className="form-radio"
+                />
+                <span className="ml-2 capitalize">{statusOption}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Detailed Description */}
+        <div>
           <ReactQuill
             value={watch("detaildescription") || ""}
             onChange={(value) => setValue("detaildescription", value)}
-            placeholder="Detailed Description"
+            placeholder="Enter detailed description"
+            className="w-full border rounded-md"
           />
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">{editingService ? "Update" : "Create"} Service</button>
-        </form>
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+        >
+          {editingService ? "Update" : "Create"} Service
+        </button>
+      </form>
 
         <div className="mt-6">
           <div className="flex justify-between items-center mb-4">

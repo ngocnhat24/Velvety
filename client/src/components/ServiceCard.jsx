@@ -12,7 +12,7 @@ const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-const ServiceCard = ({ image, name, description, price, rating, onChoose }) => {
+const ServiceCard = ({ image, name, description, price, rating, category, onChoose }) => {
   return (
     <motion.div
       className="flex flex-col items-center justify-between w-[300px] h-[400px] relative font-['Lato'] bg-white p-6 rounded-lg shadow-lg border border-gray-200"
@@ -35,6 +35,17 @@ const ServiceCard = ({ image, name, description, price, rating, onChoose }) => {
         {description}
         <br />
       </span>
+
+      
+            {/* Recommended for */}
+            <div className="text-[14px] font-normal leading-[20px] text-[#000] text-center">
+              <h3>
+                Recommended for:{" "}
+                {category && category.length > 0 
+                  ? category.join(", ") 
+                  : "All skin types"}
+              </h3>
+            </div>
 
       {/* Price */}
       <span className="text-[16px] font-normal leading-[19px] text-[#000] mt-2">

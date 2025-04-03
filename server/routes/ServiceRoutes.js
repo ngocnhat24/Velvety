@@ -5,6 +5,7 @@ const {
   updateService,
   deleteService,
   getServiceById,
+  getRecommendedServices
 } = require("../controllers/ServiceController");
 const { authenticate, authorize } = require("../middlewares/AuthMiddleware");
 
@@ -20,5 +21,5 @@ router.get("/:id", getServiceById);
 router.post("/", authenticate, authorize(["Manager"]), createService);
 router.put("/:id", authenticate, authorize(["Manager"]), updateService);
 router.delete("/:id", authenticate, authorize(["Manager"]), deleteService);
-
+router.get("/recommended-services/:quizResultId", getRecommendedServices);
 module.exports = router;
