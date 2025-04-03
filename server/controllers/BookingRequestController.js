@@ -448,3 +448,16 @@ exports.getPendingBookingsForConsultant = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch pending bookings" });
 }
 };
+
+exports.deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedBooking = await BookingRequest.findByIdAndDelete(id);
+    if (!deletedBooking) {
+      return res.status(404).json({ message: "Booking request not found" });
+    }
+    res.status(200).json({ message: "Booking request deleted successfully", deletedBooking });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting booking request", error: error.message });
+  }
+};

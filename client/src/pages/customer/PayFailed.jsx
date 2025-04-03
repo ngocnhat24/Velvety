@@ -4,9 +4,18 @@ import axios from "@/utils/axiosInstance";
 
 export const PayFailed = () => {
     const orderCode = sessionStorage.getItem("orderCode") || localStorage.getItem("orderCode");
+    const bookingId = sessionStorage.getItem("bookingId") || localStorage.getItem("bookingId");
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const deleteBooking = async () => {
+        try {
+            await axios.delete(`/api/booking-requests/${bookingId}`);
+        } catch (error) {
+            console.error("Error deleting booking:", error);
+        }
+    };
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -20,7 +29,7 @@ export const PayFailed = () => {
                 setLoading(false);
             }
         };
-
+        deleteBooking();
         fetchOrder();
     }, [orderCode]);
 
