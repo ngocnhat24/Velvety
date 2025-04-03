@@ -15,7 +15,7 @@ const capitalizeFirstLetter = (string) => {
 const ServiceCard = ({ image, name, description, price, rating, category, onChoose }) => {
   return (
     <motion.div
-      className="flex flex-col items-center justify-between w-[300px] h-[400px] relative font-['Lato'] bg-white p-6 rounded-lg shadow-lg border border-gray-200"
+      className="flex flex-col items-center justify-between w-[300px] h-[500px] relative font-['Lato'] bg-white p-6 rounded-lg shadow-lg border border-gray-200"
       animate={{ y: [0, -10, 0] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     >
@@ -38,7 +38,7 @@ const ServiceCard = ({ image, name, description, price, rating, category, onChoo
 
       
             {/* Recommended for */}
-            <div className="text-[14px] font-normal leading-[20px] text-[#000] text-center">
+            <div className="text-[15px] font-bold leading-[20px] text-[#fb8c9e] text-center">
               <h3>
                 Recommended for:{" "}
                 {category && category.length > 0 
