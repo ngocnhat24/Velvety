@@ -16,11 +16,13 @@ const SkincareBooking = () => {
     const [selectedService, setSelectedService] = useState("");
     const [selectedConsultant, setSelectedConsultant] = useState("");
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false); // State for payment modal
     const id = localStorage.getItem("consultantId");
     const serviceId = localStorage.getItem("serviceId");
     const [bookedSlots, setBookedSlots] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const [servicePrice, setServicePrice] = useState(""); // Add state for service price
+    const [createdBookingId, setCreatedBookingId] = useState(null); // State to store the created booking ID
     const navigate = useNavigate();  // Get the navigation function
 
     useEffect(() => {
@@ -133,30 +135,11 @@ const SkincareBooking = () => {
             const response = await createBookingRequest();
 
             if (response && response.status === 201) {
-                console.log("✅ Booking successful! Preparing redirection...");
+                console.log("✅ Booking successful! Showing payment modal...");
+                const bookingId = response.data._id; // Extract booking ID from response
+                setCreatedBookingId(bookingId); // Store booking ID in state
                 setShowConfirmModal(false);
-
-                // Display success message
-                const successMessage = document.createElement("div");
-                successMessage.innerText = `Successfully booked for ${selectedDate.toDateString()} at ${selectedTime}`;
-                successMessage.style.position = "fixed";
-                successMessage.style.top = "10%";
-                successMessage.style.left = "50%";
-                successMessage.style.transform = "translate(-50%, -10%)";
-                successMessage.style.backgroundColor = "#4CAF50";
-                successMessage.style.color = "white";
-                successMessage.style.padding = "10px";
-                successMessage.style.borderRadius = "5px";
-                successMessage.style.zIndex = "1000";
-                successMessage.style.fontSize = "14px";
-                document.body.appendChild(successMessage);
-
-                console.log("⏳ Redirecting in 2 seconds...");
-
-                setTimeout(() => {
-                    console.log("🚀 Redirecting to /about now!");
-                    window.location.href = "/about"; // Direct page reload
-                }, 2000);
+                setShowPaymentModal(true); // Show payment modal after successful booking
             } else {
                 console.log("❌ Booking request did not return expected status:", response);
             }
@@ -171,7 +154,37 @@ const SkincareBooking = () => {
         }
     };
 
+    const handlePaymentClick = async () => {
+        try {
+            if (!createdBookingId) {
+                throw new Error("Booking ID is missing");
+            }
 
+            const apiUrl = `/api/payments/create-payment/${createdBookingId}`;
+            console.log("🔄 Initiating payment for booking ID:", createdBookingId); // Debug log
+            console.log("🌐 API URL:", apiUrl); // Debug log
+
+            const response = await axios.post(apiUrl);
+            const checkoutUrl = response?.data?.data?.checkoutUrl; // Correct path
+            const orderCode = response?.data?.data?.orderCode; // Check if orderCode exists
+
+            if (!checkoutUrl) {
+                throw new Error("checkoutUrl is missing from API response");
+            }
+
+            localStorage.setItem("orderCode", orderCode);
+            sessionStorage.setItem("orderCode", orderCode);
+            localStorage.setItem("bookingId", createdBookingId);
+            sessionStorage.setItem("bookingId", createdBookingId);
+
+            console.log("✅ Redirecting to payment URL:", checkoutUrl); // Debug log
+            window.location.href = checkoutUrl; // Redirect to payment page
+            toast.success(`Payment link created successfully for booking #${createdBookingId}`);
+        } catch (err) {
+            console.error("❌ Payment API Error:", err);
+            toast.error("Failed to create payment link. Please try again.");
+        }
+    };
 
 
     const handleCancel = () => {
@@ -334,7 +347,30 @@ const SkincareBooking = () => {
                         </div>
                     </div>
                 )}
-
+                {showPaymentModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-md">
+                        <div className="bg-white p-6 rounded-2xl shadow-2xl w-96">
+                            <h2 className="text-2xl font-semibold text-center text-red-600 mb-4">🔔 Payment Required</h2>
+                            <p className="text-gray-700 text-center text-sm mb-6">
+                                To continue, please complete your payment in advance. ⚠️ Cancellations are <strong>non-refundable</strong>.
+                            </p>
+                            <div className="flex justify-center gap-4">
+                                <button
+                                    className="bg-green-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 flex items-center gap-2"
+                                    onClick={handlePaymentClick} // Use the stored booking ID
+                                >
+                                    💳 Pay Now
+                                </button>
+                                <button
+                                    className="bg-gray-400 text-white px-5 py-2 rounded-lg shadow-md hover:bg-gray-500 transition duration-300 flex items-center gap-2"
+                                    onClick={() => setShowPaymentModal(false)} // Close modal
+                                >
+                                    ❌ Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

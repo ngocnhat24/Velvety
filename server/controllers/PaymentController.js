@@ -16,15 +16,6 @@ const createEmbeddedPaymentLink = async (req, res) => {
         if (!bookingRequest) {
             return res.status(404).json({ error: 1, message: 'Booking request not found' });
         }
-
-        if (bookingRequest.status === "Completed") {
-            return res.status(400).json({ error: 1, message: 'You already paid' });
-        }
-
-        if (bookingRequest.status !== "Confirmed") {
-            return res.status(400).json({ error: 1, message: 'Booking request is not Confirmed yet' });
-        }
-
         const userId = bookingRequest.customerID;
         const serviceId = bookingRequest.serviceID;
 
@@ -146,7 +137,7 @@ const receivePayment = async (req, res) => {
                 }
 
                 console.log(`Order ${orderCode} updated to Paid.`);
-            } else {
+            } else {    
                 order.status = "Canceled";
                 order.paymentStatus = data.data.desc || "Payment Failed";
                 console.log(`Order ${orderCode} updated to Canceled.`);
