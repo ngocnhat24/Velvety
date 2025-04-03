@@ -5,6 +5,7 @@ import axios from "@/utils/axiosInstance";
 export const PayFailed = () => {
     const orderCode = sessionStorage.getItem("orderCode") || localStorage.getItem("orderCode");
     const [order, setOrder] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {

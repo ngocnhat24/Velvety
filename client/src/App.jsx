@@ -32,8 +32,8 @@ import CustomerProfile from "./pages/customer/CustomerProfile.jsx";
 import SkincareBooking from "./pages/customer/Calendar.jsx";
 import ViewBooked from "./pages/consultant/ViewBooked";
 import ViewBookingHistory from "./pages/customer/BookingHistory.jsx";
-import { PaySuccess } from "./pages/staff/PaySuccess";
-import { PayFailed } from "./pages/staff/PayFailed";
+import { PaySuccess } from "./pages/customer/PaySuccess";
+import { PayFailed } from "./pages/customer/PayFailed";
 import QuizResultHistory from "./pages/customer/QuizResultHistory";
 
 
@@ -91,6 +91,8 @@ function App() {
           <Route path="/customer-profile" element={<CustomerProfile />} />
           <Route path="/booking-history" element={<ViewBookingHistory />} />
           <Route path="/quiz-result-history" element={<QuizResultHistory />} />
+          <Route path="/pay-success" element={<PaySuccess />} />
+          <Route path="/pay-failed" element={<PayFailed />} />
         </Route>
 
         {/* Manager Pages */}
@@ -115,8 +117,7 @@ function App() {
         {/* Staff Pages */}
         <Route element={<ProtectedRoute allowedRoles={["Staff"]} />}>
           <Route path="/view-booking" element={<ViewBooking />} />
-          <Route path="/pay-success" element={<PaySuccess />} />
-          <Route path="/pay-failed" element={<PayFailed />} />
+  
         </Route>
 
 
