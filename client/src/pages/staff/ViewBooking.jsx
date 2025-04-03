@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import StaffSidebar from "../../components/StaffSidebar";
 import { toast, ToastContainer } from "react-toastify";
-import { MdPayment } from "react-icons/md";
 import { Pagination } from "@mui/material"; // Import Pagination component
 
 const ITEMS_PER_PAGE = 10; // Number of bookings per page
@@ -51,31 +50,7 @@ const ViewBooking = () => {
     fetchBookings();
   }, []);
 
-  const handlePaymentClick = async (bookingId) => {
-    try {
-      const response = await axios.post(
-        `/api/payments/create-payment/${bookingId}`
-      );
-      const checkoutUrl = response?.data?.data?.checkoutUrl; // Correct path
-      const orderCode = response?.data?.data?.orderCode; // Check if orderCode exists
-
-      if (!checkoutUrl) {
-        throw new Error("checkoutUrl is missing from API response");
-      }
-
-      localStorage.setItem("orderCode", orderCode);
-      sessionStorage.setItem("orderCode", orderCode);
-      localStorage.setItem("bookingId", bookingId);
-      sessionStorage.setItem("bookingId", bookingId);
-      window.location.href = checkoutUrl;
-      toast.success(`Payment link created successfully for booking #${bookingId}`);
-    } catch (err) {
-      console.error("Payment API Error:", err);
-      setError(err.response?.data?.message || "Failed to create payment link");
-      toast.error("Failed to create payment link. Please try again.");
-    }
-  };
-
+  
   const handleConsultantClick = async (consultantID, bookingID) => {
     if (!bookingID) {
       console.error("Invalid booking ID:", bookingID);
@@ -291,7 +266,6 @@ const ViewBooking = () => {
                 Status {sortField === "status" && (sortOrder === "asc" ? "↑" : "↓")}
               </th>
               <th className="border p-2 text-center">Actions</th>
-              <th className="border p-2 text-center">Payment</th>
             </tr>
           </thead>
           <tbody>
@@ -351,14 +325,6 @@ const ViewBooking = () => {
                     <option value="Completed">Completed</option>
                     <option value="Cancelled">Cancelled</option>
                   </select>
-                </td>
-                <td className="border p-2 text-center">
-                  <button
-                    onClick={() => handlePaymentClick(booking._id)}
-                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
-                  >
-                    <MdPayment className="text-white-500 text-2xl" />
-                  </button>
                 </td>
               </tr>
             ))}
