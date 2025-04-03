@@ -129,63 +129,48 @@ const SkincareBooking = () => {
         setShowConfirmModal(true); // Chỉ hiển thị popup, không gửi API
     };
 
-    const handleConfirm = async () => {
+    const handleConfirmAndPay = async () => {
         try {
             console.log("🔄 Sending booking request...");
             const response = await createBookingRequest();
 
             if (response && response.status === 201) {
-                console.log("✅ Booking successful! Showing payment modal...");
+                console.log("✅ Booking successful! Redirecting to payment...");
                 const bookingId = response.data._id; // Extract booking ID from response
                 setCreatedBookingId(bookingId); // Store booking ID in state
-                setShowConfirmModal(false);
-                setShowPaymentModal(true); // Show payment modal after successful booking
+
+                const apiUrl = `/api/payments/create-payment/${bookingId}`;
+                console.log("🌐 Initiating payment for booking ID:", bookingId);
+
+                const paymentResponse = await axios.post(apiUrl);
+                const checkoutUrl = paymentResponse?.data?.data?.checkoutUrl; // Correct path
+                const orderCode = paymentResponse?.data?.data?.orderCode; // Check if orderCode exists
+
+                if (!checkoutUrl) {
+                    throw new Error("checkoutUrl is missing from API response");
+                }
+
+                localStorage.setItem("orderCode", orderCode);
+                sessionStorage.setItem("orderCode", orderCode);
+                localStorage.setItem("bookingId", bookingId);
+                sessionStorage.setItem("bookingId", bookingId);
+
+                console.log("✅ Redirecting to payment URL:", checkoutUrl);
+                window.location.href = checkoutUrl; // Redirect to payment page
+                toast.success(`Payment link created successfully for booking #${bookingId}`);
             } else {
                 console.log("❌ Booking request did not return expected status:", response);
             }
         } catch (error) {
-            console.error("❌ Error creating booking request:", error);
+            console.error("❌ Error during booking or payment:", error);
             if (error.response) {
                 console.error("⚠️ Backend response error:", error.response.data);
-                toast.error(`Failed to create booking: ${error.response.data.message || "Unknown error"}`);
+                toast.error(`Failed to create booking or payment: ${error.response.data.message || "Unknown error"}`);
             } else {
-                toast.error("Failed to create booking request. Please try again.");
+                toast.error("Failed to create booking or payment. Please try again.");
             }
         }
     };
-
-    const handlePaymentClick = async () => {
-        try {
-            if (!createdBookingId) {
-                throw new Error("Booking ID is missing");
-            }
-
-            const apiUrl = `/api/payments/create-payment/${createdBookingId}`;
-            console.log("🔄 Initiating payment for booking ID:", createdBookingId); // Debug log
-            console.log("🌐 API URL:", apiUrl); // Debug log
-
-            const response = await axios.post(apiUrl);
-            const checkoutUrl = response?.data?.data?.checkoutUrl; // Correct path
-            const orderCode = response?.data?.data?.orderCode; // Check if orderCode exists
-
-            if (!checkoutUrl) {
-                throw new Error("checkoutUrl is missing from API response");
-            }
-
-            localStorage.setItem("orderCode", orderCode);
-            sessionStorage.setItem("orderCode", orderCode);
-            localStorage.setItem("bookingId", createdBookingId);
-            sessionStorage.setItem("bookingId", createdBookingId);
-
-            console.log("✅ Redirecting to payment URL:", checkoutUrl); // Debug log
-            window.location.href = checkoutUrl; // Redirect to payment page
-            toast.success(`Payment link created successfully for booking #${createdBookingId}`);
-        } catch (err) {
-            console.error("❌ Payment API Error:", err);
-            toast.error("Failed to create payment link. Please try again.");
-        }
-    };
-
 
     const handleCancel = () => {
         localStorage.setItem("serviceId", serviceId); // Lưu dịch vụ đã chọn
@@ -265,10 +250,6 @@ const SkincareBooking = () => {
         }
     };
 
-
-
-
-
     return (
         <div className="bg-[#F8F4F2] min-h-screen">
             <Navbar />
@@ -329,43 +310,30 @@ const SkincareBooking = () => {
                         </div>
                     </div>
                 </div>
+
                 {showConfirmModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-10 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-md">
+                    <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-md">
                         <div className="bg-white p-8 rounded-xl shadow-2xl w-96">
-                            <h2 className="text-xl font-bold text-center text-[#C54759] mb-6 ">Booking Confirmation</h2>
-                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Service:</strong> {serviceName}</p>
-                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Price:</strong> {formatPrice(servicePrice)}</p> {/* Display service price in VND */}
-                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Date:</strong> {selectedDate.toDateString()}</p>
-                            <p className="text-gray-700 mb-2 "><strong className="text-[#C54759]">Time:</strong> {selectedTime}</p>
+                            <h2 className="text-xl font-bold text-center text-[#C54759] mb-6">Booking Confirmation</h2>
+                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Service:</strong> {serviceName}</p>
+                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Price:</strong> {formatPrice(servicePrice)}</p>
+                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Date:</strong> {selectedDate.toDateString()}</p>
+                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Time:</strong> {selectedTime}</p>
                             {consultants && id !== "null" && (
                                 <p className="text-gray-700 mb-4"><strong className="text-[#C54759]">Consultant:</strong> {consultants.firstName} {consultants.lastName}</p>
                             )}
                             <div className="flex justify-end gap-4 mt-6">
-                                <button className="bg-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300" onClick={handleConfirm}>Confirm</button>
-                                <button className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300" onClick={() => setShowConfirmModal(false)}>Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {showPaymentModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-md">
-                        <div className="bg-white p-6 rounded-2xl shadow-2xl w-96">
-                            <h2 className="text-2xl font-semibold text-center text-red-600 mb-4">🔔 Payment Required</h2>
-                            <p className="text-gray-700 text-center text-sm mb-6">
-                                To continue, please complete your payment in advance. ⚠️ Cancellations are <strong>non-refundable</strong>.
-                            </p>
-                            <div className="flex justify-center gap-4">
                                 <button
-                                    className="bg-green-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 flex items-center gap-2"
-                                    onClick={handlePaymentClick} // Use the stored booking ID
+                                    className="bg-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300"
+                                    onClick={handleConfirmAndPay}
                                 >
-                                    💳 Pay Now
+                                    Confirm & Pay
                                 </button>
                                 <button
-                                    className="bg-gray-400 text-white px-5 py-2 rounded-lg shadow-md hover:bg-gray-500 transition duration-300 flex items-center gap-2"
-                                    onClick={() => setShowPaymentModal(false)} // Close modal
+                                    className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300"
+                                    onClick={() => setShowConfirmModal(false)}
                                 >
-                                    ❌ Cancel
+                                    Cancel
                                 </button>
                             </div>
                         </div>
