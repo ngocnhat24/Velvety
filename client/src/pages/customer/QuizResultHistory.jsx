@@ -39,7 +39,23 @@ const QuizResultHistory = () => {
   const fetchQuizResults = async () => {
     try {
       const response = await axios.get("/api/quiz-results/user");
-      setQuizResults(response.data || []);
+      const results = response.data || [];
+      console.log(results);
+
+      // Fetch recommended services for each quiz result
+      const resultsWithServices = await Promise.all(
+        results.map(async (result) => {
+          try {
+            const serviceResponse = await axios.get(`/api/services/recommended-services/${result._id}`);
+            return { ...result, recommendedServices: serviceResponse.data };
+          } catch (err) {
+            console.error(`Error fetching recommended services for quiz result ${result._id}:`, err.message);
+            return { ...result, recommendedServices: [] };
+          }
+        })
+      );
+
+      setQuizResults(resultsWithServices);
     } catch (err) {
       console.error("Error fetching quiz results:", err.response?.data || err.message);
       setError(err.response?.data?.message || err.message);
@@ -47,7 +63,7 @@ const QuizResultHistory = () => {
       setLoading(false);
     }
   };
-
+  
   const handleDelete = async (id) => {
     try {
       const response = await axios.delete(`/api/quiz-results/${id}`);
@@ -181,7 +197,7 @@ const QuizResultHistory = () => {
                     <TableCell align="center">Date</TableCell>
                     <TableCell align="center">Time</TableCell>
                     <TableCell align="center">Skin Type</TableCell>
-                    <TableCell align="center">Recommend Services</TableCell> {/* New column */}
+                    <TableCell align="center">Recommend Services</TableCell> 
                     <TableCell align="center">Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -201,7 +217,13 @@ const QuizResultHistory = () => {
                           {new Date(result.createdDate).toLocaleTimeString()}
                         </TableCell>
                         <TableCell align="center">{result.skinType}</TableCell>
-                        <TableCell align="center">{result.recommendService || "N/A"}</TableCell> {/* New field */}
+                        <TableCell align="center">
+                          {result.recommendedServices.length > 0 
+                            ? result.recommendedServices.map((service) => (
+                                <div key={service._id}>{service.name}</div>
+                              ))
+                            : "N/A"}
+                        </TableCell>
                         <TableCell align="center">
                           <Fab
                             size="small"

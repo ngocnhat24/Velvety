@@ -1,6 +1,8 @@
 
 // /controllers/serviceController.js
 const Service = require('../models/Service');
+const QuizResult = require('../models/QuizResult');
+const mongoose = require('mongoose');
 
 // Get all services from the database
 const getAllServices = async (req, res) => {
@@ -33,8 +35,8 @@ const createService = async (req, res) => {
 const updateService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage } = req.body;
-    const updatedService = await Service.findByIdAndUpdate(id, { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage },
+    const { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage, category, status } = req.body;
+    const updatedService = await Service.findByIdAndUpdate(id, { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage, category, status },
       { new: true } // Trả về dữ liệu sau khi cập nhật
     );
     if (!updatedService) {
@@ -71,4 +73,33 @@ const getServiceById = async (req, res) => {
   }
 };
 
-module.exports = { createService, getAllServices, updateService, deleteService, getServiceById };
+const getRecommendedServices = async (req, res) => {
+  try {
+    const { quizResultId } = req.params; // Correctly extracting quizResultId
+
+    if (!quizResultId || !mongoose.Types.ObjectId.isValid(quizResultId)) {
+      return res.status(400).json({ message: "Invalid quiz result ID" });
+    }
+
+    // Find the quiz result by ID
+    const quizResult = await QuizResult.findById(quizResultId);
+    if (!quizResult) {
+      return res.status(404).json({ message: `Quiz result not found for ID: ${quizResultId}` });
+    }
+
+    // Extract skin type from quiz result
+    const { skinType } = quizResult;
+
+    // Find services that match the user's skin type
+    const recommendedServices = await Service.find({ category: skinType }).lean();
+
+    return res.status(200).json(recommendedServices);
+  } catch (error) {
+    console.error("Error fetching recommended services:", error);
+    return res.status(500).json({ message: "Failed to fetch recommended services. Please try again later." });
+  }
+};
+
+
+
+module.exports = { createService, getAllServices, updateService, deleteService, getServiceById, getRecommendedServices };
