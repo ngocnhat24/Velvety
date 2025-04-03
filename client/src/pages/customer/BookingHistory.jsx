@@ -99,7 +99,12 @@ const ViewBookingHistory = () => {
       const response = await axios.get(
         "/api/booking-requests/history-bookings"
       );
-      setBookings(response.data.bookings || []);
+      setBookings(
+        response.data.bookings.map((booking) => ({
+          ...booking,
+          feedbackSubmitted: booking.feedback ? true : false, // Add feedbackSubmitted flag
+        }))
+      );
     } catch (err) {
       console.error(
         "Error fetching bookings:",
@@ -175,6 +180,11 @@ const ViewBookingHistory = () => {
   };
 
   const handleFeedbackClick = (bookingRequestId) => {
+    const booking = bookings.find((b) => b._id === bookingRequestId);
+    if (booking.feedbackSubmitted) {
+      toast.error("Feedback has already been submitted for this booking.");
+      return; // Prevent opening the feedback modal
+    }
     setFeedbackData((prev) => ({
       ...prev,
       bookingRequestId: bookingRequestId,
@@ -183,6 +193,11 @@ const ViewBookingHistory = () => {
   };
 
   const handleSubmitFeedback = async () => {
+    const booking = bookings.find((b) => b._id === feedbackData.bookingRequestId);
+    if (booking.feedbackSubmitted) {
+      toast.error("Feedback has already been submitted for this booking.");
+      return; // Prevent duplicate feedback submission
+    }
     try {
       const response = await axios.post("/api/feedbacks", feedbackData);
       if (response.status === 201) {
@@ -195,6 +210,16 @@ const ViewBookingHistory = () => {
           serviceComment: "",
           bookingId: null,
         }); // Reset feedback form fields
+
+        // Update the feedbackSubmitted flag for the booking
+        setBookings((prevBookings) =>
+          prevBookings.map((b) =>
+            b._id === feedbackData.bookingRequestId
+              ? { ...b, feedbackSubmitted: true }
+              : b
+          )
+        );
+
         setRefresh((prev) => !prev);
       }
     } catch (error) {
@@ -403,6 +428,7 @@ const ViewBookingHistory = () => {
                           color="primary"
                           size="small"
                           onClick={() => handleFeedbackClick(booking._id)}
+                          disabled={booking.feedbackSubmitted} // Disable button if feedback is already submitted
                         >
                           <FaComment />
                         </Button>
