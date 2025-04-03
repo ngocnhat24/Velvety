@@ -183,6 +183,23 @@ const Quiz = () => {
               Your Skin Type: {quizResult.skinType}
             </h3>
             <p>{quizResult.recommendation}</p>
+
+            {/* Recommended Services Section */}
+            <div className="mt-6">
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">
+                Recommended Services:
+              </h4>
+              {quizResult.services && quizResult.services.length > 0 ? (
+                <ul className="list-disc list-inside text-gray-700">
+                  {quizResult.services.map((service, index) => (
+                    <li key={index}>{service}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500">N/A</p>
+              )}
+            </div>
+
             <button
               className="mt-4 py-2 px-6 bg-[#f1baba] text-white rounded-lg hover:bg-[#e78999] transition"
               onClick={() => setQuizResult(null)}

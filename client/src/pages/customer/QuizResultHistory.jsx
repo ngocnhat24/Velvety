@@ -181,6 +181,7 @@ const QuizResultHistory = () => {
                     <TableCell align="center">Date</TableCell>
                     <TableCell align="center">Time</TableCell>
                     <TableCell align="center">Skin Type</TableCell>
+                    <TableCell align="center">Recommend Services</TableCell> {/* New column */}
                     <TableCell align="center">Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -200,6 +201,7 @@ const QuizResultHistory = () => {
                           {new Date(result.createdDate).toLocaleTimeString()}
                         </TableCell>
                         <TableCell align="center">{result.skinType}</TableCell>
+                        <TableCell align="center">{result.recommendService || "N/A"}</TableCell> {/* New field */}
                         <TableCell align="center">
                           <Fab
                             size="small"
