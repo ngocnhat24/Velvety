@@ -253,15 +253,15 @@ const SkincareBooking = () => {
     return (
         <div className="bg-[#F8F4F2] min-h-screen">
             <Navbar />
-            <div className="max-w-4xl mx-auto p-4">
+            <div className="max-w-4xl mx-auto p-6">
                 {consultants && id !== "null" && id && (
-                    <h1 className="text-center text-2xl font-semibold my-4">
-                        Skincare Consultation with <span className="text-[#C54759]">{consultants.firstName} {consultants.lastName}</span>
+                    <h1 className="text-center text-3xl font-bold my-6 text-[#C54759]">
+                        Skincare Consultation with {consultants.firstName} {consultants.lastName}
                     </h1>
                 )}
 
-                <div className="bg-white p-6 rounded-xl shadow-lg flex gap-6">
-                    <div>
+                <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col lg:flex-row gap-8">
+                    <div className="flex-1">
                         <Calendar
                             onChange={setSelectedDate}
                             value={selectedDate}
@@ -270,16 +270,16 @@ const SkincareBooking = () => {
                         />
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800">
                             Available Times for <span className="text-[#C54759]">{selectedDate.toDateString()}</span>
                         </h3>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-3 gap-4">
                             {times.map((time, index) => (
                                 <button
                                     key={index}
-                                    className={`border p-2 rounded-lg text-xs font-medium transition 
+                                    className={`border p-3 rounded-lg text-sm font-medium transition 
                                         ${selectedTime === time
-                                            ? 'bg-pink-400 text-white'
+                                            ? 'bg-pink-500 text-white'
                                             : isTimeDisabled(time)
                                                 ? 'bg-gray-300 text-gray-400 cursor-not-allowed opacity-50'
                                                 : 'bg-gray-100 hover:bg-pink-100 hover:text-pink-600'
@@ -292,16 +292,16 @@ const SkincareBooking = () => {
                                 </button>
                             ))}
                         </div>
-                        <div className="flex justify-center gap-4 mt-10">
+                        <div className="flex justify-center gap-6 mt-8">
                             <button
-                                className="bg-pink-500 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-pink-600 transition duration-300"
+                                className="bg-pink-500 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-pink-600 transition duration-300"
                                 onClick={handleConfirmBooking}
                                 aria-label="Confirm booking"
                             >
                                 Choose
                             </button>
                             <button
-                                className="bg-gray-300 px-6 py-3 rounded-xl hover:bg-gray-400 transition duration-300"
+                                className="bg-gray-300 px-8 py-3 rounded-xl hover:bg-gray-400 transition duration-300"
                                 onClick={handleCancel}
                                 aria-label="Cancel booking"
                             >
@@ -312,25 +312,41 @@ const SkincareBooking = () => {
                 </div>
 
                 {showConfirmModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-md">
-                        <div className="bg-white p-8 rounded-xl shadow-2xl w-96">
-                            <h2 className="text-xl font-bold text-center text-[#C54759] mb-6">Booking Confirmation</h2>
-                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Service:</strong> {serviceName}</p>
-                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Price:</strong> {formatPrice(servicePrice)}</p>
-                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Date:</strong> {selectedDate.toDateString()}</p>
-                            <p className="text-gray-700 mb-2"><strong className="text-[#C54759]">Time:</strong> {selectedTime}</p>
-                            {consultants && id !== "null" && (
-                                <p className="text-gray-700 mb-4"><strong className="text-[#C54759]">Consultant:</strong> {consultants.firstName} {consultants.lastName}</p>
-                            )}
-                            <div className="flex justify-end gap-4 mt-6">
+                    <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center transition-opacity duration-300 backdrop-blur-sm">
+                        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+                            <h2 className="text-2xl font-bold text-center text-[#C54759] mb-6">Booking Confirmation</h2>
+                            <div className="text-gray-700 space-y-3">
+                                <p>
+                                    <strong className="text-[#C54759]">Service:</strong> {serviceName}
+                                </p>
+                                <p>
+                                    <strong className="text-[#C54759]">Price:</strong> {formatPrice(servicePrice)}
+                                </p>
+                                <p>
+                                    <strong className="text-[#C54759]">Date:</strong> {selectedDate.toDateString()}
+                                </p>
+                                <p>
+                                    <strong className="text-[#C54759]">Time:</strong> {selectedTime}
+                                </p>
+                                {consultants && id !== "null" && (
+                                    <p>
+                                        <strong className="text-[#C54759]">Consultant:</strong> {consultants.firstName} {consultants.lastName}
+                                    </p>
+                                )}
+                            </div>
+                            <p className="text-sm text-red-600 mt-6 text-center font-medium">
+                                ⚠️ PLEASE NOTE: A 100% upfront payment is required to confirm your booking. <br />
+                                Cancellations are non-refundable.
+                            </p>
+                            <div className="flex justify-end gap-4 mt-8">
                                 <button
-                                    className="bg-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300"
+                                    className="bg-pink-500 text-white px-6 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300"
                                     onClick={handleConfirmAndPay}
                                 >
                                     Confirm & Pay
                                 </button>
                                 <button
-                                    className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300"
+                                    className="bg-gray-300 px-6 py-2 rounded-lg hover:bg-gray-400 transition duration-300"
                                     onClick={() => setShowConfirmModal(false)}
                                 >
                                     Cancel

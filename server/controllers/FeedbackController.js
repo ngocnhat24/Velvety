@@ -9,9 +9,9 @@ exports.createFeedback = async (req, res) => {
 
     console.log("Request Body:", req.body);
 
-    // Kiểm tra booking request có tồn tại và hoàn thành chưa
+    // Kiểm tra booking request có tồn tại và đã hoàn thành chưa
     const bookingRequest = await BookingRequest.findById(bookingRequestId)
-      .populate({ path: "serviceID", select: "_id" })  // Chỉnh đúng serviceID
+      .populate({ path: "serviceID", select: "_id" })
       .populate({ path: "consultantID", select: "_id" });
 
     if (!bookingRequest) {
@@ -22,7 +22,13 @@ exports.createFeedback = async (req, res) => {
       return res.status(400).json({ message: "Only completed bookings can receive feedback" });
     }
 
-    const serviceId = bookingRequest.serviceID?._id; // Đúng với tên trường trong model BookingRequest
+    // 🛑 Kiểm tra xem feedback cho booking này đã tồn tại chưa
+    const existingFeedback = await Feedback.findOne({ bookingRequestId });
+    if (existingFeedback) {
+      return res.status(400).json({ message: "Feedback for this booking already exists" });
+    }
+
+    const serviceId = bookingRequest.serviceID?._id;
     const consultantId = bookingRequest.consultantID?._id;
 
     // Kiểm tra nếu không có rating thì không tạo feedback
@@ -48,6 +54,7 @@ exports.createFeedback = async (req, res) => {
     res.status(500).json({ message: "Error creating feedback", error });
   }
 };
+
 
 
 exports.getFeedbackByBooking = async (req, res) => {
