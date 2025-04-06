@@ -103,7 +103,7 @@ const QuizResultHistory = () => {
   };
 
   return (
-    <div className="flex main-container w-full h-full bg-gray-100 relative mx-auto my-0 p-6">
+    <div className="flex main-container w-full h-full relative mx-auto my-0 p-6">
       <CustomerSidebar />
       <div className="w-full">
         <Typography variant="h4" className="mb-4 text-[#c86c79] text-center">

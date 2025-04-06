@@ -1,6 +1,8 @@
 const BookingRequest = require('../models/BookingRequest');
 const Consultant = require("../models/Consultant");
 const mongoose = require('mongoose');
+const cron = require('node-cron');
+const crypto = require("crypto"); // for generating a random code
 
 exports.createBookingRequest = async (req, res) => {
   try {
@@ -33,6 +35,23 @@ exports.createBookingRequest = async (req, res) => {
       }
     }
 
+    // Generate a unique check-in code
+    const generateCheckinCode = () => {
+      return crypto.randomBytes(4).toString("hex").toUpperCase(); // e.g., "A3F5C2B1"
+    };
+
+    let checkinCode;
+    let isUnique = false;
+
+    // Ensure the code is unique in the DB
+    while (!isUnique) {
+      checkinCode = generateCheckinCode();
+      const existingCode = await BookingRequest.findOne({ CheckinCode: checkinCode });
+      if (!existingCode) {
+        isUnique = true;
+      }
+    }
+
     // Create new booking request
     const newBooking = new BookingRequest({
       serviceID,
@@ -42,6 +61,7 @@ exports.createBookingRequest = async (req, res) => {
       consultantID: consultantID || null, 
       status: req.body.status || "Pending",
       isConsultantAssignedByCustomer: req.body.isConsultantAssignedByCustomer || false,
+      CheckinCode: checkinCode,
     });
 
     const bookingRequest = await newBooking.save();
@@ -215,7 +235,7 @@ exports.cancelBookingRequest = async (req, res) => {
     }
 
     // Define allowed status transitions
-    const cancellableStatuses = ["Pending", "Confirmed"];
+    const cancellableStatuses = ["Pending"];
     if (!cancellableStatuses.includes(booking.status)) {
       return res.status(400).json({ message: `Cannot cancel booking with status '${booking.status}'` });
     }
@@ -460,4 +480,38 @@ exports.deleteBooking = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error deleting booking request", error: error.message });
   }
+};
+
+// Define the cron job within the controller
+exports.scheduleBookingCancellation = () => {
+  console.log("✅ Cron job for booking cancellation initialized");
+
+  cron.schedule('* * * * *', async () => { // every minute for testing
+    try {
+      const now = new Date();
+      const bookingsToCancel = await BookingRequest.find({
+        status: "Pending",
+        date: { $lt: now }, // Only bookings scheduled before today
+      });
+
+      if (bookingsToCancel.length === 0) {
+        console.log("📭 No overdue pending bookings to cancel.");
+        return;
+      }
+
+      console.log(`🚫 Cancelling ${bookingsToCancel.length} overdue bookings:`);
+
+      for (const booking of bookingsToCancel) {
+        booking.status = "Cancelled";
+        await booking.save();
+        console.log(`🔄 Booking ID ${booking._id} cancelled.`);
+      }
+    } catch (error) {
+      console.error("❌ Error during booking cancellation cron job:", error);
+    }
+  });
+};
+
+exports.initializeBookingTasks = () => {
+  exports.scheduleBookingCancellation(); // not "this", use "exports" here
 };

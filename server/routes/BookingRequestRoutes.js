@@ -15,7 +15,7 @@ const {
   getBookingById,
   updateBookingStatus,
   getPendingBookingsForConsultant,
-  deleteBooking
+  deleteBooking,
 } = require('../controllers/BookingRequestController');
 const { authenticate, authorize } = require("../middlewares/AuthMiddleware");
 

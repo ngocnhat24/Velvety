@@ -2,7 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import StaffSidebar from "../../components/StaffSidebar";
 import { toast, ToastContainer } from "react-toastify";
-import { Pagination } from "@mui/material"; // Import Pagination component
+import { Pagination, Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Modal,
+  Box,
+  CircularProgress } from "@mui/material"; // Import Pagination component
+
 
 const ITEMS_PER_PAGE = 10; // Number of bookings per page
 
@@ -17,6 +26,94 @@ const ViewBooking = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
   const [sortField, setSortField] = useState("createdAt"); // Add state for sorting field
   const [sortOrder, setSortOrder] = useState("desc"); // Add state for sorting order
+  const [checkinModalOpen, setCheckinModalOpen] = useState(false);
+  const [checkinInput, setCheckinInput] = useState("");
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [checkinLoading, setCheckinLoading] = useState(false);
+  const [checkoutLoadingId, setCheckoutLoadingId] = useState(null);
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+
+  const handleOpenCheckoutModal = (booking) => {
+    setSelectedBooking(booking); // Set the selected booking for checkout
+    setCheckoutModalOpen(true);
+  };
+
+  const handleCloseCheckoutModal = () => {
+    setCheckoutModalOpen(false);
+    setSelectedBooking(null);
+  };
+
+  const handleOpenCheckinModal = (booking) => {
+    setSelectedBooking(booking);
+    setCheckinInput("");
+    setCheckinModalOpen(true);
+  };
+  
+  const handleCloseCheckinModal = () => {
+    setCheckinModalOpen(false);
+    setSelectedBooking(null);
+    setCheckinInput("");
+  };
+
+  const handleCheckinSubmit = async () => {
+    if (!selectedBooking) return;
+  
+    if (checkinInput.trim() !== selectedBooking.CheckinCode) {
+      toast.error("❌ Incorrect Check-in Code");
+      return;
+    }
+  
+    try {
+      setCheckinLoading(true);
+
+      await axios.put(`/api/booking-requests/${selectedBooking._id}/status`, {
+        status: "Confirmed",
+      });
+  
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking._id === selectedBooking._id
+            ? { ...booking, status: "Confirmed" }
+            : booking
+        )
+      );
+      toast.success("✅ Booking confirmed successfully");
+      handleCloseCheckinModal();
+    } catch (err) {
+      console.error("Check-in error:", err);
+      toast.error("❌ Failed to update booking status");
+    } finally {
+      setCheckinLoading(false);
+    }
+  };
+
+  const handleCheckoutConfirm = async () => {
+    setLoading(true);
+    try {
+      // Update booking status to "Completed"
+      await axios.put(`/api/booking-requests/${selectedBooking._id}/status`, {
+        status: "Completed", // Update status to "Completed"
+      });
+
+      // Update the local state to reflect the new status and updatedDate
+      setBookings((prev) =>
+        prev.map((item) =>
+          item._id === selectedBooking._id
+            ? { ...item, status: "Completed", updatedDate: new Date().toISOString() }
+            : item
+        )
+      );
+
+      toast.success(`✅ Booking #${selectedBooking._id} checked out successfully.`);
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("❌ Failed to checkout booking.");
+    } finally {
+      setLoading(false);
+      handleCloseCheckoutModal();
+    }
+};
+
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -259,6 +356,12 @@ const ViewBooking = () => {
               >
                 Consultant {sortField === "consultantID.firstName" && (sortOrder === "asc" ? "↑" : "↓")}
               </th>
+              <th>
+                Created date
+              </th>
+              <th>
+                Updated date
+              </th>
               <th
                 className="border p-2 text-center cursor-pointer"
                 onClick={() => handleColumnSort("status")}
@@ -299,6 +402,14 @@ const ViewBooking = () => {
                 </td>
 
                 <td className="border p-2 text-center">
+                  {new Date(booking.createdDate).toLocaleDateString()}
+                </td>
+
+                <td className="border p-2 text-center text-sm text-gray-500">
+                  {new Date(booking.updatedDate).toLocaleString()}
+                </td>
+
+                <td className="border p-2 text-center">
                   <span
                     className={`p-1 rounded ${booking.status === "Pending"
                       ? "bg-yellow-200"
@@ -312,20 +423,48 @@ const ViewBooking = () => {
                     {booking.status}
                   </span>
                 </td>
-                <td className="border p-2 text-center">
-                  <select
-                    value={booking.status}
-                    onChange={(e) =>
-                      handleStatusUpdate(booking._id, e.target.value)
-                    }
-                    className="border p-1"
+                <td className="border p-2 text-center space-y-1">
+                {booking.status === "Pending" && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => handleOpenCheckinModal(booking)}
+                    disabled={new Date().toLocaleDateString() !== new Date(booking.date).toLocaleDateString()}
                   >
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </td>
+                    Check In
+                  </Button>
+                )}
+
+                {booking.status === "Confirmed" && (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    size="small"
+                    onClick={() => handleOpenCheckoutModal(booking)} // Pass booking to the modal
+                    disabled={checkoutLoadingId === booking._id || new Date() < new Date(`${booking.date} ${booking.time}`)}
+                  >
+                    {checkoutLoadingId === booking._id ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Checkout"
+                    )}
+                  </Button>
+                )}
+
+                {/* If Completed or Cancelled, show something else instead of status */}
+                {booking.status === "Completed" && (
+                  <span className="text-yellow-500 font-semibold">
+                    <i className="fas fa-lock"></i> Locked
+                  </span> // Adding a lock icon for "Locked"
+                )}
+
+                {booking.status === "Cancelled" && (
+                  <span className="text-red-500 font-semibold">
+                    <i className="fas fa-ban"></i> Blocked
+                  </span> // Adding a block icon for "Blocked"
+                )}
+              </td>
               </tr>
             ))}
           </tbody>
@@ -405,6 +544,71 @@ const ViewBooking = () => {
             </div>
           </div>
         )}
+
+        <Dialog open={checkinModalOpen} onClose={handleCloseCheckinModal}>
+          <DialogTitle>Enter Check-in Code</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Check-in Code"
+              fullWidth
+              value={checkinInput}
+              onChange={(e) => setCheckinInput(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseCheckinModal} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCheckinSubmit}
+              variant="contained"
+              color="primary"
+              disabled={checkinLoading}
+              startIcon={checkinLoading ? <CircularProgress size={18} /> : null}
+            >
+              {checkinLoading ? "Checking..." : "Confirm"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+
+      {/* Checkout Modal */}
+      <Modal
+          open={checkoutModalOpen}
+          onClose={handleCloseCheckoutModal}
+          aria-labelledby="checkout-modal-title"
+          aria-describedby="checkout-modal-description"
+        >
+          <Box className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+              <h2 id="checkout-modal-title" className="text-xl font-semibold mb-4">
+                Confirm Checkout
+              </h2>
+              <p id="checkout-modal-description" className="mb-4">
+                Are you sure you want to check out this customer?
+              </p>
+              <div className="flex justify-between">
+                <Button
+                  onClick={handleCloseCheckoutModal}
+                  className="bg-gray-300 text-gray-700 hover:bg-gray-400"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleCheckoutConfirm}
+                  disabled={loading}
+                  className="ml-2"
+                >
+                  {loading ? <CircularProgress size={20} color="inherit" /> : "Confirm"}
+                </Button>
+              </div>
+            </div>
+          </Box>
+        </Modal>
 
 
         {/* Modal for Assigning Consultant */}

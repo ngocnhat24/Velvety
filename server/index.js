@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const bookingController = require('./controllers/BookingRequestController');
 
 dotenv.config();
 
@@ -39,6 +40,8 @@ mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
+
+bookingController.initializeBookingTasks(); // ✅ Start cron before server starts
 
 // Start the server
 const PORT = process.env.PORT || 5000;

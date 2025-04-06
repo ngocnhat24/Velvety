@@ -9,9 +9,22 @@ const bookingRequestSchema = new Schema({
     consultantID: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Renamed from therapistID
     status: { type: String, enum: ["Pending", "Confirmed", "Completed", "Cancelled"], required: true },
     isConsultantAssignedByCustomer: { type: Boolean, default: false },
+    CheckinCode: { type: String, unique: true, required: true },
+    createdDate: { type: Date, default: Date.now },
+    updatedDate: { type: Date, default: Date.now },
     
 });
 
 bookingRequestSchema.index({ date: 1, time: 1, consultantID: 1 }, { unique: true });
+
+bookingRequestSchema.pre('save', function (next) {
+    this.updatedDate = new Date();
+    next();
+  });
+
+  bookingRequestSchema.pre('findOneAndUpdate', function (next) {
+    this.set({ updatedDate: new Date() });
+    next();
+  });
 
 module.exports = mongoose.model("BookingRequest", bookingRequestSchema);

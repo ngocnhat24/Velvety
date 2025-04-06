@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import CustomerSidebar from "../../components/CustomerSidebar";
 import axios from "../../utils/axiosInstance";
 import { MdVerified, MdClose } from "react-icons/md";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
   Fab,
   CircularProgress,
@@ -25,6 +27,7 @@ import {
   FormControl,
   Rating,
   TablePagination,
+  IconButton,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { motion } from "framer-motion";
@@ -44,11 +47,19 @@ const ViewBookingHistory = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [visibleCodes, setVisibleCodes] = useState({});
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const navigate = useNavigate();
+
+  const toggleCheckinCode = (bookingId) => {
+    setVisibleCodes((prev) => ({
+      ...prev,
+      [bookingId]: !prev[bookingId],
+    }));
+  };
 
   const handleReviewClick = (bookingId) => {
     setReviewData({ bookingId, comment: "", rating: 0 });
@@ -253,7 +264,7 @@ const ViewBookingHistory = () => {
   );
 
   return (
-    <div className="flex main-container w-full h-full bg-gray-100 relative mx-auto my-0 p-6">
+    <div className="flex main-container w-full h-full relative mx-auto my-0 p-6">
       <CustomerSidebar />
       <div className="w-full">
         <Typography
@@ -365,6 +376,7 @@ const ViewBookingHistory = () => {
                     <TableCell align="center">Status</TableCell>
                     <TableCell align="center">Action</TableCell>
                     <TableCell align="center">Feedback</TableCell>
+                    <TableCell align="center">Checkin Code</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -433,6 +445,36 @@ const ViewBookingHistory = () => {
                           <FaComment />
                         </Button>
                       </TableCell>
+                      <TableCell align="center">
+                      <div className="flex items-center justify-center gap-2">
+                        {visibleCodes[booking._id] ? (
+                          <>
+                            <span className="bg-gray-100 px-3 py-1 rounded-md font-mono text-sm border border-gray-300">
+                              {booking.CheckinCode}
+                            </span>
+                            <Tooltip title="Hide Check-in Code">
+                              <IconButton
+                                size="small"
+                                onClick={() => toggleCheckinCode(booking._id)}
+                                color="error"
+                              >
+                                <VisibilityOffIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <Tooltip title="Show Check-in Code">
+                            <IconButton
+                              size="small"
+                              onClick={() => toggleCheckinCode(booking._id)}
+                              color="primary"
+                            >
+                              <VisibilityIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -541,7 +583,7 @@ const ViewBookingHistory = () => {
             </h3>
             <p className="text-gray-600">
               Are you sure you want to cancel this booking ? This action cannot
-              be undone.
+              be undone. The money will not be refunded.
             </p>
             <div className="flex justify-center gap-4 mt-4">
               <button
