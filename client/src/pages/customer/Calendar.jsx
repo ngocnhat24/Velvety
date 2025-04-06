@@ -253,15 +253,15 @@ const SkincareBooking = () => {
     return (
         <div className="bg-[#F8F4F2] min-h-screen">
             <Navbar />
-            <div className="max-w-4xl mx-auto p-6">
+            <div className="max-w-4xl mx-auto p-4">
                 {consultants && id !== "null" && id && (
-                    <h1 className="text-center text-3xl font-bold my-6 text-[#C54759]">
-                        Skincare Consultation with {consultants.firstName} {consultants.lastName}
+                    <h1 className="text-center text-2xl font-semibold my-4">
+                        Skincare Consultation with <span className="text-[#C54759]">{consultants.firstName} {consultants.lastName}</span>
                     </h1>
                 )}
 
-                <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col lg:flex-row gap-8">
-                    <div className="flex-1">
+                <div className="bg-white p-6 rounded-xl shadow-lg flex gap-6">
+                    <div>
                         <Calendar
                             onChange={setSelectedDate}
                             value={selectedDate}
@@ -270,16 +270,16 @@ const SkincareBooking = () => {
                         />
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800">
+                        <h3 className="text-lg font-semibold mb-2">
                             Available Times for <span className="text-[#C54759]">{selectedDate.toDateString()}</span>
                         </h3>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-3">
                             {times.map((time, index) => (
                                 <button
                                     key={index}
-                                    className={`border p-3 rounded-lg text-sm font-medium transition 
+                                    className={`border p-2 rounded-lg text-xs font-medium transition 
                                         ${selectedTime === time
-                                            ? 'bg-pink-500 text-white'
+                                            ? 'bg-pink-400 text-white'
                                             : isTimeDisabled(time)
                                                 ? 'bg-gray-300 text-gray-400 cursor-not-allowed opacity-50'
                                                 : 'bg-gray-100 hover:bg-pink-100 hover:text-pink-600'
