@@ -266,9 +266,8 @@ const ViewBookingHistory = () => {
   );
 
   const handleChangeTimeClick = (bookingId) => {
-    setSelectedBookingId(bookingId); // Lưu bookingId đã chọn
-    setShowChangeTimeModal(true); // Hiển thị modal thay đổi thời gian
-    // navigate(`/change-time/${bookingId}`);
+    sessionStorage.setItem("changingBookingId", bookingId);
+    navigate(`/change-consultant/${bookingId}`);
   };
 
   // Modal cho việc thay đổi thời gian
@@ -488,7 +487,7 @@ const ViewBookingHistory = () => {
                       {/* Thêm nút "Change Time" */}
                       <TableCell align="center">
                         <Button
-                          onClick={() => handleChangeTimeClick(booking._id)}
+                          onClick={() => navigate(`/change-consultant/${booking._id}`)}
                           variant="contained"
                           color="secondary"
                         >
