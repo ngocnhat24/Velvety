@@ -35,6 +35,8 @@ import ViewBookingHistory from "./pages/customer/BookingHistory.jsx";
 import { PaySuccess } from "./pages/customer/PaySuccess";
 import { PayFailed } from "./pages/customer/PayFailed";
 import QuizResultHistory from "./pages/customer/QuizResultHistory";
+import ChangeCalendar from "./pages/customer/ChangeCalendar"
+import ChangeConsultant from "./pages/customer/ChangeConsultant";
 
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
@@ -93,6 +95,9 @@ function App() {
           <Route path="/quiz-result-history" element={<QuizResultHistory />} />
           <Route path="/pay-success" element={<PaySuccess />} />
           <Route path="/pay-failed" element={<PayFailed />} />
+          <Route path="/change-calendar" element={<ChangeCalendar />} />
+          <Route path="/change-consultant" element={<ChangeConsultant />} />
+          <Route path="/change-consultant/:id" element={<ChangeConsultant />} />
         </Route>
 
         {/* Manager Pages */}
@@ -117,7 +122,7 @@ function App() {
         {/* Staff Pages */}
         <Route element={<ProtectedRoute allowedRoles={["Staff"]} />}>
           <Route path="/view-booking" element={<ViewBooking />} />
-  
+
         </Route>
 
 
