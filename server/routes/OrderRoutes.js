@@ -19,5 +19,8 @@ router.get("/:orderCode", authenticate, orderController.getOrderByOrderCode);
 router.get("/revenue", orderController.getTotalRevenue);
 
 
+router.get("/most-ordered-service", orderController.getMostOrderedService);
+
+
 router.delete("/:id", orderController.deleteOrder);
 module.exports = router;

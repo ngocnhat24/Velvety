@@ -106,6 +106,35 @@ const getTotalRevenue = async (req, res) => {
     }
 };
 
+const getMostOrderedService = async (req, res) => {
+    try {
+        const serviceOrders = await Order.aggregate([
+            { $match: { status: "Paid" } }, // Chỉ tính các đơn hàng đã thanh toán
+            { $group: { _id: "$serviceId", count: { $sum: 1 } } }, // Nhóm theo serviceId và đếm số lượng
+            { $sort: { count: -1 } }, // Sắp xếp giảm dần theo số lượng
+            { $limit: 1 } // Lấy dịch vụ có số lần đặt cao nhất
+        ]);
+
+        if (serviceOrders.length === 0) {
+            return res.status(404).json({ message: "No paid orders found" });
+        }
+
+        const mostOrderedService = await Service.findById(serviceOrders[0]._id);
+
+        if (!mostOrderedService) {
+            return res.status(404).json({ message: "Service not found" });
+        }
+
+        res.status(200).json({ 
+            service: mostOrderedService, 
+            orderCount: serviceOrders[0].count 
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 module.exports = {
     createOrder,
@@ -114,4 +143,5 @@ module.exports = {
     getOrderByOrderCode,
     deleteOrder,
     getTotalRevenue,
+    getMostOrderedService,
 };
