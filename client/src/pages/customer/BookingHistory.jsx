@@ -400,6 +400,7 @@ const ViewBookingHistory = () => {
                     <TableCell align="center">Time</TableCell>
                     <TableCell align="center">Consultant</TableCell>
                     <TableCell align="center">Status</TableCell>
+                    <TableCell align="center">Create Date</TableCell>
                     <TableCell align="center">Action</TableCell>
                     <TableCell align="center">Feedback</TableCell>
                     <TableCell align="center">Change Date</TableCell>
@@ -416,7 +417,7 @@ const ViewBookingHistory = () => {
                         {booking.serviceID?.name || "N/A"}
                       </TableCell>
                       <TableCell align="center">
-                        {new Date(booking.date).toLocaleDateString()}
+                      {new Date(booking.date).toLocaleDateString("en-GB")}
                       </TableCell>
                       <TableCell align="center">{booking.time}</TableCell>
                       <TableCell align="center">
@@ -447,6 +448,16 @@ const ViewBookingHistory = () => {
                         >
                           {booking.status}
                         </span>
+                      </TableCell>
+                      <TableCell align="center">
+                      {new Date(booking.createdDate).toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
                       </TableCell>
                       <TableCell align="center">
                         <Button

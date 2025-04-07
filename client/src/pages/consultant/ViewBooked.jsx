@@ -63,7 +63,7 @@ const ViewBooked = () => {
     startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(endOfWeek.getDate() + 6);
-    return `${startOfWeek.toLocaleDateString()} To ${endOfWeek.toLocaleDateString()}`;
+    return `${startOfWeek.toLocaleDateString("en-GB")} To ${endOfWeek.toLocaleDateString("en-GB")}`;
   };
 
   const handleWeekChange = (event) => {
@@ -176,7 +176,7 @@ const ViewBooked = () => {
                       {`${booking.customerID?.firstName || ""} ${booking.customerID?.lastName || ""}`.trim() || "N/A"}
                     </td>
                     <td className="border px-4 py-2">
-                      {booking.date ? new Date(booking.date).toLocaleDateString() : "N/A"}
+                      {booking.date ? new Date(booking.date).toLocaleDateString("en-GB") : "N/A"}
                     </td>
                     <td className="border px-4 py-2">{booking.time || "N/A"}</td>
                     <td className="border px-4 py-2">{booking.status || "N/A"}</td>
