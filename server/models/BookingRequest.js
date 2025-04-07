@@ -10,6 +10,7 @@ const bookingRequestSchema = new Schema({
     status: { type: String, enum: ["Pending", "Confirmed", "Completed", "Cancelled"], required: true },
     isConsultantAssignedByCustomer: { type: Boolean, default: false },
     CheckinCode: { type: String, unique: true, required: true },
+    isUpdated: { type: Boolean, default: false },
     createdDate: { type: Date, default: Date.now },
     updatedDate: { type: Date, default: Date.now },
     
