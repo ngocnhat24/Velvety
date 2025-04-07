@@ -31,7 +31,9 @@ const Dashboard = () => {
   const [stats, setStats] = useState({});
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
-
+  const [mostOrderedServiceId, setMostOrderedServiceId] = useState(null);
+  const [mostOrderedServiceName, setMostOrderedServiceName] = useState(null);
+  const [topServices, setTopServices] = useState([]);
   const [selectedDate, setSelectedDate] = useState({
     day: moment().format("YYYY-MM-DD"),
     month: moment().month() + 1, // 1-12
@@ -42,6 +44,7 @@ const Dashboard = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get("/api/orders");
+        console.log(response.data); // Kiểm tra dữ liệu trả về
         setOrders(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -49,6 +52,10 @@ const Dashboard = () => {
     };
     fetchOrders();
   }, []);
+
+
+
+
 
   useEffect(() => {
     if (orders.length === 0) return;
@@ -62,28 +69,27 @@ const Dashboard = () => {
       );
     }
 
+    // Lọc theo ngày/tháng/năm
     if (filter === "day") {
-      // Lọc theo ngày
-      filteredOrders = filteredOrders.filter((order) => {
-        return moment(order.transactionDateTime).isSame(moment(selectedDate.day), "day");
-      });
+      filteredOrders = filteredOrders.filter((order) =>
+        moment(order.transactionDateTime).isSame(moment(selectedDate.day), "day")
+      );
     } else if (filter === "month") {
-      // Lọc theo tháng
-      filteredOrders = filteredOrders.filter((order) => {
-        return moment(order.transactionDateTime).month() + 1 === selectedDate.month &&
-          moment(order.transactionDateTime).year() === selectedDate.year;
-      });
+      filteredOrders = filteredOrders.filter((order) =>
+        moment(order.transactionDateTime).month() + 1 === selectedDate.month &&
+        moment(order.transactionDateTime).year() === selectedDate.year
+      );
     } else if (filter === "year") {
-      // Lọc theo năm
-      filteredOrders = filteredOrders.filter((order) => {
-        return moment(order.transactionDateTime).year() === selectedDate.year;
-      });
+      filteredOrders = filteredOrders.filter((order) =>
+        moment(order.transactionDateTime).year() === selectedDate.year
+      );
     }
 
     // Tính toán thống kê
     const newStats = {};
     let revenueSum = 0;
     let orderCount = 0;
+    const serviceCount = {}; // Để đếm số lần xuất hiện của mỗi serviceId
 
     filteredOrders.forEach((order) => {
       const revenue = order.amount || 0;
@@ -97,12 +103,51 @@ const Dashboard = () => {
       }
       newStats[month].revenue += revenue;
       newStats[month].count += 1;
+
+      // Đếm số lần xuất hiện của mỗi serviceId
+      const serviceId = order.serviceId;
+      if (!serviceCount[serviceId]) {
+        serviceCount[serviceId] = 0;
+      }
+      serviceCount[serviceId] += 1;
     });
 
     setStats(newStats);
     setTotalRevenue(revenueSum);
     setTotalOrders(orderCount);
-  }, [orders, filter, selectedDate, statusFilter]); // Thêm statusFilter vào dependencies
+
+    // Tìm 5 dịch vụ được đặt nhiều nhất
+    const sortedServices = Object.entries(serviceCount)
+      .sort((a, b) => b[1] - a[1]) // Sắp xếp theo số lần đặt
+      .slice(0, 5); // Top 5 dịch vụ
+
+    // Gọi API để lấy tên các dịch vụ được đặt nhiều nhất
+    Promise.all(
+      sortedServices.map(async ([serviceId, count]) => {
+        try {
+          const res = await fetch(`/api/services/${serviceId}`);
+          const data = await res.json();
+          return {
+            serviceId,
+            name: data.name,
+            count,
+          };
+        } catch (err) {
+          return {
+            serviceId,
+            name: "Unknown Service",
+            count,
+          };
+        }
+      })
+    ).then((top) => {
+      setTopServices(top);
+    });
+  }, [orders, filter, selectedDate, statusFilter]);
+
+
+
+
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -200,35 +245,38 @@ const Dashboard = () => {
         </Grid>
 
         {/* Tổng quan nhanh */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={6}>
-            <Card sx={{ p: 2 }}>
+        <Grid container spacing={1} sx={{ mb: 4 }}>
+          {/* Tổng Doanh Thu và Đơn Hàng */}
+          <Grid item xs={12} sm={6}>
+            <Card sx={{ p: 3, boxShadow: 3, borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="h6">Total Revenue</Typography>
-                <Typography variant="h5" color="primary">
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#4A90E2' }}>
+                  Total Revenue
+                </Typography>
+                <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', mt: 1 }}>
                   {totalRevenue.toLocaleString()} VND
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6}>
-            <Card sx={{ p: 2 }}>
+          <Grid item xs={12} sm={6}>
+            <Card sx={{ p: 3, boxShadow: 3, borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="h6">Total Orders</Typography>
-                <Typography variant="h5" color="secondary">
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#E91E63' }}>
+                  Total Orders
+                </Typography>
+                <Typography variant="h5" color="secondary" sx={{ fontWeight: 'bold', mt: 1 }}>
                   {totalOrders}
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
 
-        {/* Biểu đồ doanh thu và đơn hàng với filter status */}
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Card>
+          {/* Biểu đồ doanh thu và đơn hàng */}
+          <Grid item xs={12} sm={6}>
+            <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }} gutterBottom>
                   Monthly Revenue
                 </Typography>
                 <Bar
@@ -250,8 +298,10 @@ const Dashboard = () => {
                   }}
                   options={{
                     responsive: true,
-                    plugins: {
-                      legend: { position: "top" },
+                    plugins: { legend: { position: "top" } },
+                    scales: {
+                      x: { ticks: { font: { weight: 'bold' } } },
+                      y: { ticks: { font: { weight: 'bold' } } },
                     },
                   }}
                 />
@@ -259,10 +309,10 @@ const Dashboard = () => {
             </Card>
           </Grid>
 
-          <Grid item xs={6}>
-            <Card>
+          <Grid item xs={12} sm={6}>
+            <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }} gutterBottom>
                   Monthly Total Orders
                 </Typography>
                 <Bar
@@ -284,11 +334,55 @@ const Dashboard = () => {
                   }}
                   options={{
                     responsive: true,
-                    plugins: {
-                      legend: { position: "top" },
+                    plugins: { legend: { position: "top" } },
+                    scales: {
+                      x: { ticks: { font: { weight: 'bold' } } },
+                      y: { ticks: { font: { weight: 'bold' } } },
                     },
                   }}
                 />
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Top Ordered Services */}
+          <Grid item xs={12}>
+            <Card sx={{ p: 3, boxShadow: 3, borderRadius: 2 }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }} gutterBottom>
+                  Top Ordered Services
+                </Typography>
+                {topServices.length === 0 ? (
+                  <Typography variant="body2" sx={{ color: '#888' }}>
+                    No orders yet.
+                  </Typography>
+                ) : (
+                  topServices.map((service, index) => (
+                    <Box
+                      key={service.serviceId}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        py: 1.5,
+                        borderBottom: "1px solid #eee",
+                        '&:hover': {
+                          backgroundColor: '#f9f9f9',
+                          cursor: 'pointer',
+                          borderRadius: 1,
+                          boxShadow: 1,
+                        },
+                      }}
+                    >
+                      <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                        {index + 1}. {service.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {service.count} bookings
+                      </Typography>
+                    </Box>
+                  ))
+                )}
               </CardContent>
             </Card>
           </Grid>
