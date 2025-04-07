@@ -385,7 +385,7 @@ const ViewBooking = () => {
                 </td>
 
                 <td className="border p-2 text-center">
-                  {new Date(booking.date).toLocaleDateString()}
+                  {new Date(booking.date).toLocaleDateString("en-GB")}
                 </td>
                 <td className="border p-2 text-center">{booking.time}</td>
 
@@ -402,11 +402,11 @@ const ViewBooking = () => {
                 </td>
 
                 <td className="border p-2 text-center">
-                  {new Date(booking.createdDate).toLocaleDateString()}
+                  {new Date(booking.createdDate).toLocaleDateString("en-GB")}
                 </td>
 
                 <td className="border p-2 text-center text-sm text-gray-500">
-                  {new Date(booking.updatedDate).toLocaleString()}
+                  {new Date(booking.updatedDate).toLocaleString("en-GB")}
                 </td>
 
                 <td className="border p-2 text-center">
