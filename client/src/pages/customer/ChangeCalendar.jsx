@@ -132,25 +132,26 @@ const SkincareBookingChagne = () => {
 
     const handleConfirmChange = async () => {
         try {
-        console.log("BookedId:", selectedBookingId);
-        axios.put(`/api/booking-requests/${selectedBookingId}/update-details`, {
-            date: selectedDate,
-            time: selectedTime,
-            consultantID: selectedConsultant
-        })
-        .then(response => {
+            console.log("BookedId:", selectedBookingId);
+
+            const response = await axios.put(`/api/booking-requests/${selectedBookingId}/update-details`, {
+                date: selectedDate,
+                time: selectedTime,
+                consultantID: selectedConsultant
+            });
+
             console.log("Booking updated!", response.data);
-        })
-        .catch(error => {
-            console.error("Error updating booking:", error);
-        });
+            toast.success("Booking updated successfully!");
+
+            navigate("/booking-history"); // ✅ Điều hướng sau khi cập nhật thành công
+
         } catch (error) {
-            console.error("❌ Error during booking or payment:", error);
+            console.error("❌ Error updating booking:", error);
             if (error.response) {
                 console.error("⚠️ Backend response error:", error.response.data);
-                toast.error(`Failed to create booking or payment: ${error.response.data.message || "Unknown error"}`);
+                toast.error(`Failed to update booking: ${error.response.data.message || "Unknown error"}`);
             } else {
-                toast.error("Failed to create booking or payment. Please try again.");
+                toast.error("Failed to update booking. Please try again.");
             }
         }
     };
