@@ -31,12 +31,13 @@ export default function ConsultantGuest() {
               note: c.note || "No additional notes available.",
               image: c.image || null,
               rating: ratingRes.data[0]?.averageRating || 0, // Add rating
+              category: c.category || [], // Add category
             };
           } catch (err) {
             if (err.response && err.response.status === 401) {
               toast.error("Unauthorized access to ratings");
             }
-            return { ...c, rating: 0 }; // Default rating if unauthorized
+            return { ...c, rating: 0, category: c.category || [] }; // Default category if unauthorized
           }
         })
       );
@@ -50,7 +51,7 @@ export default function ConsultantGuest() {
     setSelectedConsultant(consultant);
     await axios.get(`/api/feedbacks/consultant-rating/${consultant._id}`).then((res) => {
       setSelectedConsultantRating(res.data[0].averageRating);
-    })
+    });
   };
 
   const closePanel = () => {
@@ -133,25 +134,26 @@ export default function ConsultantGuest() {
                 }
               })}
             </div>
-            <div className="relative mt-[15px] flex items-center justify-center">
-              <span className="absolute top-[-10px] right-[-10px] flex size-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff8a8a] opacity-75"></span>
-                <span className="relative inline-flex size-3 rounded-full bg-[#C54759]"></span>
-              </span>
-              <motion.button
-                className="w-[110px] h-[36px] bg-[#ffc0cb] rounded-full border hover:bg-[#ff8a8a] transition duration-300 mt-3"
-                whileHover={{
-                  scale: 1.1,
-                  boxShadow: "0 5px 15px rgba(0, 0, 0, 0.3)",
-                }}
-                whileTap={{ scale: 0.95 }}
+            <div className="mt-2 text-sm text-gray-600">
+              <strong>Specializes in:</strong>{" "}
+              {consultant.category?.join(", ") || "No Categories"}
+            </div>
+            <motion.div
+              className="relative mt-[15px] flex items-center justify-center w-full"
+              whileHover={{
+                scale: 1.05,
+                transition: { duration: 0.3, ease: "easeInOut" },
+              }}
+            >
+              <button
+                className="w-full max-w-[120px] h-[40px] bg-[#ffc0cb] rounded-full border hover:bg-[#ff8a8a] transition-all duration-300 flex items-center justify-center"
                 onClick={() => handleViewMore(consultant)}
               >
                 <span className="text-[15px] font-bold text-[#C54759]">
                   View More
                 </span>
-              </motion.button>
-            </div>
+              </button>
+            </motion.div>
           </div>
         ))}
       </div>
@@ -209,6 +211,30 @@ export default function ConsultantGuest() {
                     }
                   })}
                 </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold text-gray-700">Certifications:</h3>
+                <ul className="list-disc list-inside text-sm text-gray-600 mt-2">
+                  {selectedConsultant.certifications?.length > 0 ? (
+                    selectedConsultant.certifications.map((cert, index) => (
+                      <li key={index}>{cert}</li>
+                    ))
+                  ) : (
+                    <li>No Certifications</li>
+                  )}
+                </ul>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold text-gray-700">Specializes in:</h3>
+                <ul className="list-disc list-inside text-sm text-gray-600 mt-2">
+                  {selectedConsultant.category?.length > 0 ? (
+                    selectedConsultant.category.map((cat, index) => (
+                      <li key={index}>{cat}</li>
+                    ))
+                  ) : (
+                    <li>No Categories</li>
+                  )}
+                </ul>
               </div>
             </div>
           </motion.div>

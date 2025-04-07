@@ -26,7 +26,9 @@ exports.getAllConsultants = async (req, res) => {
                     phoneNumber: 1,
                     verified: 1,
                     note: "$consultantData.note",
-                    image: "$consultantData.image"
+                    image: "$consultantData.image",
+                    certifications: "$consultantData.certifications", // Include certifications
+                    category: "$consultantData.category", // Include category
                 }
             }
         ]);
@@ -89,7 +91,7 @@ exports.createConsultant = async (req, res) => {
     try {
         console.log("Request Body:", req.body);
 
-        const { firstName, lastName, email, password, phoneNumber, note, image, verified } = req.body;
+        const { firstName, lastName, email, password, phoneNumber, note, image, verified, certifications, category } = req.body;
 
         let existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -121,6 +123,8 @@ exports.createConsultant = async (req, res) => {
             note: note || "",  // Default empty if not provided
             image: image || "", // Default empty if not provided
             ratings: ratings, // Ensure ratings is an empty array
+            certifications: certifications || [], // Add certifications
+            category: category || [], // Add category
         });
 
         // Save the Consultant and check for errors
@@ -140,12 +144,12 @@ exports.createConsultant = async (req, res) => {
             res.status(500).json({ message: "Error saving consultant", error: error.message });
         }
     }
-}; ``
+};
 
 // Update Consultant Profile
 exports.updateConsultant = async (req, res) => {
     try {
-        const { firstName, lastName, email, phoneNumber, note, image, verified } = req.body;
+        const { firstName, lastName, email, phoneNumber, note, image, verified, certifications, category } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.params.id,
@@ -157,7 +161,7 @@ exports.updateConsultant = async (req, res) => {
 
         const consultant = await Consultant.findOneAndUpdate(
             { user: req.params.id },
-            { note, image },
+            { note, image, certifications, category }, // Update category
             { new: true }
         );
 
@@ -294,11 +298,10 @@ exports.getAvailableConsultants = async (req, res) => {
         res.status(500).json({ message: "Server error" });
       }
     };
-    
-    
 
 
-  
 
-  
-  
+
+
+
+

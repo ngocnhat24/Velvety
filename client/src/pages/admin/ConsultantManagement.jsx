@@ -28,6 +28,8 @@ const schema = yup.object().shape({
     .required("Phone number is required"),
   note: yup.string(),
   image: yup.string().url("Invalid image URL").nullable(),
+  certifications: yup.array().of(yup.string().required("Certification is required")).nullable(),
+  category: yup.array().of(yup.string().required("Category is required")).nullable(),
 });
 
 export default function ConsultantManagement() {
@@ -37,6 +39,7 @@ export default function ConsultantManagement() {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedNote, setSelectedNote] = useState(null);
   const itemsPerPage = 3;
 
   useEffect(() => {
@@ -52,6 +55,8 @@ export default function ConsultantManagement() {
           note: c.note,
           image: c.image,
           verified: c.verified,
+          certifications: c.certifications,
+          category: c.category,
         }))
       );
     } catch (err) {
@@ -123,6 +128,12 @@ export default function ConsultantManagement() {
       const updatedData = {
         ...data,
         verified: Boolean(data.verified),
+        certifications: Array.isArray(data.certifications)
+          ? data.certifications
+          : data.certifications.split(",").map((cert) => cert.trim()), // Ensure certifications is an array
+        category: Array.isArray(data.category)
+          ? data.category
+          : data.category.split(",").map((cat) => cat.trim()), // Ensure category is an array
       };
 
       if (modalData?._id) {
@@ -208,6 +219,12 @@ export default function ConsultantManagement() {
                   Image
                 </th>
                 <th className="p-3 text-left text-sm font-medium text-gray-700">
+                  Certifications
+                </th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">
+                  Category
+                </th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">
                   Actions
                 </th>
               </tr>
@@ -222,7 +239,16 @@ export default function ConsultantManagement() {
                   <td className="p-3 text-sm">{consultant.lastName}</td>
                   <td className="p-3 text-sm">{consultant.email}</td>
                   <td className="p-3 text-sm">{consultant.phoneNumber}</td>
-                  <td className="p-3 text-sm">{consultant.note}</td>
+                  <td className="p-3 text-sm">
+                    <span
+                      className="cursor-pointer text-blue-500 underline"
+                      onClick={() => setSelectedNote(consultant.note)}
+                    >
+                      {consultant.note?.length > 20
+                        ? `${consultant.note.substring(0, 20)}...`
+                        : consultant.note}
+                    </span>
+                  </td>
                   <td className="p-3 text-sm">
                     {consultant.verified ? (
                       <i className="fas fa-check-circle text-green-500"></i>
@@ -240,6 +266,23 @@ export default function ConsultantManagement() {
                     ) : (
                       "No Image"
                     )}
+                  </td>
+                  <td className="p-3 text-sm">
+                    <span
+                      className="cursor-pointer text-blue-500 underline"
+                      onClick={() =>
+                        setSelectedNote(
+                          consultant.certifications?.join(", ") || "No Certifications"
+                        )
+                      }
+                    >
+                      {consultant.certifications?.length > 2
+                        ? `${consultant.certifications.slice(0, 2).join(", ")}...`
+                        : consultant.certifications?.join(", ") || "No Certifications"}
+                    </span>
+                  </td>
+                  <td className="p-3 text-sm">
+                    {consultant.category?.join(", ") || "No Categories"}
                   </td>
                   <td className="p-3 text-sm">
                     <button
@@ -273,6 +316,20 @@ export default function ConsultantManagement() {
             onClose={() => setModalData(null)}
           />
         )}
+        {selectedNote && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+              <h3 className="text-xl font-bold mb-4">Full Note</h3>
+              <p className="text-gray-700 mb-6">{selectedNote}</p>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600"
+                onClick={() => setSelectedNote(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
         <div className="flex justify-center space-x-2 mt-4">
           {[...Array(totalPages)].map((_, index) => (
             <button
@@ -294,6 +351,7 @@ export default function ConsultantManagement() {
 }
 
 function ConsultantForm({ data, onSubmit, onClose }) {
+  const categories = ["Oily", "Dry", "Combination", "Normal"]; // Available categories
   const {
     register,
     handleSubmit,
@@ -310,6 +368,8 @@ function ConsultantForm({ data, onSubmit, onClose }) {
       note: data.note || "",
       image: data.image || "",
       verified: data.verified || false,
+      certifications: data.certifications || [],
+      category: data.category || [],
     },
   });
 
@@ -322,6 +382,8 @@ function ConsultantForm({ data, onSubmit, onClose }) {
       note: data.note || "",
       image: data.image || "",
       verified: !!data.verified,
+      certifications: data.certifications || [],
+      category: data.category || [],
     });
   }, [data, reset]);
 
@@ -353,6 +415,56 @@ function ConsultantForm({ data, onSubmit, onClose }) {
               )}
             </div>
           ))}
+
+          {/* Certifications Input */}
+          <div className="mb-4">
+            <textarea
+              {...register("certifications")}
+              className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="Certifications (comma-separated)"
+              defaultValue={data.certifications?.join(", ")} // Display certifications as a comma-separated string
+              onBlur={(e) =>
+                reset({
+                  ...watch(),
+                  certifications: e.target.value
+                    .split(",")
+                    .map((cert) => cert.trim())
+                    .filter((cert) => cert), // Convert input to array and remove empty values
+                })
+              }
+            />
+            {errors.certifications && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.certifications.message}
+              </p>
+            )}
+          </div>
+
+          {/* Category Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Categories
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {categories.map((cat) => (
+                <label key={cat} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={cat}
+                    {...register("category")}
+                    defaultChecked={data.category?.includes(cat)}
+                    className="form-checkbox h-4 w-4 text-green-500"
+                  />
+                  <span className="text-sm text-gray-700">{cat}</span>
+                </label>
+              ))}
+            </div>
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
 
           {/* Verified Toggle */}
           <div className="flex items-center mb-6">
