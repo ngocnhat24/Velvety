@@ -17,8 +17,9 @@ const SkincareBookingChagne = () => {
     const [selectedConsultant, setSelectedConsultant] = useState("");
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false); // State for payment modal
-    const id = localStorage.getItem("consultantId");
-    const serviceId = localStorage.getItem("serviceId");
+    const id = localStorage.getItem("consultantId") || sessionStorage.getItem("consultantId") || localStorage.getItem("BookedConsultantId") || sessionStorage.getItem("BookedConsultantId");
+    const selectedBookingId = localStorage.getItem("selectedBookingId") || sessionStorage.getItem("selectedBookingId");
+    const serviceId = localStorage.getItem("serviceId") || sessionStorage.getItem("serviceId");
     const [bookedSlots, setBookedSlots] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const [servicePrice, setServicePrice] = useState(""); // Add state for service price
@@ -129,38 +130,20 @@ const SkincareBookingChagne = () => {
         setShowConfirmModal(true); // Chỉ hiển thị popup, không gửi API
     };
 
-    const handleConfirmAndPay = async () => {
+    const handleConfirmChange = async () => {
         try {
-            console.log("🔄 Sending booking request...");
-            const response = await createBookingRequest();
-
-            if (response && response.status === 201) {
-                console.log("✅ Booking successful! Redirecting to payment...");
-                const bookingId = response.data._id; // Extract booking ID from response
-                setCreatedBookingId(bookingId); // Store booking ID in state
-
-                const apiUrl = `/api/payments/create-payment/${bookingId}`;
-                console.log("🌐 Initiating payment for booking ID:", bookingId);
-
-                const paymentResponse = await axios.post(apiUrl);
-                const checkoutUrl = paymentResponse?.data?.data?.checkoutUrl; // Correct path
-                const orderCode = paymentResponse?.data?.data?.orderCode; // Check if orderCode exists
-
-                if (!checkoutUrl) {
-                    throw new Error("checkoutUrl is missing from API response");
-                }
-
-                localStorage.setItem("orderCode", orderCode);
-                sessionStorage.setItem("orderCode", orderCode);
-                localStorage.setItem("bookingId", bookingId);
-                sessionStorage.setItem("bookingId", bookingId);
-
-                console.log("✅ Redirecting to payment URL:", checkoutUrl);
-                window.location.href = checkoutUrl; // Redirect to payment page
-                toast.success(`Payment link created successfully for booking #${bookingId}`);
-            } else {
-                console.log("❌ Booking request did not return expected status:", response);
-            }
+        console.log("BookedId:", selectedBookingId);
+        axios.put(`/api/booking-requests/${selectedBookingId}/update-details`, {
+            date: selectedDate,
+            time: selectedTime,
+            consultantID: selectedConsultant
+        })
+        .then(response => {
+            console.log("Booking updated!", response.data);
+        })
+        .catch(error => {
+            console.error("Error updating booking:", error);
+        });
         } catch (error) {
             console.error("❌ Error during booking or payment:", error);
             if (error.response) {
@@ -173,8 +156,9 @@ const SkincareBookingChagne = () => {
     };
 
     const handleCancel = () => {
-        localStorage.setItem("serviceId", serviceId); // Lưu dịch vụ đã chọn
-        window.location.href = "/consultant-customer"; // Chuyển về trang consultant khi bấm Cancel
+        localStorage.removeItem("consultantId");
+        sessionStorage.removeItem("consultantId");
+        window.location.href = "/change-consultant"; // Chuyển về trang consultant khi bấm Cancel
     };
 
     const isTimeDisabled = (time) => {
@@ -317,12 +301,6 @@ const SkincareBookingChagne = () => {
                             <h2 className="text-2xl font-bold text-center text-[#C54759] mb-6">Change Confirmation</h2>
                             <div className="text-gray-700 space-y-3">
                                 <p>
-                                    <strong className="text-[#C54759]">Service:</strong> {serviceName}
-                                </p>
-                                <p>
-                                    <strong className="text-[#C54759]">Price:</strong> {formatPrice(servicePrice)}
-                                </p>
-                                <p>
                                     <strong className="text-[#C54759]">Date:</strong> {selectedDate.toDateString()}
                                 </p>
                                 <p>
@@ -341,7 +319,7 @@ const SkincareBookingChagne = () => {
                             <div className="flex justify-end gap-4 mt-8">
                                 <button
                                     className="bg-pink-500 text-white px-6 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300"
-                                    onClick={handleConfirmAndPay}
+                                    onClick={handleConfirmChange}
                                 >
                                     Confirm Change
                                 </button>

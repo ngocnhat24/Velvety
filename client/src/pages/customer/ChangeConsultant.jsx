@@ -11,6 +11,15 @@ export default function ChangeConsultant() {
     const [visibleNoteIndex, setVisibleNoteIndex] = useState(null);
     const [consultants, setConsultants] = useState([]);
 
+    const handleClick = () => {
+        navigate(`/change-calendar`);
+      };
+
+    const handleNullConsultants = () => {
+        localStorage.setItem("consultantId", null);
+        sessionStorage.setItem("consultantId", null);
+        navigate(`/change-calendar`);
+    };
 
     useEffect(() => {
         fetchConsultants();
@@ -39,10 +48,7 @@ export default function ChangeConsultant() {
     const handleBookingNow = async (consultantId) => {
         localStorage.setItem("consultantId", consultantId);
         sessionStorage.setItem("consultantId", consultantId);
-        localStorage.setItem("serviceUrl", `/services/${id}/consultant-customer/${consultantId}/calendar`);
-        sessionStorage.setItem("serviceUrl", `/services/${id}/consultant-customer/${consultantId}/calendar`);
-        navigate(`/services/${id}/consultant-customer/${consultantId}/calendar`);
-        console.log("Navigating to:", `/services/${id}/consultant-customer/${consultantId}/calendar`);
+        navigate(`/change-calendar`);
     };
 
     return (
@@ -56,9 +62,15 @@ export default function ChangeConsultant() {
                     </span>
                 </div>
             </div>
+            <button
+            onClick={() => navigate("/booking-history")}
+            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md shadow"
+            >
+            ← Back
+            </button>
             <div className="w-full max-w-[1800px] h-auto relative z-[27] mt-[40px] mx-auto flex flex-col gap-5 px-4">
                 <button
-                    onClick={() => navigate("/services")}
+                    onClick={handleClick}
                     className="mb-2 text-lg text-[#C86C79] hover:text-[#ffc0cb] self-end"
                 >
                     Change your calendar
@@ -111,12 +123,7 @@ export default function ChangeConsultant() {
             <div className="flex justify-center mt-8 mb-8">
                 <button
                     className="w-[220px] h-[50px] bg-[#ffc0cb] rounded-full border-solid border-[2px] border-[#C54759] flex items-center justify-center hover:bg-[#ff8a8a] transition duration-300 shadow-lg"
-                    onClick={() => {
-                        localStorage.setItem("consultantId", null);
-                        localStorage.setItem("serviceUrl", `/services/${id}/consultant-customer/null/calendar`);
-                        navigate(`/services/${id}/consultant-customer/null/calendar`);
-                        console.log("Navigating to: ", `/services/${id}/consultant-customer/null/calendar`);
-                    }}
+                    onClick={() => handleNullConsultants()}
                 >
                     <span className="text-[20px] font-bold leading-[24px] text-[#C54759]">
                         We can choose consultant for you

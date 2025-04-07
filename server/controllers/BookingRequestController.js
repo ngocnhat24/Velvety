@@ -572,7 +572,7 @@ exports.updateBookingRequestDetails = async (req, res) => {
       const bookedConsultants = await BookingRequest.find({
         date: date || booking.date, // Use the provided date or the existing booking date
         time: time || booking.time, // Use the provided time or the existing booking time
-        consultantID: { $ne: null },
+        consultantID,
         status: { $in: ["Pending", "Confirmed"] },
       }).distinct("consultantID");
 
@@ -585,7 +585,9 @@ exports.updateBookingRequestDetails = async (req, res) => {
     const updateData = {};
     if (date) updateData.date = date;
     if (time) updateData.time = time;
-    if (consultantID) updateData.consultantID = consultantID;
+    if (consultantID !== undefined) {
+      updateData.consultantID = consultantID === '' ? null : consultantID;
+    }
     updateData.isUpdated = true; // Mark as updated
 
     const updatedBooking = await BookingRequest.findByIdAndUpdate(id, updateData, { new: true });

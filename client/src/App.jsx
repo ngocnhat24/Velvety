@@ -96,6 +96,7 @@ function App() {
           <Route path="/pay-success" element={<PaySuccess />} />
           <Route path="/pay-failed" element={<PayFailed />} />
           <Route path="/change-calendar" element={<ChangeCalendar />} />
+          <Route path="/change-consultant/:id/change-calendar" element={<ChangeCalendar />} />
           <Route path="/change-consultant" element={<ChangeConsultant />} />
           <Route path="/change-consultant/:id" element={<ChangeConsultant />} />
         </Route>

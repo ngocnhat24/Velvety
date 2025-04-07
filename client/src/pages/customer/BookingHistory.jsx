@@ -56,6 +56,23 @@ const ViewBookingHistory = () => {
 
   const navigate = useNavigate();
 
+  const handleChangeTime = (BookedConsultantId, bookingId) => {
+    if (BookedConsultantId) {
+      localStorage.setItem("BookedConsultantId", BookedConsultantId);
+      sessionStorage.setItem("BookedConsultantId", BookedConsultantId);
+    } else {
+      // Store null explicitly so it's clear no consultant is currently assigned
+      localStorage.setItem("BookedConsultantId", "null");
+      sessionStorage.setItem("BookedConsultantId", "null");
+    }
+  
+    localStorage.setItem("selectedBookingId", bookingId);
+    sessionStorage.setItem("selectedBookingId", bookingId);
+  
+    navigate(`/change-consultant`);
+  };
+  
+
   const toggleCheckinCode = (bookingId) => {
     setVisibleCodes((prev) => ({
       ...prev,
@@ -265,30 +282,6 @@ const ViewBookingHistory = () => {
     page * rowsPerPage + rowsPerPage
   );
 
-  const handleChangeTimeClick = (bookingId) => {
-    sessionStorage.setItem("changingBookingId", bookingId);
-    navigate(`/change-consultant/${bookingId}`);
-  };
-
-  // Modal cho việc thay đổi thời gian
-  const handleTimeChange = async () => {
-    if (!newTime) {
-      alert("Please select a new time.");
-      return;
-    }
-
-    try {
-      const response = await axios.put(`/api/booking-requests/${selectedBookingId}/change-time`, { newTime });
-      if (response.status === 200) {
-        toast.success("Time changed successfully!");
-        setShowChangeTimeModal(false);
-        setRefresh((prev) => !prev); // Refresh lại danh sách booking
-      }
-    } catch (error) {
-      toast.error("Failed to change time");
-    }
-  };
-
   return (
     <div className="flex main-container w-full h-full relative mx-auto my-0 p-6">
       <CustomerSidebar />
@@ -487,7 +480,7 @@ const ViewBookingHistory = () => {
                       {/* Thêm nút "Change Time" */}
                       <TableCell align="center">
                         <Button
-                          onClick={() => navigate(`/change-consultant/${booking._id}`)}
+                          onClick={() => handleChangeTime(booking.consultantID?._id, booking._id)}
                           variant="contained"
                           color="secondary"
                         >
