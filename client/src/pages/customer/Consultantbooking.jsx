@@ -66,7 +66,15 @@ export default function ConsultantGuest() {
         {consultants.map((consultant, index) => (
           <div key={consultant._id} className="flex flex-row items-start bg-white p-6 rounded-lg shadow-lg gap-5 mb-5">
             <div>
-              {consultant.image ? <img src={consultant.image} alt="Consultant" className="w-[150px] h-[150px] bg-cover bg-center bg-no-repeat rounded-t-lg" /> : "No Image"}
+              {consultant.image ? (
+                <img
+                  src={consultant.image}
+                  alt="Consultant"
+                  className="w-[150px] h-[150px] bg-cover bg-center bg-no-repeat rounded-t-lg"
+                />
+              ) : (
+                "No Image"
+              )}
             </div>
             <div className="flex flex-col items-start flex-1">
               <span className="text-[18px] font-semibold leading-[24px] text-[#000] tracking-[-0.8px]">
@@ -86,6 +94,10 @@ export default function ConsultantGuest() {
                     return <FaRegStar key={index} className="text-[#C54759] w-4 h-4" />;
                   }
                 })}
+              </div>
+              <div className="mt-2 text-sm text-gray-600">
+                <strong>Specializes in:</strong>{" "}
+                {consultant.category?.join(", ") || "No Categories"}
               </div>
               {visibleNoteIndex === index && (
                 <span className="mt-2 text-[14px] font-normal leading-[20px] text-[#555] tracking-[-0.4px]">

@@ -6,6 +6,11 @@ const consultantSchema = new Schema({
     note: { type: String },
     image: { type: String },
     certifications: { type: [String], default: [] }, // New field for certifications
+    category: { 
+        type: [String],
+        enum: ["Oily", "Dry", "Combination", "Normal"], 
+        required: true 
+      },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Consultant", consultantSchema);

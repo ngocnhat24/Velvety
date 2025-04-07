@@ -29,6 +29,7 @@ const schema = yup.object().shape({
   note: yup.string(),
   image: yup.string().url("Invalid image URL").nullable(),
   certifications: yup.array().of(yup.string().required("Certification is required")).nullable(),
+  category: yup.array().of(yup.string().required("Category is required")).nullable(),
 });
 
 export default function ConsultantManagement() {
@@ -55,6 +56,7 @@ export default function ConsultantManagement() {
           image: c.image,
           verified: c.verified,
           certifications: c.certifications,
+          category: c.category,
         }))
       );
     } catch (err) {
@@ -129,6 +131,9 @@ export default function ConsultantManagement() {
         certifications: Array.isArray(data.certifications)
           ? data.certifications
           : data.certifications.split(",").map((cert) => cert.trim()), // Ensure certifications is an array
+        category: Array.isArray(data.category)
+          ? data.category
+          : data.category.split(",").map((cat) => cat.trim()), // Ensure category is an array
       };
 
       if (modalData?._id) {
@@ -217,6 +222,9 @@ export default function ConsultantManagement() {
                   Certifications
                 </th>
                 <th className="p-3 text-left text-sm font-medium text-gray-700">
+                  Category
+                </th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700">
                   Actions
                 </th>
               </tr>
@@ -272,6 +280,9 @@ export default function ConsultantManagement() {
                         ? `${consultant.certifications.slice(0, 2).join(", ")}...`
                         : consultant.certifications?.join(", ") || "No Certifications"}
                     </span>
+                  </td>
+                  <td className="p-3 text-sm">
+                    {consultant.category?.join(", ") || "No Categories"}
                   </td>
                   <td className="p-3 text-sm">
                     <button
@@ -340,6 +351,7 @@ export default function ConsultantManagement() {
 }
 
 function ConsultantForm({ data, onSubmit, onClose }) {
+  const categories = ["Oily", "Dry", "Combination", "Normal"]; // Available categories
   const {
     register,
     handleSubmit,
@@ -357,6 +369,7 @@ function ConsultantForm({ data, onSubmit, onClose }) {
       image: data.image || "",
       verified: data.verified || false,
       certifications: data.certifications || [],
+      category: data.category || [],
     },
   });
 
@@ -370,6 +383,7 @@ function ConsultantForm({ data, onSubmit, onClose }) {
       image: data.image || "",
       verified: !!data.verified,
       certifications: data.certifications || [],
+      category: data.category || [],
     });
   }, [data, reset]);
 
@@ -422,6 +436,32 @@ function ConsultantForm({ data, onSubmit, onClose }) {
             {errors.certifications && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.certifications.message}
+              </p>
+            )}
+          </div>
+
+          {/* Category Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Categories
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {categories.map((cat) => (
+                <label key={cat} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={cat}
+                    {...register("category")}
+                    defaultChecked={data.category?.includes(cat)}
+                    className="form-checkbox h-4 w-4 text-green-500"
+                  />
+                  <span className="text-sm text-gray-700">{cat}</span>
+                </label>
+              ))}
+            </div>
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.category.message}
               </p>
             )}
           </div>

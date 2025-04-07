@@ -28,6 +28,7 @@ exports.getAllConsultants = async (req, res) => {
                     note: "$consultantData.note",
                     image: "$consultantData.image",
                     certifications: "$consultantData.certifications", // Include certifications
+                    category: "$consultantData.category", // Include category
                 }
             }
         ]);
@@ -90,7 +91,7 @@ exports.createConsultant = async (req, res) => {
     try {
         console.log("Request Body:", req.body);
 
-        const { firstName, lastName, email, password, phoneNumber, note, image, verified, certifications } = req.body;
+        const { firstName, lastName, email, password, phoneNumber, note, image, verified, certifications, category } = req.body;
 
         let existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -123,6 +124,7 @@ exports.createConsultant = async (req, res) => {
             image: image || "", // Default empty if not provided
             ratings: ratings, // Ensure ratings is an empty array
             certifications: certifications || [], // Add certifications
+            category: category || [], // Add category
         });
 
         // Save the Consultant and check for errors
@@ -147,7 +149,7 @@ exports.createConsultant = async (req, res) => {
 // Update Consultant Profile
 exports.updateConsultant = async (req, res) => {
     try {
-        const { firstName, lastName, email, phoneNumber, note, image, verified, certifications } = req.body;
+        const { firstName, lastName, email, phoneNumber, note, image, verified, certifications, category } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.params.id,
@@ -159,7 +161,7 @@ exports.updateConsultant = async (req, res) => {
 
         const consultant = await Consultant.findOneAndUpdate(
             { user: req.params.id },
-            { note, image, certifications }, // Update certifications
+            { note, image, certifications, category }, // Update category
             { new: true }
         );
 
