@@ -50,7 +50,7 @@ export default function ConsultantGuest() {
     setSelectedConsultant(consultant);
     await axios.get(`/api/feedbacks/consultant-rating/${consultant._id}`).then((res) => {
       setSelectedConsultantRating(res.data[0].averageRating);
-    })
+    });
   };
 
   const closePanel = () => {
@@ -209,6 +209,18 @@ export default function ConsultantGuest() {
                     }
                   })}
                 </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold text-gray-700">Certifications:</h3>
+                <ul className="list-disc list-inside text-sm text-gray-600 mt-2">
+                  {selectedConsultant.certifications?.length > 0 ? (
+                    selectedConsultant.certifications.map((cert, index) => (
+                      <li key={index}>{cert}</li>
+                    ))
+                  ) : (
+                    <li>No Certifications</li>
+                  )}
+                </ul>
               </div>
             </div>
           </motion.div>
