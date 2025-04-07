@@ -215,7 +215,7 @@ const QuizResultHistory = () => {
                       >
                         <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
                         <TableCell align="center">
-                          {new Date(result.createdDate).toLocaleDateString()}
+                        {new Date(result.createdDate).toLocaleDateString("en-GB")}
                         </TableCell>
                         <TableCell align="center">
                           {new Date(result.createdDate).toLocaleTimeString()}

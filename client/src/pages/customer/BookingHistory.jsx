@@ -48,6 +48,8 @@ const ViewBookingHistory = () => {
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [visibleCodes, setVisibleCodes] = useState({});
+  const [newTime, setNewTime] = useState("");
+  const [showChangeTimeModal, setShowChangeTimeModal] = useState(false);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -263,6 +265,30 @@ const ViewBookingHistory = () => {
     page * rowsPerPage + rowsPerPage
   );
 
+  const handleChangeTimeClick = (bookingId) => {
+    sessionStorage.setItem("changingBookingId", bookingId);
+    navigate(`/change-consultant/${bookingId}`);
+  };
+
+  // Modal cho việc thay đổi thời gian
+  const handleTimeChange = async () => {
+    if (!newTime) {
+      alert("Please select a new time.");
+      return;
+    }
+
+    try {
+      const response = await axios.put(`/api/booking-requests/${selectedBookingId}/change-time`, { newTime });
+      if (response.status === 200) {
+        toast.success("Time changed successfully!");
+        setShowChangeTimeModal(false);
+        setRefresh((prev) => !prev); // Refresh lại danh sách booking
+      }
+    } catch (error) {
+      toast.error("Failed to change time");
+    }
+  };
+
   return (
     <div className="flex main-container w-full h-full relative mx-auto my-0 p-6">
       <CustomerSidebar />
@@ -374,8 +400,10 @@ const ViewBookingHistory = () => {
                     <TableCell align="center">Time</TableCell>
                     <TableCell align="center">Consultant</TableCell>
                     <TableCell align="center">Status</TableCell>
+                    <TableCell align="center">Create Date</TableCell>
                     <TableCell align="center">Action</TableCell>
                     <TableCell align="center">Feedback</TableCell>
+                    <TableCell align="center">Change Date</TableCell>
                     <TableCell align="center">Checkin Code</TableCell>
                   </TableRow>
                 </TableHead>
@@ -389,7 +417,7 @@ const ViewBookingHistory = () => {
                         {booking.serviceID?.name || "N/A"}
                       </TableCell>
                       <TableCell align="center">
-                        {new Date(booking.date).toLocaleDateString()}
+                      {new Date(booking.date).toLocaleDateString("en-GB")}
                       </TableCell>
                       <TableCell align="center">{booking.time}</TableCell>
                       <TableCell align="center">
@@ -422,6 +450,16 @@ const ViewBookingHistory = () => {
                         </span>
                       </TableCell>
                       <TableCell align="center">
+                      {new Date(booking.createdDate).toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
+                      </TableCell>
+                      <TableCell align="center">
                         <Button
                           variant="contained"
                           color="error"
@@ -434,6 +472,7 @@ const ViewBookingHistory = () => {
                           <FaTrash />
                         </Button>
                       </TableCell>
+
                       <TableCell align="center">
                         <Button
                           variant="contained"
@@ -445,36 +484,46 @@ const ViewBookingHistory = () => {
                           <FaComment />
                         </Button>
                       </TableCell>
+                      {/* Thêm nút "Change Time" */}
                       <TableCell align="center">
-                      <div className="flex items-center justify-center gap-2">
-                        {visibleCodes[booking._id] ? (
-                          <>
-                            <span className="bg-gray-100 px-3 py-1 rounded-md font-mono text-sm border border-gray-300">
-                              {booking.CheckinCode}
-                            </span>
-                            <Tooltip title="Hide Check-in Code">
+                        <Button
+                          onClick={() => navigate(`/change-consultant/${booking._id}`)}
+                          variant="contained"
+                          color="secondary"
+                        >
+                          Change Date
+                        </Button>
+                      </TableCell>
+                      <TableCell align="center">
+                        <div className="flex items-center justify-center gap-2">
+                          {visibleCodes[booking._id] ? (
+                            <>
+                              <span className="bg-gray-100 px-3 py-1 rounded-md font-mono text-sm border border-gray-300">
+                                {booking.CheckinCode}
+                              </span>
+                              <Tooltip title="Hide Check-in Code">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => toggleCheckinCode(booking._id)}
+                                  color="error"
+                                >
+                                  <VisibilityOffIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                          ) : (
+                            <Tooltip title="Show Check-in Code">
                               <IconButton
                                 size="small"
                                 onClick={() => toggleCheckinCode(booking._id)}
-                                color="error"
+                                color="primary"
                               >
-                                <VisibilityOffIcon />
+                                <VisibilityIcon />
                               </IconButton>
                             </Tooltip>
-                          </>
-                        ) : (
-                          <Tooltip title="Show Check-in Code">
-                            <IconButton
-                              size="small"
-                              onClick={() => toggleCheckinCode(booking._id)}
-                              color="primary"
-                            >
-                              <VisibilityIcon />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </TableCell>
+                          )}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
