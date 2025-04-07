@@ -16,7 +16,7 @@ export default function ServiceDetails() {
   const [error, setError] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(3); // Hiển thị 3 comment đầu tiên
+  const [visibleCount, setVisibleCount] = useState(10); // Hiển thị 3 comment đầu tiên
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // Chỉ số ảnh hiện tại
 
   const loadMore = () => { setVisibleCount(prev => prev + 3); };

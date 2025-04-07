@@ -13,7 +13,7 @@ export default function ChangeConsultant() {
 
     const handleClick = () => {
         navigate(`/change-calendar`);
-      };
+    };
 
     const handleNullConsultants = () => {
         localStorage.setItem("consultantId", null);
@@ -62,19 +62,22 @@ export default function ChangeConsultant() {
                     </span>
                 </div>
             </div>
-            <button
-            onClick={() => navigate("/booking-history")}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md shadow"
-            >
-            ← Back
-            </button>
+
             <div className="w-full max-w-[1800px] h-auto relative z-[27] mt-[40px] mx-auto flex flex-col gap-5 px-4">
-                <button
-                    onClick={handleClick}
-                    className="mb-2 text-lg text-[#C86C79] hover:text-[#ffc0cb] self-end"
-                >
-                    Change your calendar
-                </button>
+                <div className="flex justify-between items-center mb-4">
+                    <button
+                        onClick={() => navigate("/booking-history")}
+                        className="text-lg text-[#C86C79] hover:text-[#ffc0cb]"
+                    >
+                        ← Back
+                    </button>
+                    <button
+                        onClick={handleClick}
+                        className="text-lg text-[#C86C79] hover:text-[#ffc0cb]"
+                    >
+                        Change your calendar
+                    </button>
+                </div>
                 {consultants.map((consultant, index) => (
                     <div key={consultant._id} className="flex flex-row items-start bg-white p-6 rounded-lg shadow-lg gap-5 mb-5">
                         <div>

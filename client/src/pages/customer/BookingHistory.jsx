@@ -48,30 +48,32 @@ const ViewBookingHistory = () => {
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [visibleCodes, setVisibleCodes] = useState({});
-  const [newTime, setNewTime] = useState("");
-  const [showChangeTimeModal, setShowChangeTimeModal] = useState(false);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const navigate = useNavigate();
 
-  const handleChangeTime = (BookedConsultantId, bookingId) => {
+  const handleChangeTime = (BookedConsultantId, bookingId, isRescheduled) => {
+    if (isRescheduled) {
+      toast.warning("You can only reschedule once.");
+      return;
+    }
+
     if (BookedConsultantId) {
       localStorage.setItem("BookedConsultantId", BookedConsultantId);
       sessionStorage.setItem("BookedConsultantId", BookedConsultantId);
     } else {
-      // Store null explicitly so it's clear no consultant is currently assigned
       localStorage.setItem("BookedConsultantId", "null");
       sessionStorage.setItem("BookedConsultantId", "null");
     }
-  
+
     localStorage.setItem("selectedBookingId", bookingId);
     sessionStorage.setItem("selectedBookingId", bookingId);
-  
+
     navigate(`/change-consultant`);
   };
-  
+
 
   const toggleCheckinCode = (bookingId) => {
     setVisibleCodes((prev) => ({
@@ -213,8 +215,9 @@ const ViewBookingHistory = () => {
     const booking = bookings.find((b) => b._id === bookingRequestId);
     if (booking.feedbackSubmitted) {
       toast.error("Feedback has already been submitted for this booking.");
-      return; // Prevent opening the feedback modal
+      return; // Prevent opening the feedback modal if feedback is already submitted
     }
+
     setFeedbackData((prev) => ({
       ...prev,
       bookingRequestId: bookingRequestId,
@@ -228,6 +231,7 @@ const ViewBookingHistory = () => {
       toast.error("Feedback has already been submitted for this booking.");
       return; // Prevent duplicate feedback submission
     }
+
     try {
       const response = await axios.post("/api/feedbacks", feedbackData);
       if (response.status === 201) {
@@ -241,7 +245,7 @@ const ViewBookingHistory = () => {
           bookingId: null,
         }); // Reset feedback form fields
 
-        // Update the feedbackSubmitted flag for the booking
+        // Update the feedbackSubmitted flag for the booking and update the booking state
         setBookings((prevBookings) =>
           prevBookings.map((b) =>
             b._id === feedbackData.bookingRequestId
@@ -250,12 +254,14 @@ const ViewBookingHistory = () => {
           )
         );
 
+        // Ensure the page gets refreshed with new data if needed
         setRefresh((prev) => !prev);
       }
     } catch (error) {
       toast.error("Failed to submit feedback");
     }
   };
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -394,7 +400,7 @@ const ViewBookingHistory = () => {
                     <TableCell align="center">Consultant</TableCell>
                     <TableCell align="center">Status</TableCell>
                     <TableCell align="center">Create Date</TableCell>
-                    <TableCell align="center">Action</TableCell>
+                    <TableCell align="center">Cancel</TableCell>
                     <TableCell align="center">Feedback</TableCell>
                     <TableCell align="center">Change Date</TableCell>
                     <TableCell align="center">Checkin Code</TableCell>
@@ -410,7 +416,7 @@ const ViewBookingHistory = () => {
                         {booking.serviceID?.name || "N/A"}
                       </TableCell>
                       <TableCell align="center">
-                      {new Date(booking.date).toLocaleDateString("en-GB")}
+                        {new Date(booking.date).toLocaleDateString("en-GB")}
                       </TableCell>
                       <TableCell align="center">{booking.time}</TableCell>
                       <TableCell align="center">
@@ -443,14 +449,14 @@ const ViewBookingHistory = () => {
                         </span>
                       </TableCell>
                       <TableCell align="center">
-                      {new Date(booking.createdDate).toLocaleString("en-GB", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    })}
+                        {new Date(booking.createdDate).toLocaleString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
                       </TableCell>
                       <TableCell align="center">
                         <Button
@@ -461,6 +467,7 @@ const ViewBookingHistory = () => {
                             setSelectedBookingId(booking._id);
                             setShowModal(true);
                           }}
+                          disabled={booking.status === "Completed" || booking.status === "Cancelled" || booking.status === "Confirmed"} // Disable cancel button if status is Completed
                         >
                           <FaTrash />
                         </Button>
@@ -472,17 +479,25 @@ const ViewBookingHistory = () => {
                           color="primary"
                           size="small"
                           onClick={() => handleFeedbackClick(booking._id)}
-                          disabled={booking.feedbackSubmitted} // Disable button if feedback is already submitted
+                          disabled={booking.feedbackSubmitted || booking.status === "Cancelled" || booking.status === "Pending" || booking.status === "Confirmed"}
                         >
                           <FaComment />
                         </Button>
+
                       </TableCell>
-                      {/* Thêm nút "Change Time" */}
+                      {/* Nút "Change Time" */}
                       <TableCell align="center">
                         <Button
-                          onClick={() => handleChangeTime(booking.consultantID?._id, booking._id)}
-                          variant="contained"
-                          color="secondary"
+                          variant="outlined"
+                          onClick={() =>
+                            handleChangeTime(
+                              booking.consultantID?._id,
+                              booking._id,
+                              booking.isUpdated
+                            )
+                          }
+                          disabled={booking.isUpdated || booking.status === "Completed" || booking.status === "Cancelled" || booking.status === "Confirmed"}
+                          className="text-xs py-1 px-3 min-w-auto whitespace-nowrap disabled:opacity-50"
                         >
                           Change Date
                         </Button>

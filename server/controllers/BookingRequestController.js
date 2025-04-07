@@ -23,10 +23,10 @@ exports.createBookingRequest = async (req, res) => {
 
     // Check if the consultant is already booked at the same date and time
     if (consultantID) {
-      const existingBooking = await BookingRequest.findOne({ 
+      const existingBooking = await BookingRequest.findOne({
         date: new Date(date), // Convert input date to a Date object
-        time, 
-        consultantID 
+        time,
+        consultantID
       });
 
       if (existingBooking) {
@@ -58,7 +58,7 @@ exports.createBookingRequest = async (req, res) => {
       customerID,
       date: bookingDate.toISOString().split("T")[0], // Ensures consistent date format
       time,
-      consultantID: consultantID || null, 
+      consultantID: consultantID || null,
       status: req.body.status || "Pending",
       isConsultantAssignedByCustomer: req.body.isConsultantAssignedByCustomer || false,
       CheckinCode: checkinCode,
@@ -352,7 +352,7 @@ exports.cancelBooking = async (req, res) => {
 exports.getBookingById = async (req, res) => {
   try {
     const { id } = req.params;
-    const booking = await BookingRequest.findById(id).populate("serviceID customerID consultantID");
+    const booking = await BookingRequest.findById(id).populate("serviceID customerID consultantID isUpdated");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking request not found" });
@@ -452,21 +452,21 @@ exports.assignConsultant = async (req, res) => {
 exports.getPendingBookingsForConsultant = async (req, res) => {
   try {
     const { consultantId } = req.params; // Extract consultant ID from URL params
-    
+
     if (!consultantId) {
-        return res.status(400).json({ error: "Consultant ID is required" });
+      return res.status(400).json({ error: "Consultant ID is required" });
     }
 
     const pendingBookings = await BookingRequest.find({
-        consultantID: consultantId,
-        status: "Pending",
+      consultantID: consultantId,
+      status: "Pending",
     }); // Populate related data if needed
 
     res.json(pendingBookings);
-} catch (error) {
+  } catch (error) {
     console.error("Error fetching pending bookings:", error);
     res.status(500).json({ error: "Failed to fetch pending bookings" });
-}
+  }
 };
 
 exports.deleteBooking = async (req, res) => {
