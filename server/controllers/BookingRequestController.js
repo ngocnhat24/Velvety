@@ -534,6 +534,11 @@ exports.updateBookingRequestDetails = async (req, res) => {
       return res.status(404).json({ message: "Booking Request not found" });
     }
 
+    // Ensure the booking is in "Pending" status
+    if (booking.status !== "Pending") {
+      return res.status(400).json({ message: "Booking can only be updated when its status is 'Pending'." });
+    }
+
     // Ensure the booking has not already been updated
     if (booking.isUpdated) {
       return res.status(400).json({ message: "Booking details can only be updated once." });
@@ -559,6 +564,20 @@ exports.updateBookingRequestDetails = async (req, res) => {
 
       if (existingBooking) {
         return res.status(400).json({ message: "This consultant is already booked at the selected date and time." });
+      }
+    }
+
+    // If a new consultant is being selected, ensure they are available
+    if (consultantID) {
+      const bookedConsultants = await BookingRequest.find({
+        date: date || booking.date, // Use the provided date or the existing booking date
+        time: time || booking.time, // Use the provided time or the existing booking time
+        consultantID: { $ne: null },
+        status: { $in: ["Pending", "Confirmed"] },
+      }).distinct("consultantID");
+
+      if (bookedConsultants.includes(consultantID)) {
+        return res.status(400).json({ message: "The selected consultant is not available at the chosen time." });
       }
     }
 
