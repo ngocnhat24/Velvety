@@ -515,3 +515,68 @@ exports.scheduleBookingCancellation = () => {
 exports.initializeBookingTasks = () => {
   exports.scheduleBookingCancellation(); // not "this", use "exports" here
 };
+
+exports.updateBookingRequestDetails = async (req, res) => {
+  try {
+    const { id } = req.params; // Booking ID from URL
+    const { date, time, consultantID } = req.body; // New booking details
+
+    console.log("Updating BookingRequest ID:", id, "with data:", { date, time, consultantID });
+
+    // Validate ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid booking ID format" });
+    }
+
+    // Fetch the booking request
+    const booking = await BookingRequest.findById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking Request not found" });
+    }
+
+    // Ensure the booking has not already been updated
+    if (booking.isUpdated) {
+      return res.status(400).json({ message: "Booking details can only be updated once." });
+    }
+
+    // Validate the date if provided
+    if (date) {
+      const selectedDate = new Date(date);
+      const currentDate = new Date();
+      if (isNaN(selectedDate.getTime()) || selectedDate <= currentDate) {
+        return res.status(400).json({ message: "Selected date must be in the future." });
+      }
+    }
+
+    // Check if the consultant is already booked at the new date and time
+    if (consultantID && date && time) {
+      const existingBooking = await BookingRequest.findOne({
+        date: new Date(date),
+        time,
+        consultantID,
+        _id: { $ne: id }, // Exclude the current booking
+      });
+
+      if (existingBooking) {
+        return res.status(400).json({ message: "This consultant is already booked at the selected date and time." });
+      }
+    }
+
+    // Update booking details
+    const updateData = {};
+    if (date) updateData.date = date;
+    if (time) updateData.time = time;
+    if (consultantID) updateData.consultantID = consultantID;
+    updateData.isUpdated = true; // Mark as updated
+
+    const updatedBooking = await BookingRequest.findByIdAndUpdate(id, updateData, { new: true });
+
+    res.status(200).json({
+      message: "Booking Request updated successfully",
+      booking: updatedBooking,
+    });
+  } catch (error) {
+    console.error("Error updating booking request details:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
