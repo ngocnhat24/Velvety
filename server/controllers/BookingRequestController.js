@@ -469,6 +469,7 @@ exports.getPendingBookingsForConsultant = async (req, res) => {
   }
 };
 
+// delete booking 
 exports.deleteBooking = async (req, res) => {
   try {
     const { id } = req.params;
@@ -518,6 +519,9 @@ exports.initializeBookingTasks = () => {
   exports.scheduleBookingCancellation(); // not "this", use "exports" here
 };
 
+
+
+//update booking request (date and consultant)
 exports.updateBookingRequestDetails = async (req, res) => {
   try {
     const { id } = req.params; // Booking ID from URL
