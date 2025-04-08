@@ -123,7 +123,26 @@ const ChangePassword = () => {
         color="secondary"
         fullWidth
         sx={{ mt: 2 }}
-        onClick={() => navigate(roleName === "Admin" ? "/staff-management" : "/dashboard")}
+        onClick={() => {
+          switch (roleName) {
+            case "Admin":
+              navigate("/staff-management");
+              break;
+            case "Manager":
+              navigate("/dashboard");
+              break;
+            case "Staff":
+              navigate("/view-booking");
+              break;
+            case "Consultant":
+              navigate("/view-booked");
+              break;
+            default:
+              // fallback nếu roleName không khớp
+              navigate("/not-authorized"); // hoặc trang nào bạn muốn
+          }
+        }}
+
       >
         Back
       </Button>
