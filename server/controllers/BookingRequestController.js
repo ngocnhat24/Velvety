@@ -486,12 +486,14 @@ exports.deleteBooking = async (req, res) => {
 exports.scheduleBookingCancellation = () => {
   console.log("✅ Cron job for booking cancellation initialized");
 
-  cron.schedule('* * * * *', async () => { // every minute for testing
+  cron.schedule('* * * * *', async () => {
     try {
-      const now = new Date();
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+
       const bookingsToCancel = await BookingRequest.find({
         status: "Pending",
-        date: { $lt: now }, // Only bookings scheduled before today
+        date: { $lt: todayStart },
       });
 
       if (bookingsToCancel.length === 0) {
