@@ -215,7 +215,7 @@ const QuizResultHistory = () => {
                       >
                         <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
                         <TableCell align="center">
-                        {new Date(result.createdDate).toLocaleDateString("en-GB")}
+                          {new Date(result.createdDate).toLocaleDateString("en-GB")}
                         </TableCell>
                         <TableCell align="center">
                           {new Date(result.createdDate).toLocaleTimeString()}
@@ -249,7 +249,7 @@ const QuizResultHistory = () => {
                                       r._id === result._id ? { ...r, showAll: !r.showAll } : r
                                     );
                                     setQuizResults(updatedResults);
-                                  }}
+                                  }} 
                                   style={{
                                     cursor: "pointer",
                                     transition: "transform 0.3s, color 0.3s",
