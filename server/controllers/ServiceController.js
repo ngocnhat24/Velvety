@@ -22,13 +22,29 @@ const getAllServices = async (req, res) => {
 
 const createService = async (req, res) => {
   try {
-    const { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage } = req.body;
-    const newService = new Service({ price, name, description, detaildescription, image, effectimage, resultimage, sensationimage });
+    const { price, name, description, detaildescription, image, effectimage, resultimage, sensationimage, category, status } = req.body;
+    const parsedPrice = Number(price);
+    if (isNaN(parsedPrice)) {
+      return res.status(400).json({ error: 'Price must be a valid number' });
+    }
+
+    const newService = new Service({
+      price: parsedPrice,
+      name,
+      description: description || "",
+      detaildescription: detaildescription || "",
+      image: image || "",
+      effectimage: effectimage || "",
+      resultimage: resultimage || "",
+      sensationimage: sensationimage || "",
+      category: Array.isArray(category) ? category : [],
+      status: status || "active"
+    });
     await newService.save();
-    res.status(201).json(newService);  // Return the created service
+    res.status(201).json(newService);
   } catch (err) {
-    console.error('Error creating service:', err);  // Log any errors
-    res.status(500).json({ error: 'Internal Server Error' });  // Return a 500 error if there is an issue
+    console.error('Error creating service:', err);
+    res.status(500).json({ error: err.message });
   }
 };
 
